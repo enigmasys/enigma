@@ -3,12 +3,13 @@ package edu.vanderbilt.enigma.controller
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import edu.vanderbilt.enigma.model.*
+import edu.vanderbilt.enigma.model.Observation.UploadObservationObject
+import edu.vanderbilt.enigma.model.Process.ProcessOwned
 import edu.vanderbilt.enigma.services.ObservationServiceImpl
 import edu.vanderbilt.enigma.services.ObservationUploadServiceImpl
 import edu.vanderbilt.enigma.services.PremonitionFileUploadService
 import edu.vanderbilt.enigma.services.PremonitionProcessServiceImpl
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.core.io.ResourceLoader
 import org.springframework.http.*
 import org.springframework.web.bind.annotation.*

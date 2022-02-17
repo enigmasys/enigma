@@ -1,4 +1,7 @@
-package edu.vanderbilt.enigma.model
+package edu.vanderbilt.enigma.model.Observation
+
+import edu.vanderbilt.enigma.model.Inputs
+import edu.vanderbilt.enigma.model.RuntimeConfig
 
 data class Application(
     val funName: String,

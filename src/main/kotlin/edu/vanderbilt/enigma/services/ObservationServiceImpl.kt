@@ -5,7 +5,7 @@ import com.azure.storage.blob.BlobClientBuilder
 import edu.vanderbilt.enigma.model.Directory
 import edu.vanderbilt.enigma.model.EgressData
 import edu.vanderbilt.enigma.model.TransferStat
-import edu.vanderbilt.enigma.model.UploadObservationObject
+import edu.vanderbilt.enigma.model.Observation.UploadObservationObject
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.BodyInserters

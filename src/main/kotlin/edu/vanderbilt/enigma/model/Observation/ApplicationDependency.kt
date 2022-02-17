@@ -1,6 +1,4 @@
-package edu.vanderbilt.enigma.model
-
-import edu.vanderbilt.enigma.model.Application
+package edu.vanderbilt.enigma.model.Observation
 
 data class ApplicationDependency(
     val application: Application,

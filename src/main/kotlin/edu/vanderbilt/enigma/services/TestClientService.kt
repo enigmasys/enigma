@@ -8,7 +8,6 @@ import reactor.core.publisher.Mono
 
 @Service
 class TestClientService(@Qualifier("premonitionApiWebClient") private val webClient: WebClient) {
-
     fun getTestMessage(): String? {
         var apiVersion: String = "/v2"
         val myRequest = webClient.get()
@@ -19,6 +18,5 @@ class TestClientService(@Qualifier("premonitionApiWebClient") private val webCli
         val result = retrievedResource.share().block()
         println(result)
         return result
-
     }
 }

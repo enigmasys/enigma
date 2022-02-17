@@ -1,7 +1,7 @@
 package edu.vanderbilt.enigma.services
 
 
-import edu.vanderbilt.enigma.model.UploadObservationObject
+import edu.vanderbilt.enigma.model.Observation.UploadObservationObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service

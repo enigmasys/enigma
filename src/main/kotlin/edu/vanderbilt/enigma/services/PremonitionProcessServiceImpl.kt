@@ -1,6 +1,6 @@
 package edu.vanderbilt.enigma.services
 
-import edu.vanderbilt.enigma.model.ProcessOwned
+import edu.vanderbilt.enigma.model.Process.ProcessOwned
 import edu.vanderbilt.enigma.model.ProcessState
 import org.springframework.beans.factory.annotation.Qualifier
 

@@ -1,4 +1,4 @@
-package edu.vanderbilt.enigma.model
+package edu.vanderbilt.enigma.model.Process
 
 data class ProcessDependency(
     val endIndex: Int,
