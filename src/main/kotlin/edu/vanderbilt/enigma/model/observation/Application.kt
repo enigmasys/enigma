@@ -1,4 +1,4 @@
-package edu.vanderbilt.enigma.model.Observation
+package edu.vanderbilt.enigma.model.observation
 
 import edu.vanderbilt.enigma.model.Inputs
 import edu.vanderbilt.enigma.model.RuntimeConfig

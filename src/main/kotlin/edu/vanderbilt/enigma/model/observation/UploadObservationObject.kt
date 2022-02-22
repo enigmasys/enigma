@@ -1,7 +1,7 @@
-package edu.vanderbilt.enigma.model.Observation
+package edu.vanderbilt.enigma.model.observation
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import edu.vanderbilt.enigma.model.Process.ProcessDependency
+import edu.vanderbilt.enigma.model.process.ProcessDependency
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class UploadObservationObject(

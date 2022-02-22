@@ -9,15 +9,14 @@ import picocli.CommandLine
 
 @SpringBootApplication
 class EnigmaApplication
-//(
-//	private val generateEnigmaCommand: EnigmaCommand
-//
-//): CommandLineRunner
-//{
-//	override fun run(vararg args: String?) {
-//		CommandLine(generateEnigmaCommand).execute(*args)
-//	}
-//}
+(
+	private val generateEnigmaCommand: EnigmaCommand
+): CommandLineRunner
+{
+	override fun run(vararg args: String?) {
+		CommandLine(generateEnigmaCommand).execute(*args)
+	}
+}
 
 
 

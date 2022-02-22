@@ -5,7 +5,7 @@ import com.azure.storage.blob.BlobClientBuilder
 import edu.vanderbilt.enigma.model.Directory
 import edu.vanderbilt.enigma.model.EgressData
 import edu.vanderbilt.enigma.model.TransferStat
-import edu.vanderbilt.enigma.model.Observation.UploadObservationObject
+import edu.vanderbilt.enigma.model.observation.UploadObservationObject
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.BodyInserters
@@ -97,7 +97,7 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
             .bodyToMono(EgressData::class.java)
         val data = response.share().block()
         val sasUrlList:ArrayList<String> =ArrayList<String>()
-        data?.files?.forEach {it -> sasUrlList.add(it.sasUrl)}
+        data?.dataLakeFiles?.forEach { it -> sasUrlList.add(it.sasUrl)}
         return data
 
 //        return sasUrlList
@@ -125,7 +125,7 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
             .bodyToMono(String::class.java)
         val data = response.share().block()
 //        val sasUrlList:ArrayList<String> =ArrayList<String>()
-//        data?.files?.forEach {it -> sasUrlList.add(it.sasUrl)}
+//        data?.dataLakeFiles?.forEach {it -> sasUrlList.add(it.sasUrl)}
         return data
     }
 

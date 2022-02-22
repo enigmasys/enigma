@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 data class EgressData(
     val directoryId: String,
     val expiresOn: String,
-    val files: List<File>,
+    val dataLakeFiles: List<DataLakeFile>,
     val processId: String,
     val transferId: Any?
 )

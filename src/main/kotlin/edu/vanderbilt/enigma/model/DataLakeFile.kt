@@ -2,7 +2,7 @@ package edu.vanderbilt.enigma.model
 
 import com.fasterxml.jackson.annotation.JsonInclude
 @JsonInclude(JsonInclude.Include.ALWAYS)
-data class File(
+data class DataLakeFile(
     val hash: Any?,
     val length: Any?,
     val name: String,
