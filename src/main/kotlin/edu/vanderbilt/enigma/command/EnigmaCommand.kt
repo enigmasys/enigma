@@ -15,6 +15,7 @@ import java.util.concurrent.Callable
 import edu.vanderbilt.enigma.model.observation.UploadObservationObject
 import edu.vanderbilt.enigma.model.testdata.MRIData
 import edu.vanderbilt.enigma.services.ObservationUploadServiceImpl
+import java.lang.Thread.sleep
 
 
 @Component
@@ -95,7 +96,12 @@ class EnigmaCommand(
 
 
                 val uploadData:UploadObservationObject = generateData() as UploadObservationObject
-                ObservationUploadServiceObj.appendObservation(observationObject)
+//                ObservationUploadServiceObj.appendObservation(observationObject)
+                (0..100).forEach {
+                    ObservationUploadServiceObj.appendObservation(uploadData)
+                    sleep(10)
+                }
+
             }
 
 //            downloadObs -> {
@@ -190,7 +196,7 @@ class EnigmaCommand(
               "isMeasure": true,
               "index": 1,
               "version": 0,
-              "observerId": "b92dfdef-f13e-48f3-a56f-07f161f3aac2",
+              "observerId": "53f28719-1d33-4bad-b958-bc9537f3f42e",
               "startTime": "",
               "endTime": "",
               "applicationDependencies": [],
