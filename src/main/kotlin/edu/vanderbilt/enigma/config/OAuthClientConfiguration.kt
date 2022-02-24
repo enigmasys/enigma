@@ -139,7 +139,7 @@ class TestClientConfig {
             .build()
     }
 
-    // This is needed to let the rest controller accept the client credential workflow authorization...
+//     This is needed to let the rest controller accept the client credential workflow authorization...
 //    @Bean
 //    fun springSecurityFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
 //        return http.oauth2Client().and().build()

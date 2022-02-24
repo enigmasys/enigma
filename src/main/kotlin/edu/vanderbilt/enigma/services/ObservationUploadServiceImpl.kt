@@ -2,13 +2,16 @@ package edu.vanderbilt.enigma.services
 
 
 import edu.vanderbilt.enigma.model.observation.UploadObservationObject
+import edu.vanderbilt.enigma.util.prettyJsonPrint
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.BodyInserters
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToMono
 import org.springframework.web.util.UriBuilder
 import reactor.core.publisher.Mono
-import org.springframework.web.reactive.function.client.WebClient
 
 
 @Service
@@ -25,16 +28,39 @@ class ObservationUploadServiceImpl(@Qualifier("premonitionApiWebClient") private
         val observationID = processStat?.numObservations
         observationObject.index = observationID!!
         apiVersion="/v2"
-        val response = webClient.post()
+        println(observationObject)
+        prettyJsonPrint(observationObject)
+        val request = webClient.post()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder.path("$apiVersion/Process/AppendObservation")
                     .queryParam("processId", processID)
                     .build()
             }
-            .body(BodyInserters.fromPublisher(Mono.just(observationObject), UploadObservationObject::class.java))
-            .retrieve()
-            .bodyToMono(String::class.java)
-        val data = response.share().block()
+            .contentType(MediaType.APPLICATION_JSON)
+//            .body(Mono.just(observationObject),UploadObservationObject::class.java)
+            .body(BodyInserters.fromPublisher(Mono.just(observationObject),UploadObservationObject::class.java))
+//            .body(BodyInserters.fromPublisher(Mono.just(observationObject), UploadObservationObject::class.java))
+//            .accept(MediaType.APPLICATION_JSON)
+//            .body(BodyInserters.fromValue(observationObject))
+            .accept(MediaType.APPLICATION_JSON)
+            .exchange()
+            .flatMap { clientResponse ->
+            if (clientResponse.statusCode().is4xxClientError) {
+                clientResponse.body { clientHttpResponse, context -> clientHttpResponse.getBody() }
+                return@flatMap clientResponse.bodyToMono(String::class.java)
+            } else return@flatMap clientResponse.bodyToMono(String::class.java)
+        }
+
+
+
+
+
+//        val response = request
+//            .retrieve()
+//            .bodyToMono(String::class.java)
+        val data = request.share().block()
+//        val data = response.share().block()
+        println(data)
         return data
     }
 
