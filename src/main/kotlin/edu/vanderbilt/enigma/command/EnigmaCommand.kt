@@ -27,6 +27,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 
+
 @Component
 @Command(
     name = "premcli",
@@ -37,7 +38,10 @@ import java.nio.file.Paths
 class EnigmaCommand(
     private val ProcessServiceObj: PremonitionProcessServiceImpl,
     private val ObservationUploadServiceObj: ObservationUploadServiceImpl,
-    private val ObservationDownloadServiceObj: ObservationServiceImpl
+    private val ObservationDownloadServiceObj: ObservationServiceImpl,
+    private val FileUploaderObj: FileUploader
+//    private val FileDownloaderObj: FileDownloader
+
 
 ) : Callable<Int> {
 
@@ -67,14 +71,6 @@ class EnigmaCommand(
     var uploadFiles = false
 
 
-//    private fun prettyPrint(input: Any) {
-//        val mapper = ObjectMapper()
-//        mapper.enable(SerializationFeature.INDENT_OUTPUT)
-//        val result = mapper.writeValueAsString(input)
-//        println(result)
-//
-//    }
-
 
     override fun call(): Int {
 
@@ -91,9 +87,7 @@ class EnigmaCommand(
                 //Here we first create the observationMetaData
                 val path = Paths.get("").toAbsolutePath()
                 val uploadDir = Paths.get("$path/upload/dat")
-
-
-                uploadDirectory(processID, observerID, uploadDir)
+                FileUploaderObj.uploadDirectory(processID, observerID, uploadDir)
             }
 
             downloadFiles ->{
@@ -176,25 +170,25 @@ class EnigmaCommand(
         return 0
     }
 
-    private fun uploadDirectory(processID: String, observerID: String, uploadDir: Path) {
-        var uploadMetaData = generateUploadMetaData(processID, observerID = observerID) as UploadObservationObject
-        uploadMetaData.index = ProcessServiceObj.getProcessState(processID)!!.numObservations
-        var relativeFilePathList = FileUploader.getMapofRelativeAndAbsolutePath(uploadDir.toString()).keys
-        uploadMetaData.dataFiles = relativeFilePathList.map { it.toString() }.toList()
-        ObservationUploadServiceObj.appendObservation(uploadMetaData)
-        println(uploadMetaData)
-        //
-        val result = ObservationDownloadServiceObj.createTemporaryDirectory(processID, isUpload = true)
-        val values = result as Directory
-        FileUploader.put(values.sasUrl, uploadDir.toString())
-        // putobservation
-        uploadMetaData.dataFiles?.let {
-            ObservationDownloadServiceObj.putObservationFiles(
-                processID, result.directoryId, uploadMetaData.index.toString(),
-                uploadMetaData.index.toString(), "0", it
-            )
-        }
-    }
+//    private fun uploadDirectory(processID: String, observerID: String, uploadDir: Path) {
+//        var uploadMetaData = generateUploadMetaData(processID, observerID = observerID) as UploadObservationObject
+//        uploadMetaData.index = ProcessServiceObj.getProcessState(processID)!!.numObservations
+//        var relativeFilePathList = FileUploader.getMapofRelativeAndAbsolutePath(uploadDir.toString()).keys
+//        uploadMetaData.dataFiles = relativeFilePathList.map { it.toString() }.toList()
+//        ObservationUploadServiceObj.appendObservation(uploadMetaData)
+//        println(uploadMetaData)
+//        //
+//        val result = ObservationDownloadServiceObj.createTemporaryDirectory(processID, isUpload = true)
+//        val values = result as Directory
+//        FileUploader.put(values.sasUrl, uploadDir.toString())
+//        // putobservation
+//        uploadMetaData.dataFiles?.let {
+//            ObservationDownloadServiceObj.putObservationFiles(
+//                processID, result.directoryId, uploadMetaData.index.toString(),
+//                uploadMetaData.index.toString(), "0", it
+//            )
+//        }
+//    }
 
 
     private fun generateData() : Any {
