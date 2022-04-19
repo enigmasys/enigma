@@ -16,6 +16,8 @@ repositories {
 }
 
 dependencies {
+//	implementation("com.amazonaws:aws-java-sdk:1.12.195")
+
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.6")
@@ -26,7 +28,6 @@ dependencies {
 	implementation("com.azure:azure-storage-blob:12.14.2")
 	implementation ("info.picocli:picocli:4.6.2")
     implementation("junit:junit:4.13.1")
-	implementation("junit:junit:4.13.1")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
 }

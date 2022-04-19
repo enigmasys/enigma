@@ -18,8 +18,6 @@ class EnigmaApplication
 	}
 }
 
-
-
 fun main(args: Array<String>) {
 	runApplication<EnigmaApplication>(*args)
 }

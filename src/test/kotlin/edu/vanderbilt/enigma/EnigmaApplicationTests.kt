@@ -1,13 +1,24 @@
 package edu.vanderbilt.enigma
 
+import com.azure.storage.blob.BlobContainerClientBuilder
+import com.azure.storage.blob.BlobServiceClientBuilder
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import edu.vanderbilt.enigma.model.observation.UploadObservationObject
+import edu.vanderbilt.enigma.model.testdata.MRIData
+import edu.vanderbilt.enigma.services.PremonitionProcessServiceImpl
+import org.junit.Before
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import java.io.UncheckedIOException
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
-class EnigmaApplicationTests {
+
+class EnigmaApplicationTests() {
 	@Test
 	fun contextLoads() {
 		val mapper = jacksonObjectMapper()
@@ -113,5 +124,199 @@ class EnigmaApplicationTests {
 
 	}
 
+	@Test
+	fun testUploadBlob(){
+		var sasUrl="https://leapdevelopmentblob.blob.core.windows.net/22567be5-4f4e-4747-ae25-62d44a07fef9?sv=2020-04-08&si=UploadPolicy&sr=c&sig=dtuWKPa8ISBdhv8iBo7eY3CYxCB%2BqgYjUZ11IOqbfK0%3D"
+
+		var bloburl = sasUrl.substringBefore("?")
+		var blobsas = sasUrl.substringAfter("?")
+
+
+		val path = Paths.get("").toAbsolutePath()
+		val uploadDir = "$path/upload"
+		if (Files.notExists(Paths.get(uploadDir)))
+			println("Folder does not exist")
+		println(Files.list(Paths.get(uploadDir)))
+
+
+		val blobServiceClient = BlobServiceClientBuilder()
+			.endpoint(bloburl)
+			.sasToken(blobsas)
+			.buildAsyncClient()
+//		println(blobServiceClient.statistics)
+//			.endpoint(sasUrl)
+//			.buildClient()
+//		println(blobClient.containerName)
+	//		return blobClient.downloadStream(outputStream);
+
+	}
+
+	@Test
+	fun testBlobClient()
+	{
+
+		var sasUrl="https://leapdevelopmentblob.blob.core.windows.net/7100ee9f-d975-4ab3-8719-8aeebeb25b4f?sv=2020-04-08&si=UploadPolicy&sr=c&sig=7772xvxbZSpuyIrzJEkVPdC6MgQCtmAHOs1lieQOnzU%3D"
+//		var bloburl = sasUrl.substringBefore("?")
+//		var blobsas = sasUrl.substringAfter("?")
+
+		val path = Paths.get("").toAbsolutePath()
+		val uploadDir = "$path/upload/"
+
+		if (Files.notExists(Paths.get(uploadDir)))
+			println("Folder does not exist")
+
+//		val blobServiceClient = BlobServiceClientBuilder()
+//			.endpoint(bloburl)
+//			.sasToken(blobsas)
+//			.buildClient();
+
+
+
+		var blobContainerClient = BlobContainerClientBuilder().
+				endpoint(sasUrl).buildClient()
+
+		println(blobContainerClient.blobContainerName)
+
+
+
+
+		var fileMap = getMapofRelativeAndAbsolutePath(uploadDir)
+
+		fileMap.forEach { (key, value) ->
+			run {
+				println("$key: $value")
+				val blobClient = blobContainerClient.getBlobClient(key.toString())
+				try {
+					blobClient.uploadFromFile(value.toString(),true)
+					println("Finished Uploading $value")
+				} catch (ex: UncheckedIOException) {
+					System.err.printf("Failed to upload from file %s%n", ex.message)
+				}
+			}
+		}
+
+
+//		for file in relativeFileList:
+//			println(file)
+
+//        val blobClient = blobContainerClient.getBlobClient("data/test.txt")
+//        blobClient.uploadFromFile(uploadDir)
+
+//
+
+//		println(blobServiceClient.toString())
+//		blobServiceClient.
+//		this.containerClient = serviceClient.
+//		getBlobContainerClient(MY_DEFAULT_CONTAINER_NAME);
+//
+//		if (!this.containerClient.exists()) {
+//			this.containerClient.create();
+//		}
+	}
+
+
+	@Test
+	fun TestgetRelativePaths(){
+		val path = Paths.get("").toAbsolutePath()
+		val uploadDir = Paths.get("$path/upload/")
+		var fileList = Files.walk(uploadDir)
+			.filter(Files::isRegularFile)
+			.toList()
+		var relativeFileList = fileList.map { uploadDir.relativize(it) }
+		println(fileList)
+		println(relativeFileList)
+	}
+
+	@Test
+	fun TestgetFilesRelativePathList(){
+		val path = Paths.get("").toAbsolutePath()
+		val uploadDir = Paths.get("$path/upload/")
+		var fileList = Files.walk(uploadDir)
+			.filter(Files::isRegularFile)
+			.toList()
+		println(fileList)
+
+	}
+
+	@Test
+	fun TestgetFilesPathList(){
+		val path = Paths.get("").toAbsolutePath()
+		val uploadDir = Paths.get("$path/upload/")
+		var fileList = Files.walk(uploadDir)
+			.filter(Files::isRegularFile)
+			.toList()
+		var relativeFileList = fileList.map { uploadDir.relativize(it) }
+		println(relativeFileList)
+	}
+
+
+	fun getMapofRelativeAndAbsolutePath(uploadDir: String): Map<Path, Path> {
+//		val path = Paths.get("").toAbsolutePath()
+//		val uploadDir = Paths.get("$path/upload/")
+		var uploadDirPath = Paths.get(uploadDir)
+
+		var fileList = Files.walk(uploadDirPath)
+			.filter(Files::isRegularFile)
+			.toList()
+
+		var relativeFileList = fileList.map { uploadDirPath.relativize(it) }
+
+
+		var fileMap = relativeFileList.zip(fileList).toMap()
+		return fileMap
+//		println(relativeFileList)
+//		return relativeFileList
+	}
+
+	fun getFilesPathList(uploadDir: String): List<Path>{
+//		val path = Paths.get("").toAbsolutePath()
+//		val uploadDir = Paths.get("$path/upload/")
+		val uploadDirPath = Paths.get(uploadDir)
+		var fileList = Files.walk(uploadDirPath)
+			.filter(Files::isRegularFile)
+			.toList()
+//		println(fileList)
+		return fileList
+	}
+
+
+	private fun generateUploadMetaData() : Any {
+//		var processID = "4935ff85-8e84-4b06-a69a-9ac160542a50"
+		val uploadData = """
+            {
+              "isFunction": false,
+              "processType": "TestSim",
+              "processId": "4935ff85-8e84-4b06-a69a-9ac160542a50",
+              "isMeasure": true,
+              "index": 1,
+              "version": 0,
+              "observerId": "d798e5be-344e-4e5e-994f-48d43e93d6d6",
+              "startTime": "",
+              "endTime": "",
+              "applicationDependencies": [],
+              "processDependencies": [],
+              "data": [],
+              "dataFiles": []
+            }
+        """.trim()
+		val observationMapper = jacksonObjectMapper()
+		var uploadObs:UploadObservationObject = observationMapper.readValue(uploadData)
+		uploadObs.data = emptyList()
+//        prettyPrint( observationMapper.writeValueAsString(uploadObs))
+		return uploadObs
+	}
+
+
+	@Test
+	fun testuploadObsforFile(){
+		val uploadData:UploadObservationObject = generateUploadMetaData() as UploadObservationObject
+//		val processStat = premonitionProcessObj.getProcessState(uploadData.processId)
+		// use the observation count as the index for the observationID.....
+//		val observationID = processStat?.numObservations
+//		if (observationID != null) {
+//			uploadData.index = observationID!!
+//		}
+		println(uploadData.index)
+	}
 
 }

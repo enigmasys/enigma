@@ -5,6 +5,7 @@ import com.azure.storage.blob.BlobClientBuilder
 import edu.vanderbilt.enigma.model.Directory
 import edu.vanderbilt.enigma.model.EgressData
 import edu.vanderbilt.enigma.model.TransferStat
+import edu.vanderbilt.enigma.model.observation.EgressResult
 import edu.vanderbilt.enigma.model.observation.UploadObservationObject
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -13,6 +14,8 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 import reactor.core.publisher.Mono
 import java.io.OutputStream
+import java.nio.file.Files
+import java.nio.file.Paths
 
 @Service
 class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val webClient: WebClient) {
@@ -80,7 +83,7 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
         endObsIndex: String,
         expiresInMin: String = "60",
 //        authorizedClient: OAuth2AuthorizedClient?
-    ): EgressData? {
+    ): EgressResult? {
         apiVersion="/v3"
         val response = webClient
             .put()
@@ -94,10 +97,11 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
             }
 //            .headers { header -> header.setBearerAuth(authorizedClient?.accessToken?.tokenValue.toString()) }
             .retrieve()
-            .bodyToMono(EgressData::class.java)
+            .bodyToMono(EgressResult::class.java)
         val data = response.share().block()
         val sasUrlList:ArrayList<String> =ArrayList<String>()
-        data?.dataLakeFiles?.forEach { it -> sasUrlList.add(it.sasUrl)}
+        data?.files?.forEach { it -> sasUrlList.add(it.sasUrl)}
+        println(data)
         return data
 
 //        return sasUrlList
@@ -109,7 +113,7 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
         startObsIndex: String,
         version: String,
 //        authorizedClient: OAuth2AuthorizedClient?
-    ): String? {
+    ): UploadObservationObject? {
         apiVersion="/v2"
         val response = webClient
             .get()
@@ -122,7 +126,7 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
             }
 //            .headers { header -> header.setBearerAuth(authorizedClient?.accessToken?.tokenValue.toString()) }
             .retrieve()
-            .bodyToMono(String::class.java)
+            .bodyToMono(UploadObservationObject::class.java)
         val data = response.share().block()
 //        val sasUrlList:ArrayList<String> =ArrayList<String>()
 //        data?.dataLakeFiles?.forEach {it -> sasUrlList.add(it.sasUrl)}
@@ -149,7 +153,7 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
         return transString
     }
 
-    fun getObservationFilesV3(processID: String, startObsIndex: String, endObsIndex: String, expiresInMins: String): String? {
+    fun getObservationFilesV3(processID: String, startObsIndex: String, endObsIndex: String, expiresInMins: String): Any? {
         apiVersion="/v3"
         val response = webClient
             .put()
@@ -163,9 +167,10 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
                     .build()
             }
             .retrieve()
-            .bodyToMono(String::class.java)
-        val transferId = response.share().block().toString()
-        return transferId
+            .bodyToMono(EgressResult::class.java)
+
+        val result  = response.share().block()
+        return result
     }
 
 
@@ -229,4 +234,28 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
         return result
     }
 
+    fun DownloadFiles(values: EgressResult) {
+        var fileDownLoadMap: HashMap<String, String> = HashMap<String, String>()
+        values?.files?.forEach {
+            fileDownLoadMap.put(it.name, it.sasUrl)
+        }
+
+        val path = Paths.get("").toAbsolutePath()
+        val outputDir = "$path/outputFile/"
+        if (Files.notExists(Paths.get(outputDir)))
+            Files.createDirectories(Paths.get(outputDir))
+
+        //            println(fileDownLoadMap.entries)
+        fileDownLoadMap.filter { it.key == "dat/0/col_source/dataset/120.xml" }
+        println(fileDownLoadMap.size)
+        fileDownLoadMap.entries.forEach {
+            val fname = it.key
+            val url = it.value
+            val filePath = outputDir + fname
+            val tmpDir = Paths.get(filePath).parent
+            if (Files.notExists(tmpDir))
+                Files.createDirectories(tmpDir)
+            FileDownloader.get(url, filePath)
+        }
+    }
 }

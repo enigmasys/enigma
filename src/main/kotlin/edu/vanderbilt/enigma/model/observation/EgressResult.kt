@@ -1,13 +1,12 @@
-package edu.vanderbilt.enigma.model
+package edu.vanderbilt.enigma.model.observation
 
 import com.fasterxml.jackson.annotation.JsonInclude
 
 @JsonInclude(JsonInclude.Include.ALWAYS)
-data class EgressData(
+data class EgressResult(
     val directoryId: String,
     val expiresOn: String,
-    val files: List<DataLakeFile>?,
+    val files: List<File>?,
     val processId: String,
     val transferId: Any?
 )
-

@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import edu.vanderbilt.enigma.services.PremonitionProcessServiceImpl
+import edu.vanderbilt.enigma.model.Directory
+import edu.vanderbilt.enigma.model.EgressData
+import edu.vanderbilt.enigma.model.observation.EgressResult
 import org.springframework.stereotype.Component
 import picocli.CommandLine.Command
 import picocli.CommandLine.Option
@@ -14,8 +16,15 @@ import java.util.concurrent.Callable
 
 import edu.vanderbilt.enigma.model.observation.UploadObservationObject
 import edu.vanderbilt.enigma.model.testdata.MRIData
-import edu.vanderbilt.enigma.services.ObservationUploadServiceImpl
+import edu.vanderbilt.enigma.services.*
+import edu.vanderbilt.enigma.util.prettyJsonPrint
+import reactor.kotlin.core.publisher.zip
+import java.io.File
+import java.lang.Integer.max
 import java.lang.Thread.sleep
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 
 @Component
@@ -28,6 +37,8 @@ import java.lang.Thread.sleep
 class EnigmaCommand(
     private val ProcessServiceObj: PremonitionProcessServiceImpl,
     private val ObservationUploadServiceObj: ObservationUploadServiceImpl,
+    private val ObservationDownloadServiceObj: ObservationServiceImpl
+
 ) : Callable<Int> {
 
     @Option(names = ["-i","--inputDir"], description = ["Input Directory"],interactive = true)
@@ -49,71 +60,142 @@ class EnigmaCommand(
     var listofProcesses = false
 
 
-    private fun prettyPrint(input: Any) {
-        val mapper = ObjectMapper()
-        mapper.enable(SerializationFeature.INDENT_OUTPUT)
-        val result = mapper.writeValueAsString(input)
-        println(result)
+    @Option(names=["-df","--downloadfiles"], description = ["Download Files of a process"])
+    var downloadFiles = false
 
-    }
+    @Option(names=["-uf","--uploadfiles"], description = ["Upload Files of a process"])
+    var uploadFiles = false
+
+
+//    private fun prettyPrint(input: Any) {
+//        val mapper = ObjectMapper()
+//        mapper.enable(SerializationFeature.INDENT_OUTPUT)
+//        val result = mapper.writeValueAsString(input)
+//        println(result)
+//
+//    }
 
 
     override fun call(): Int {
 
         when{
+            uploadFiles ->{
+
+                var processID = "4935ff85-8e84-4b06-a69a-9ac160542a50" // TestSim/
+                var observerID = "d798e5be-344e-4e5e-994f-48d43e93d6d6"
+//                val processID = "3d9adc35-e21e-43cc-b867-69b07305e75a"
+                val startObsIndex = "0"
+                val endObsIndex = "0"
+                val expiresInMins = "60"
+                // createobservation
+                //Here we first create the observationMetaData
+                val path = Paths.get("").toAbsolutePath()
+                val uploadDir = Paths.get("$path/upload/dat")
+
+
+                uploadDirectory(processID, observerID, uploadDir)
+            }
+
+            downloadFiles ->{
+                val processID = "3d9adc35-e21e-43cc-b867-69b07305e75a"
+                val startObsIndex = "0"
+                val endObsIndex = "0"
+                val expiresInMins = "60"
+                val result = ObservationDownloadServiceObj.getObservationFilesV3(processID, startObsIndex, endObsIndex, expiresInMins)
+//                val response = ObservationDownloadServiceObj.getObservationsV3(
+//            processID,
+//            startObsIndex,
+//            endObsIndex,
+//            expiresInMins
+//        )
+            val values = result as EgressResult
+            ObservationDownloadServiceObj.DownloadFiles(values)
+
+//                val url = fileDownLoadMap.get("dat/0/col_source/dataset/120.xml")
+//                val filePath = outputDir + "dat/0/col_source/dataset/120.xml"
+//                val tmpDir = Paths.get(filePath).parent
+//                if(Files.notExists(tmpDir))
+//                    Files.createDirectories(tmpDir)
+//
+//                FileDownloader.get(url,filePath)
+
+
+            }
             listofProcesses -> {
                 val result =  ProcessServiceObj.getListofProcesses()
                 if (result != null) {
-                    prettyPrint(result)
+//                    prettyPrint(result)
+                    prettyJsonPrint(result)
                 }
             }
             uploadObs -> {
 
                 val mapper = jacksonObjectMapper()
-                val observationObject: UploadObservationObject = mapper.readValue("{\n" +
-                        "  \"isFunction\": false,\n" +
-                        "  \"processType\": \"testSim\",\n" +
-                        "  \"processId\": \"82abfdc8-7c78-4ae6-b137-a8fe1b4116d8\",\n" +
-                        "  \"isMeasure\": true,\n" +
-                        "  \"index\": 1,\n" +
-                        "  \"version\": 0,\n" +
-                        "  \"observerId\": \"53f28719-1d33-4bad-b958-bc9537f3f42e\",\n" +
-                        "  \"startTime\": \"\",\n" +
-                        "  \"endTime\": \"\",\n" +
-                        "  \"applicationDependencies\": [],\n" +
-                        "  \"processDependencies\": [],\n" +
-                        "  \"data\": [\n" +
-                        "    {\n" +
-                        "      \"School\": \"Tennessee State University\",\n" +
-                        "      \"City\": \"Nashville\",\n" +
-                        "      \"State\": \"Tennessee\",\n" +
-                        "      \"Country\": \"USA\"\n" +
-                        "    }\n" +
-                        "  ],\n" +
-                        "  \"dataFiles\": [\n" +
-                        "  ]\n" +
-                        "}")
-
-
                 val uploadData:UploadObservationObject = generateData() as UploadObservationObject
-//                ObservationUploadServiceObj.appendObservation(observationObject)
                 (0..100).forEach {
                     ObservationUploadServiceObj.appendObservation(uploadData)
-                    sleep(10)
+//                    sleep(1)
                 }
 
             }
+            downloadObs -> {
+//                val processID = "82abfdc8-7c78-4ae6-b137-a8fe1b4116d8"
+                val processID = "4935ff85-8e84-4b06-a69a-9ac160542a50"
 
-//            downloadObs -> {
-//
-//
-//            }
+                val lastIndex = ProcessServiceObj.getProcessState(processID)!!.numObservations
+                val startIndex = max(0,lastIndex-100)
+                val endIndex = lastIndex
+
+                // Download Observations to a folder...
+                val path = Paths.get("").toAbsolutePath()
+                val outputDir = "$path/output/"
+                if(Files.notExists(Paths.get(outputDir)))
+                  Files.createDirectory(Paths.get(outputDir))
 
 
+                for(i in startIndex until endIndex){
+                    val result = ObservationDownloadServiceObj.getObservation(processID = processID,
+                        startObsIndex = i.toString(),
+                        version= "0"
+                    )
+                    result?.let {
+                        prettyJsonPrint(it)
+                        val mapper = ObjectMapper()
+                        val patt = "$outputDir/obervation$i.json"
+                        val file = File(patt)
+                        file.createNewFile()
+                        mapper.writeValue(file,it.data)
+                    }
+
+
+                }
+
+            }
         }
 
         return 0
     }
+
+    private fun uploadDirectory(processID: String, observerID: String, uploadDir: Path) {
+        var uploadMetaData = generateUploadMetaData(processID, observerID = observerID) as UploadObservationObject
+        uploadMetaData.index = ProcessServiceObj.getProcessState(processID)!!.numObservations
+        var relativeFilePathList = FileUploader.getMapofRelativeAndAbsolutePath(uploadDir.toString()).keys
+        uploadMetaData.dataFiles = relativeFilePathList.map { it.toString() }.toList()
+        ObservationUploadServiceObj.appendObservation(uploadMetaData)
+        println(uploadMetaData)
+        //
+        val result = ObservationDownloadServiceObj.createTemporaryDirectory(processID, isUpload = true)
+        val values = result as Directory
+        FileUploader.put(values.sasUrl, uploadDir.toString())
+        // putobservation
+        uploadMetaData.dataFiles?.let {
+            ObservationDownloadServiceObj.putObservationFiles(
+                processID, result.directoryId, uploadMetaData.index.toString(),
+                uploadMetaData.index.toString(), "0", it
+            )
+        }
+    }
+
 
     private fun generateData() : Any {
         val tmpData =
@@ -188,15 +270,22 @@ class EnigmaCommand(
         val mriDataMapper = jacksonObjectMapper()
         var mridata: MRIData = mriDataMapper.readValue(tmpData)
 
+
+//        d798e5be-344e-4e5e-994f-48d43e93d6d6
+//                "observerId": "53f28719-1d33-4bad-b958-bc9537f3f42e",
+//                "processId": "82abfdc8-7c78-4ae6-b137-a8fe1b4116d8",
+
+
+
         val uploadData = """
             {
               "isFunction": false,
-              "processType": "testSim",
-              "processId": "82abfdc8-7c78-4ae6-b137-a8fe1b4116d8",
+              "processType": "TestSim",
+              "processId": "4935ff85-8e84-4b06-a69a-9ac160542a50",
               "isMeasure": true,
               "index": 1,
               "version": 0,
-              "observerId": "53f28719-1d33-4bad-b958-bc9537f3f42e",
+              "observerId": "d798e5be-344e-4e5e-994f-48d43e93d6d6",
               "startTime": "",
               "endTime": "",
               "applicationDependencies": [],
@@ -209,6 +298,33 @@ class EnigmaCommand(
         val observationMapper = jacksonObjectMapper()
         var uploadObs:UploadObservationObject = observationMapper.readValue(uploadData)
         uploadObs.data = listOf(mridata)
+//        prettyPrint( observationMapper.writeValueAsString(uploadObs))
+        return uploadObs
+    }
+
+
+    private fun generateUploadMetaData(processID:String, observerID:String) : Any {
+//		var processID = "4935ff85-8e84-4b06-a69a-9ac160542a50"
+        val uploadData = """
+            {
+              "isFunction": false,
+              "processType": "TestSim",
+              "processId": "$processID",
+              "isMeasure": true,
+              "index": 1,
+              "version": 0,
+              "observerId": "$observerID",
+              "startTime": "",
+              "endTime": "",
+              "applicationDependencies": [],
+              "processDependencies": [],
+              "data": [],
+              "dataFiles": []
+            }
+        """.trim()
+        val observationMapper = jacksonObjectMapper()
+        var uploadObs:UploadObservationObject = observationMapper.readValue(uploadData)
+        uploadObs.data = emptyList()
 //        prettyPrint( observationMapper.writeValueAsString(uploadObs))
         return uploadObs
     }

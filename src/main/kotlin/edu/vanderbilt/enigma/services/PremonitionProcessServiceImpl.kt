@@ -18,7 +18,8 @@ class PremonitionProcessServiceImpl(@Qualifier("premonitionApiWebClient") privat
 
     fun getListofProcesses(): ProcessOwned? {
         val myRequest = webClient.get()
-            .uri(apiVersion+"/Process/ListOwnedProcesses")
+//            .uri(apiVersion+"/Process/ListOwnedProcesses")
+              .uri(apiVersion+"/Process/ListProcesses?permission=read")
 //            .attributes(ServerOAuth2AuthorizedClientExchangeFilterFunction.oauth2AuthorizedClient(authorizedClient))
 //            .headers { header -> header.setBearerAuth(authorizedClient?.accessToken?.tokenValue.toString()) }
 
