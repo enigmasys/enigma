@@ -20,7 +20,7 @@ class FileUploader(
 
 ) {
 
-    fun put(sasUrl: String, uploadDir: String){
+    fun put(sasUrl: String, uploadDir: String,index:String){
         if (Files.notExists(Paths.get(uploadDir))) {
             println("Folder does not exist")
             return
@@ -36,7 +36,7 @@ class FileUploader(
         fileMap.forEach { (key, value) ->
             run {
                 println("$key: $value")
-                val blobClient = blobContainerClient.getBlobClient(key.toString())
+                val blobClient = blobContainerClient.getBlobClient("$index/$key")
                 try {
                     blobClient.uploadFromFile(value.toString(),true)
                     println("Finished Uploading $value")
@@ -53,13 +53,13 @@ class FileUploader(
         var uploadMetaData = generateUploadMetaData(processID, observerID = observerID, data) as UploadObservationObject
         uploadMetaData.index = ProcessServiceObj.getProcessState(processID)!!.numObservations
         var relativeFilePathList = getMapofRelativeAndAbsolutePath(uploadDir.toString()).keys
-        uploadMetaData.dataFiles = relativeFilePathList.map { it.toString() }.toList()
+        uploadMetaData.dataFiles = relativeFilePathList.map { "${uploadMetaData.index}/$it" }.toList()
         ObservationUploadServiceObj.appendObservation(uploadMetaData)
         println(uploadMetaData)
         //
         val result = ObservationDownloadServiceObj.createTemporaryDirectory(processID, isUpload = true)
         val values = result as Directory
-        put(values.sasUrl, uploadDir.toString())
+        put(values.sasUrl, uploadDir.toString(),uploadMetaData.index.toString())
         // putobservation
         uploadMetaData.dataFiles?.let {
             ObservationDownloadServiceObj.putObservationFiles(
