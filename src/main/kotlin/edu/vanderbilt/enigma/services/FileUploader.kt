@@ -5,8 +5,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import edu.vanderbilt.enigma.model.Directory
 import edu.vanderbilt.enigma.model.observation.UploadObservationObject
-import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Service
+import java.io.File
 import java.io.UncheckedIOException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -48,8 +48,9 @@ class FileUploader(
     }
 
 
-    fun uploadDirectory(processID: String, observerID: String, uploadDir: Path) {
-        var uploadMetaData = generateUploadMetaData(processID, observerID = observerID) as UploadObservationObject
+    fun uploadDirectory(processID: String, observerID: String, uploadDir: Path, data: Path? = null) {
+
+        var uploadMetaData = generateUploadMetaData(processID, observerID = observerID, data) as UploadObservationObject
         uploadMetaData.index = ProcessServiceObj.getProcessState(processID)!!.numObservations
         var relativeFilePathList = getMapofRelativeAndAbsolutePath(uploadDir.toString()).keys
         uploadMetaData.dataFiles = relativeFilePathList.map { it.toString() }.toList()
@@ -85,7 +86,7 @@ class FileUploader(
 
         }
 
-        private fun generateUploadMetaData(processID:String, observerID:String) : Any {
+        private fun generateUploadMetaData(processID:String, observerID:String,data:Path?) : Any {
 //		var processID = "4935ff85-8e84-4b06-a69a-9ac160542a50"
             val uploadData = """
             {
@@ -107,6 +108,10 @@ class FileUploader(
             val observationMapper = jacksonObjectMapper()
             var uploadObs:UploadObservationObject = observationMapper.readValue(uploadData)
             uploadObs.data = emptyList()
+            data?.let {
+                uploadObs.data = listOf( observationMapper.readValue(it.toFile()))
+            }
+
 //        prettyPrint( observationMapper.writeValueAsString(uploadObs))
             return uploadObs
         }

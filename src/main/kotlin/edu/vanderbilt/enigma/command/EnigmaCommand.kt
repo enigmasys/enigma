@@ -2,11 +2,8 @@ package edu.vanderbilt.enigma.command
 
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import edu.vanderbilt.enigma.model.Directory
-import edu.vanderbilt.enigma.model.EgressData
 import edu.vanderbilt.enigma.model.observation.EgressResult
 import org.springframework.stereotype.Component
 import picocli.CommandLine.Command
@@ -18,12 +15,10 @@ import edu.vanderbilt.enigma.model.observation.UploadObservationObject
 import edu.vanderbilt.enigma.model.testdata.MRIData
 import edu.vanderbilt.enigma.services.*
 import edu.vanderbilt.enigma.util.prettyJsonPrint
-import reactor.kotlin.core.publisher.zip
+import picocli.CommandLine
 import java.io.File
 import java.lang.Integer.max
-import java.lang.Thread.sleep
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
 
 
@@ -33,7 +28,9 @@ import java.nio.file.Paths
     name = "premcli",
     mixinStandardHelpOptions = true,
     version = ["premcli"],
-    description = ["Command for premonition datalake"]
+    description = ["Command for premonition datalake"],
+    scope = CommandLine.ScopeType.LOCAL,
+//    subcommands = [UploadCmd::class]
 )
 class EnigmaCommand(
     private val ProcessServiceObj: PremonitionProcessServiceImpl,
@@ -51,7 +48,7 @@ class EnigmaCommand(
     @Option(names = ["-o","--outputDir"], description = ["Output Directory Path"])
     var outputDir: String? = null
 
-    @Option(names= ["-U","--upload"], description = ["Perform Upload Operation"])
+    @Option(names= ["-U","--upoad"], description = ["Perform Upload Operation"])
     var uploadObs:Boolean = false
 
     @Option(names= ["-D","--download"], description = ["Perform Download Operation"])
@@ -70,13 +67,9 @@ class EnigmaCommand(
     @Option(names=["-uf","--uploadfiles"], description = ["Upload Files of a process"])
     var uploadFiles = false
 
-
-
     override fun call(): Int {
-
         when{
             uploadFiles ->{
-
                 var processID = "4935ff85-8e84-4b06-a69a-9ac160542a50" // TestSim/
                 var observerID = "d798e5be-344e-4e5e-994f-48d43e93d6d6"
 //                val processID = "3d9adc35-e21e-43cc-b867-69b07305e75a"
