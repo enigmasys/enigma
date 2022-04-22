@@ -9,6 +9,8 @@ import edu.vanderbilt.enigma.util.prettyJsonPrint
 import org.springframework.stereotype.Component
 import picocli.CommandLine
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.concurrent.Callable
 import kotlin.system.exitProcess
 
@@ -73,11 +75,24 @@ class DownloadCmd(
             resultData?.let {
                 prettyJsonPrint(it)
                 val mapper = ObjectMapper()
-                val nFile = "$dir/$startObsIndex/observation.json"
+
+                val downloadDir = when(Paths.get(dir).isAbsolute){
+                    false -> Paths.get(dir).toAbsolutePath().normalize()
+                    else -> Paths.get(dir)
+                }
+                val nFile = "$downloadDir/$startObsIndex/observation.json"
+
+
+
 //                val patt = "$outputDir/obervation$i.json"
                 val file = File(nFile)
+
+                val tmpDir = Paths.get(nFile).parent
+
+                if (Files.notExists(tmpDir))
+                    Files.createDirectories(tmpDir)
                 file.createNewFile()
-                mapper.writeValue(file,it.data)
+                mapper.writeValue(file,it)
             }
 
             val result = ObservationDownloadServiceObj.getObservationFilesV3(processID, startObsIndex!!, endObsIndex!!, expiresInMins)
