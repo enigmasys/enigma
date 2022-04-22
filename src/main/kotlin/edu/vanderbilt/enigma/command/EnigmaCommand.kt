@@ -57,31 +57,31 @@ class EnigmaCommand(
     @Option(names = ["-h", "--help"], usageHelp = true, description = ["Print usage help and exit."])
     var usageHelpRequested = false
 
-    @Option(names = ["-l", "--listofProcesses"], description = ["Display the list of owned processes."])
-    var listofProcesses = false
+//    @Option(names = ["-l", "--listofProcesses"], description = ["Display the list of owned processes."])
+//    var listofProcesses = false
 
 
     @Option(names=["-df","--downloadfiles"], description = ["Download Files of a process"])
     var downloadFiles = false
 
-    @Option(names=["-uf","--uploadfiles"], description = ["Upload Files of a process"])
-    var uploadFiles = false
+//    @Option(names=["-uf","--uploadfiles"], description = ["Upload Files of a process"])
+//    var uploadFiles = false
 
     override fun call(): Int {
         when{
-            uploadFiles ->{
-                var processID = "4935ff85-8e84-4b06-a69a-9ac160542a50" // TestSim/
-                var observerID = "d798e5be-344e-4e5e-994f-48d43e93d6d6"
-//                val processID = "3d9adc35-e21e-43cc-b867-69b07305e75a"
-                val startObsIndex = "0"
-                val endObsIndex = "0"
-                val expiresInMins = "60"
-                // createobservation
-                //Here we first create the observationMetaData
-                val path = Paths.get("").toAbsolutePath()
-                val uploadDir = Paths.get("$path/upload/dat")
-                FileUploaderObj.uploadDirectory(processID, observerID, uploadDir)
-            }
+//            uploadFiles ->{
+//                var processID = "4935ff85-8e84-4b06-a69a-9ac160542a50" // TestSim/
+//                var observerID = "d798e5be-344e-4e5e-994f-48d43e93d6d6"
+////                val processID = "3d9adc35-e21e-43cc-b867-69b07305e75a"
+//                val startObsIndex = "0"
+//                val endObsIndex = "0"
+//                val expiresInMins = "60"
+//                // createobservation
+//                //Here we first create the observationMetaData
+//                val path = Paths.get("").toAbsolutePath()
+//                val uploadDir = Paths.get("$path/upload/dat")
+//                FileUploaderObj.uploadDirectory(processID, observerID, uploadDir)
+//            }
 
             downloadFiles ->{
                 val processID = "3d9adc35-e21e-43cc-b867-69b07305e75a"
@@ -108,13 +108,13 @@ class EnigmaCommand(
 
 
             }
-            listofProcesses -> {
-                val result =  ProcessServiceObj.getListofProcesses()
-                if (result != null) {
-//                    prettyPrint(result)
-                    prettyJsonPrint(result)
-                }
-            }
+//            listofProcesses -> {
+//                val result =  ProcessServiceObj.getListofProcesses()
+//                if (result != null) {
+////                    prettyPrint(result)
+//                    prettyJsonPrint(result)
+//                }
+//            }
             uploadObs -> {
 
                 val mapper = jacksonObjectMapper()
