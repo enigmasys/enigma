@@ -83,31 +83,36 @@ class EnigmaCommand(
 //                FileUploaderObj.uploadDirectory(processID, observerID, uploadDir)
 //            }
 
-            downloadFiles ->{
-                val processID = "3d9adc35-e21e-43cc-b867-69b07305e75a"
-                val startObsIndex = "0"
-                val endObsIndex = "0"
-                val expiresInMins = "60"
-                val result = ObservationDownloadServiceObj.getObservationFilesV3(processID, startObsIndex, endObsIndex, expiresInMins)
-//                val response = ObservationDownloadServiceObj.getObservationsV3(
-//            processID,
-//            startObsIndex,
-//            endObsIndex,
-//            expiresInMins
-//        )
-            val values = result as EgressResult
-            ObservationDownloadServiceObj.DownloadFiles(values)
-
-//                val url = fileDownLoadMap.get("dat/0/col_source/dataset/120.xml")
-//                val filePath = outputDir + "dat/0/col_source/dataset/120.xml"
-//                val tmpDir = Paths.get(filePath).parent
-//                if(Files.notExists(tmpDir))
-//                    Files.createDirectories(tmpDir)
+//            downloadFiles ->{
 //
-//                FileDownloader.get(url,filePath)
-
-
-            }
+//  //-------------
+//                val processID = "3d9adc35-e21e-43cc-b867-69b07305e75a"
+//                val startObsIndex = "0"
+//                val endObsIndex = "0"
+//                val expiresInMins = "60"
+//                val result = ObservationDownloadServiceObj.getObservationFilesV3(processID, startObsIndex, endObsIndex, expiresInMins)
+//                // ---------
+////                val response = ObservationDownloadServiceObj.getObservationsV3(
+////            processID,
+////            startObsIndex,
+////            endObsIndex,
+////            expiresInMins
+////        )
+//                // need this
+////            val values = result as EgressResult
+////            ObservationDownloadServiceObj.DownloadFiles(values)
+//                //need this
+//
+////                val url = fileDownLoadMap.get("dat/0/col_source/dataset/120.xml")
+////                val filePath = outputDir + "dat/0/col_source/dataset/120.xml"
+////                val tmpDir = Paths.get(filePath).parent
+////                if(Files.notExists(tmpDir))
+////                    Files.createDirectories(tmpDir)
+////
+////                FileDownloader.get(url,filePath)
+//
+//
+////            }
 //            listofProcesses -> {
 //                val result =  ProcessServiceObj.getListofProcesses()
 //                if (result != null) {

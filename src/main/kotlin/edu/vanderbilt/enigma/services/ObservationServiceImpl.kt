@@ -153,7 +153,7 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
         return transString
     }
 
-    fun getObservationFilesV3(processID: String, startObsIndex: String, endObsIndex: String, expiresInMins: String): Any? {
+    fun getObservationFilesV3(processID: String, startObsIndex: String, endObsIndex: String, expiresInMins: String): EgressResult? {
         apiVersion="/v3"
         val response = webClient
             .put()
@@ -234,27 +234,42 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
         return result
     }
 
-    fun DownloadFiles(values: EgressResult) {
+    fun DownloadFiles(values: EgressResult, dir: String) {
         var fileDownLoadMap: HashMap<String, String> = HashMap<String, String>()
         values?.files?.forEach {
             fileDownLoadMap.put(it.name, it.sasUrl)
         }
 
-        val path = Paths.get("").toAbsolutePath()
-        val outputDir = "$path/outputFile/"
-        if (Files.notExists(Paths.get(outputDir)))
-            Files.createDirectories(Paths.get(outputDir))
+
+        val downloadDir = when(Paths.get(dir).isAbsolute){
+            false -> Paths.get(dir).toAbsolutePath().normalize()
+            else -> Paths.get(dir)
+        }
+
+
+//        val path = Paths.get("").toAbsolutePath()
+
+//        val outputDir = "$path/outputFile/"
+
+//        if (Files.notExists(Paths.get(outputDir)))
+//            Files.createDirectories(Paths.get(outputDir))
+
+        if (Files.notExists(downloadDir))
+            Files.createDirectories(downloadDir)
 
         //            println(fileDownLoadMap.entries)
-        fileDownLoadMap.filter { it.key == "dat/0/col_source/dataset/120.xml" }
-        println(fileDownLoadMap.size)
+//        fileDownLoadMap.filter { it.key == "dat/0/col_source/dataset/120.xml" }
+//        println(fileDownLoadMap.size)
         fileDownLoadMap.entries.forEach {
             val fname = it.key
             val url = it.value
-            val filePath = outputDir + fname
+            val filePath = "$downloadDir/${fname}"
+
             val tmpDir = Paths.get(filePath).parent
+
             if (Files.notExists(tmpDir))
                 Files.createDirectories(tmpDir)
+
             FileDownloader.get(url, filePath)
         }
     }
