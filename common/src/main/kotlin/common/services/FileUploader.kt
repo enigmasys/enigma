@@ -52,7 +52,10 @@ class FileUploader(
     fun uploadDirectory(processID: String, observerID: String, uploadDir: Path, data: Path? = null) {
 
         var uploadMetaData = generateUploadMetaData(processID, observerID = observerID, data) as UploadObservationObject
-        uploadMetaData.index = ProcessServiceObj.getProcessState(processID)!!.numObservations
+        val processInfo = ProcessServiceObj.getProcessState(processID)
+        uploadMetaData.isFunction = processInfo!!.isFunction
+        uploadMetaData.index = processInfo!!.numObservations
+        uploadMetaData.processType = processInfo!!.processType
         var relativeFilePathList = getMapofRelativeAndAbsolutePath(uploadDir.toString()).keys
         uploadMetaData.dataFiles = relativeFilePathList.map { "${uploadMetaData.index}/$it" }.toList()
         ObservationUploadServiceObj.appendObservation(uploadMetaData)

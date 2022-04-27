@@ -1,6 +1,7 @@
 package command
 
 import common.services.FileUploader
+import common.services.UserInfo
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import picocli.CommandLine
@@ -16,7 +17,8 @@ import kotlin.system.exitProcess
     mixinStandardHelpOptions = true,
 )
 class UploadCmd(
-    private val FileUploaderObj: FileUploader
+    private val FileUploaderObj: FileUploader,
+    private val UserInfoObj: UserInfo
 ): Callable<Int> {
 
     val logger = LoggerFactory.getLogger(this::class.java)
@@ -64,7 +66,8 @@ class UploadCmd(
 
                 var oid: String = if (observerID==null){
                     // need to acquire the observerID
-                    "d798e5be-344e-4e5e-994f-48d43e93d6d6"
+//                    "d798e5be-344e-4e5e-994f-48d43e93d6d6"
+                    UserInfoObj.getOID()!!.userId
 
                 } else
                     observerID as String
