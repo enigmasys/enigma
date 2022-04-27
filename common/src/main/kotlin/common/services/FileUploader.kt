@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import common.model.Directory
 import common.model.observation.UploadObservationObject
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.io.UncheckedIOException
 import java.nio.file.Files
@@ -18,27 +19,28 @@ class FileUploader(
     private val ObservationDownloadServiceObj: ObservationServiceImpl
 
 ) {
+    val logger = LoggerFactory.getLogger(this::class.java)
 
     fun put(sasUrl: String, uploadDir: String,index:String){
         if (Files.notExists(Paths.get(uploadDir))) {
-            println("Folder does not exist")
+            logger.info("Folder does not exist")
             return
         }
 
         var blobContainerClient = BlobContainerClientBuilder().
         endpoint(sasUrl).buildClient()
 
-        println(blobContainerClient.blobContainerName)
+        logger.info(blobContainerClient.blobContainerName)
 
         var fileMap = getMapofRelativeAndAbsolutePath(uploadDir)
 
         fileMap.forEach { (key, value) ->
             run {
-                println("$key: $value")
+                logger.info("$key: $value")
                 val blobClient = blobContainerClient.getBlobClient("$index/$key")
                 try {
                     blobClient.uploadFromFile(value.toString(),true)
-                    println("Finished Uploading $value")
+                    logger.info("Finished Uploading $value")
                 } catch (ex: UncheckedIOException) {
                     System.err.printf("Failed to upload from file %s%n", ex.message)
                 }
@@ -54,7 +56,7 @@ class FileUploader(
         var relativeFilePathList = getMapofRelativeAndAbsolutePath(uploadDir.toString()).keys
         uploadMetaData.dataFiles = relativeFilePathList.map { "${uploadMetaData.index}/$it" }.toList()
         ObservationUploadServiceObj.appendObservation(uploadMetaData)
-        println(uploadMetaData)
+        logger.info(uploadMetaData.toString())
         //
         val result = ObservationDownloadServiceObj.createTemporaryDirectory(processID, isUpload = true)
         val values = result as Directory

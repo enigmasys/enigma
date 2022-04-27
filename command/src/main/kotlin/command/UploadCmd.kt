@@ -1,6 +1,7 @@
 package command
 
 import common.services.FileUploader
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import picocli.CommandLine
 import java.nio.file.Path
@@ -17,6 +18,8 @@ import kotlin.system.exitProcess
 class UploadCmd(
     private val FileUploaderObj: FileUploader
 ): Callable<Int> {
+
+    val logger = LoggerFactory.getLogger(this::class.java)
 
     @CommandLine.Option(required = true, names=["-d","--dir"], description = ["Directory Path"])
     var dir: String? = null
@@ -68,7 +71,7 @@ class UploadCmd(
 
 
                 processID?.let {
-                    println("$it ::  $oid  ::  $uploadDir :: $jsonFilePath")
+                    logger.info("$it ::  $oid  ::  $uploadDir :: $jsonFilePath")
                     FileUploaderObj.uploadDirectory(it, oid, uploadDir, jsonFilePath)
                 }
             }

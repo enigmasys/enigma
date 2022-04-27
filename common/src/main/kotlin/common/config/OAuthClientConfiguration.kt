@@ -31,6 +31,8 @@ import reactor.core.publisher.Mono
 //@ComponentScan("org.springframework.web.reactive.function.client.WebClient")
 class TestClientConfig {
 
+    val logger = LoggerFactory.getLogger(this::class.java)
+
     @Value("\${base_url:https://premonition.azurewebsites.net/}")
     private lateinit var testClientBaseUrl: String
 
@@ -129,7 +131,7 @@ class TestClientConfig {
 
     @Bean
     fun premonitionApiWebClient(clientRegistrations: ReactiveClientRegistrationRepository?): WebClient {
-        println("Activating the premonitionAPI")
+        logger.info("Activating the premonitionAPI")
         val clientService = InMemoryReactiveOAuth2AuthorizedClientService(clientRegistrations)
         val authorizedClientManager =
             AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager(clientRegistrations, clientService)

@@ -1,5 +1,6 @@
 package common.services
 
+import org.slf4j.LoggerFactory
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -11,21 +12,23 @@ import java.nio.file.Paths
 
 
 class FileDownloader {
-
     companion object {
+        @Suppress("JAVA_CLASS_ON_COMPANION")
+        @JvmStatic
+        private val logger = LoggerFactory.getLogger(javaClass.enclosingClass)
         @Throws(IOException::class)
         fun get(fileURL: String?, localFilename: String?) {
-            println("Current file: $localFilename")
+            logger.info("Current file: $localFilename")
             val url = URL(fileURL)
-            println("Remote File size ${fileURL?.let { getFileSizeOfUrl(it) }}")
+            logger.info("Remote File size ${fileURL?.let { getFileSizeOfUrl(it) }}")
             if(Files.exists(Paths.get(localFilename)))
             {
-                println("Local File Size ${Files.size(Paths.get(localFilename))}")
+                logger.info("Local File Size ${Files.size(Paths.get(localFilename))}")
             }
 
             val isPresent = isAvailable(fileURL, localFilename)
             if (!isPresent) {
-                println("Starting Download..")
+                logger.info("Starting Download..")
                 if (Files.notExists(Paths.get(localFilename)))
                     Files.createFile(Paths.get(localFilename))
                 Channels.newChannel(url.openStream()).use { readableByteChannel ->
@@ -36,7 +39,7 @@ class FileDownloader {
                         }
                     }
                 }
-                println("Finished Downloading file: $localFilename")
+                logger.info("Finished Downloading file: $localFilename")
             }
 
 
@@ -61,12 +64,12 @@ class FileDownloader {
 
         fun isAvailable(fileURL: String?, localFilename: String? ) : Boolean{
             val url = URL(fileURL)
-//            println("File size ${fileURL?.let { getFileSizeOfUrl(it) }}")
+//            logger.info("File size ${fileURL?.let { getFileSizeOfUrl(it) }}")
             val remoteSize =fileURL?.let { getFileSizeOfUrl(it) }
             var localSize: Long? = null
             if(Files.exists(Paths.get(localFilename)))
             {
-//                println("*******File Size ${Files.size(Paths.get(localFilename))}")
+//                logger.info("*******File Size ${Files.size(Paths.get(localFilename))}")
                 localSize = Files.size(Paths.get(localFilename))
                 if (localSize !=remoteSize){
                     return false

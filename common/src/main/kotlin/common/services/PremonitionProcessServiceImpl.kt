@@ -2,6 +2,7 @@ package common.services
 
 import common.model.ProcessState
 import common.model.process.ProcessOwned
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -14,6 +15,7 @@ class PremonitionProcessServiceImpl(@Qualifier("premonitionApiWebClient") privat
 //    @Autowired
 //    lateinit var premWebClient: PremonitionClientConfig
 
+    val logger = LoggerFactory.getLogger(this::class.java)
     var apiVersion: String = "/v2"
 
     fun getListofProcesses(): ProcessOwned? {
@@ -46,7 +48,7 @@ class PremonitionProcessServiceImpl(@Qualifier("premonitionApiWebClient") privat
             .retrieve()
             .bodyToMono(ProcessState::class.java)
         val response = retrievedResource.share().block()
-        println(response)
+        logger.info(response.toString())
 //        return retrievedResource.share().block()
         return response
     }

@@ -6,6 +6,7 @@ import common.model.Directory
 import common.model.TransferStat
 import common.model.observation.EgressResult
 import common.model.observation.UploadObservationObject
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.BodyInserters
@@ -18,6 +19,7 @@ import java.nio.file.Paths
 
 @Service
 class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val webClient: WebClient) {
+    var logger = LoggerFactory.getLogger(this::class.java)
     var apiVersion:String = "/v2"
 
     fun createTemporaryDirectory(
@@ -100,7 +102,7 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
         val data = response.share().block()
         val sasUrlList:ArrayList<String> =ArrayList<String>()
         data?.files?.forEach { it -> sasUrlList.add(it.sasUrl)}
-        println(data)
+        logger.info(data.toString())
         return data
 
 //        return sasUrlList
@@ -256,9 +258,15 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
         if (Files.notExists(downloadDir))
             Files.createDirectories(downloadDir)
 
-        //            println(fileDownLoadMap.entries)
+        //            logger.info(fileDownLoadMap.entries)
 //        fileDownLoadMap.filter { it.key == "dat/0/col_source/dataset/120.xml" }
-//        println(fileDownLoadMap.size)
+//        logger.info(fileDownLoadMap.size)
+
+
+        // Here we need to check the status of the transfer ID
+
+        Thread.sleep(30000)
+
         fileDownLoadMap.entries.forEach {
             val fname = it.key
             val url = it.value

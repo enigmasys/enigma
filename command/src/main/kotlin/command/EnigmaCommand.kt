@@ -181,7 +181,7 @@ class EnigmaCommand(
 //        var relativeFilePathList = FileUploader.getMapofRelativeAndAbsolutePath(uploadDir.toString()).keys
 //        uploadMetaData.dataFiles = relativeFilePathList.map { it.toString() }.toList()
 //        ObservationUploadServiceObj.appendObservation(uploadMetaData)
-//        println(uploadMetaData)
+//        logger.info(uploadMetaData)
 //        //
 //        val result = ObservationDownloadServiceObj.createTemporaryDirectory(processID, isUpload = true)
 //        val values = result as Directory

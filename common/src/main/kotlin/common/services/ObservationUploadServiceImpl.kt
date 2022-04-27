@@ -3,6 +3,7 @@ package common.services
 
 import common.util.prettyJsonPrint
 import common.model.observation.UploadObservationObject
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.MediaType
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono
 
 @Service
 class ObservationUploadServiceImpl(@Qualifier("premonitionApiWebClient") private val webClient: WebClient) {
+    val logger = LoggerFactory.getLogger(this::class.java)
     @Autowired
     lateinit var premonitionProcessObj: PremonitionProcessServiceImpl
     var apiVersion:String = "/v2"
@@ -27,7 +29,7 @@ class ObservationUploadServiceImpl(@Qualifier("premonitionApiWebClient") private
         val observationID = processStat?.numObservations
         observationObject.index = observationID!!
         apiVersion="/v2"
-        println(observationObject)
+        logger.info(observationObject.toString())
         prettyJsonPrint(observationObject)
         val request = webClient.post()
             .uri { uriBuilder: UriBuilder ->
@@ -59,7 +61,7 @@ class ObservationUploadServiceImpl(@Qualifier("premonitionApiWebClient") private
 //            .bodyToMono(String::class.java)
         val data = request.share().block()
 //        val data = response.share().block()
-        println(data)
+        logger.info(data)
         return data
     }
 
