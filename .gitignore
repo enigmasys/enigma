@@ -42,3 +42,9 @@ out/
 
 ### VS Code ###
 .vscode/
+/src-to-delete/
+/output/
+/outputdat/
+/outputFile/
+/src-to-delete/
+/upload/
