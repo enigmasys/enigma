@@ -9,6 +9,8 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.Callable
 import kotlin.system.exitProcess
+import common.util.tryExtendPath
+import org.springframework.context.annotation.ComponentScan
 
 @Component
 @CommandLine.Command(
@@ -16,9 +18,11 @@ import kotlin.system.exitProcess
     aliases = ["push"],
     mixinStandardHelpOptions = true,
 )
+@ComponentScan(basePackages = ["common"])
 class UploadCmd(
     private val FileUploaderObj: FileUploader,
-    private val UserInfoObj: UserInfo
+    private val UserInfoObj: UserInfo,
+
 ): Callable<Int> {
 
     val logger = LoggerFactory.getLogger(this::class.java)
@@ -59,15 +63,17 @@ class UploadCmd(
                     }
                 }?:null
 
-                val uploadDir = when(Paths.get(dir).isAbsolute){
-                    false -> Paths.get(dir).toAbsolutePath().normalize()
-                    else -> Paths.get(dir)
-                }
+                val uploadDir = Paths.get(dir?.let { tryExtendPath(it) })
+//                val uploadDir = when(Paths.get(dir).isAbsolute){
+//                    false ->
+//                        Paths.get(dir).toAbsolutePath().normalize()
+//                    else -> Paths.get(dir)
+//                }
 
                 var oid: String = if (observerID==null){
                     // need to acquire the observerID
 //                    "d798e5be-344e-4e5e-994f-48d43e93d6d6"
-                    UserInfoObj.getOID()!!.userId
+                    UserInfoObj.getUserRegistration()!!.userId
 
                 } else
                     observerID as String

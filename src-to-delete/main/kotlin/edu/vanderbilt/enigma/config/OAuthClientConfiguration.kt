@@ -72,6 +72,7 @@ class TestClientConfig {
             .scope(scope)
             .authorizationGrantType(AuthorizationGrantType(authorizationGrantType))
             .build()
+
         return InMemoryReactiveClientRegistrationRepository(registration)
     }
 
@@ -133,6 +134,7 @@ class TestClientConfig {
             AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager(clientRegistrations, clientService)
         val oauth = ServerOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager)
         oauth.setDefaultClientRegistrationId("premonition")
+
         return WebClient.builder()
             .baseUrl(baseUrl)
             .filter(oauth)

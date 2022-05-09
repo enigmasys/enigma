@@ -1,8 +1,5 @@
 package edu.vanderbilt.enigma.secretapp
-import command.DownloadCmd
-import command.EnigmaCommand
-import command.ProcessCmd
-import command.UploadCmd
+import command.*
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -17,7 +14,8 @@ class EnigmaApplication
 	private val generateEnigmaCommand: EnigmaCommand,
 	private val generateUploadCmd: UploadCmd,
 	private val generateProcessCmd: ProcessCmd,
-	private val generateDownloadCmd: DownloadCmd
+	private val generateDownloadCmd: DownloadCmd,
+	private val generateUserStatusCmd: UserInfoCmd
 
 ): CommandLineRunner
 {
@@ -26,6 +24,7 @@ class EnigmaApplication
 			.addSubcommand(generateUploadCmd)
 			.addSubcommand(generateProcessCmd)
 			.addSubcommand(generateDownloadCmd)
+			.addSubcommand(generateUserStatusCmd)
 			.execute(*args)
 	}
 }
