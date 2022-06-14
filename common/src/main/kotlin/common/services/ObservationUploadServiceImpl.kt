@@ -15,7 +15,8 @@ import reactor.core.publisher.Mono
 
 
 @Service
-class ObservationUploadServiceImpl(@Qualifier("premonitionApiWebClient") private val webClient: WebClient) {
+//class ObservationUploadServiceImpl(@Qualifier("premonitionApiWebClient") private val webClient: WebClient) {
+class ObservationUploadServiceImpl(private val webClient: WebClient) {
     val logger = LoggerFactory.getLogger(this::class.java)
     @Autowired
     lateinit var premonitionProcessObj: PremonitionProcessServiceImpl

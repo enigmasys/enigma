@@ -18,7 +18,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 @Service
-class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val webClient: WebClient) {
+class ObservationServiceImpl(private val webClient: WebClient) {
     var logger = LoggerFactory.getLogger(this::class.java)
     var apiVersion:String = "/v2"
 

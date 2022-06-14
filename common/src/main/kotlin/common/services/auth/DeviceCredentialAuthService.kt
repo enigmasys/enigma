@@ -1,0 +1,57 @@
+package common.services.auth
+
+import com.microsoft.aad.msal4j.IAuthenticationResult
+import common.services.auth.azuredevice.AzureDeviceFlow
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.stereotype.Component
+import org.springframework.web.reactive.function.client.WebClient
+import common.services.auth.AuthService as AuthService
+
+@Component
+@ConditionalOnProperty("authentication.security.deviceflow.enabled", havingValue = "true")
+@ComponentScan(basePackages = ["common.services.auth.azuredevice"])
+class DeviceCredentialAuthService(
+    val webClient: WebClient,
+): AuthService {
+
+    val logger = LoggerFactory.getLogger(this::class.java)
+
+    @Value("\${spring.security.oauth2.client.provider.aad.token-uri}")
+    private lateinit var token_uri: String
+    @Value("\${spring.security.oauth2.client.registration.premonition.client-id}")
+    private lateinit var client_id: String
+    @Value("\${spring.security.oauth2.client.registration.premonition.client-secret}")
+    private lateinit var  client_secret: String
+    @Value("\${spring.security.oauth2.client.registration.premonition.scope}")
+    private lateinit var  scope: Set<String>
+    @Value("\${spring.security.oauth2.client.registration.premonition.authorization-grant-type}")
+    private lateinit var  authorizationGrantType: String
+
+    private var token:String = ""
+
+    override fun getAuthToken() : String{
+        fetchToken()
+        return token
+    }
+
+    fun fetchToken() {
+        logger.info("Fetching Device Code Token,,,")
+        var result: IAuthenticationResult? = null
+        try {
+            result = AzureDeviceFlow(client_id,token_uri,scope).acquireTokenDeviceCode()
+        }catch(ex:Exception){
+            println("Encounter Exception: $ex")
+        }
+
+        println("Access token: " + result?.accessToken())
+        token = result?.accessToken().toString()
+//        println("Id token: " + result?.idToken())
+//        println("Account username: " + result?.account()?.username())
+//        println("Observer ID:"+ (result?.account()?.homeAccountId()?.split(".")?.get(0)))
+        logger.info("Token ${token}")
+    }
+
+}

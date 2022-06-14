@@ -2,8 +2,8 @@ package common.services
 
 import common.model.ProcessState
 import common.model.process.ProcessOwned
+import common.services.auth.AuthService
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
@@ -11,7 +11,11 @@ import reactor.core.publisher.Mono
 
 @Service
 //@ComponentScan(*arrayOf("org.springframework.web.reactive.function.client.WebClient"))
-class PremonitionProcessServiceImpl(@Qualifier("premonitionApiWebClient") private val webClient: WebClient) {
+//class PremonitionProcessServiceImpl(@Qualifier("premonitionApiWebClient") private val webClient: WebClient) {
+class PremonitionProcessServiceImpl(
+    val webClient: WebClient,
+    val authService: AuthService
+) {
 //    @Autowired
 //    lateinit var premWebClient: PremonitionClientConfig
 
@@ -19,9 +23,11 @@ class PremonitionProcessServiceImpl(@Qualifier("premonitionApiWebClient") privat
     var apiVersion: String = "/v2"
 
     fun getListofProcesses(): ProcessOwned? {
+        val token = authService.getAuthToken()
         val myRequest = webClient.get()
 //            .uri(apiVersion+"/Process/ListOwnedProcesses")
               .uri(apiVersion+"/Process/ListProcesses?permission=read")
+            .headers { it.setBearerAuth(token) }
 //            .attributes(ServerOAuth2AuthorizedClientExchangeFilterFunction.oauth2AuthorizedClient(authorizedClient))
 //            .headers { header -> header.setBearerAuth(authorizedClient?.accessToken?.tokenValue.toString()) }
 
@@ -33,12 +39,14 @@ class PremonitionProcessServiceImpl(@Qualifier("premonitionApiWebClient") privat
 
 
     fun getProcessState(processId: String) : ProcessState?{
+        val token = authService.getAuthToken()
         val myRequest = webClient.get()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder.path("$apiVersion/Process/GetProcessState")
                     .queryParam("processId", processId)
                     .build()
             }
+            .headers { it.setBearerAuth(token) }
 //            .attributes(ServerOAuth2AuthorizedClientExchangeFilterFunction.oauth2AuthorizedClient(authorizedClient))
 //            .headers { header -> header.setBearerAuth(authorizedClient?.accessToken?.tokenValue.toString()) }
 

@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono
 import java.net.InetAddress
 
 @Service
-class UserInfo(@Qualifier("premonitionApiWebClient") private val webClient: WebClient) {
+class UserInfo(private val webClient: WebClient) {
 
         var logger = LoggerFactory.getLogger(this::class.java)
 

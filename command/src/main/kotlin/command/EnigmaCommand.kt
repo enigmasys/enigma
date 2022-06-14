@@ -33,10 +33,10 @@ import common.services.PremonitionProcessServiceImpl
 //@ComponentScan(basePackages = ["common/services","common","common/model","common/config","common/util"])
 @ComponentScan(basePackages = ["common","common.util"])
 class EnigmaCommand(
-    private val ProcessServiceObj: PremonitionProcessServiceImpl,
-    private val ObservationUploadServiceObj: ObservationUploadServiceImpl,
-    private val ObservationDownloadServiceObj: ObservationServiceImpl,
-    private val FileUploaderObj: FileUploader
+//    private val ProcessServiceObj: PremonitionProcessServiceImpl,
+//    private val ObservationUploadServiceObj: ObservationUploadServiceImpl,
+//    private val ObservationDownloadServiceObj: ObservationServiceImpl,
+//    private val FileUploaderObj: FileUploader
 //    private val FileDownloaderObj: FileDownloader
 
 

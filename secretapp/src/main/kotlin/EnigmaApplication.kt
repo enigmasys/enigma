@@ -15,7 +15,8 @@ class EnigmaApplication
 	private val generateUploadCmd: UploadCmd,
 	private val generateProcessCmd: ProcessCmd,
 	private val generateDownloadCmd: DownloadCmd,
-	private val generateUserStatusCmd: UserInfoCmd
+	private val generateUserStatusCmd: UserInfoCmd,
+	private val generateDevCmd: DevCmd
 
 ): CommandLineRunner
 {
@@ -25,6 +26,7 @@ class EnigmaApplication
 			.addSubcommand(generateProcessCmd)
 			.addSubcommand(generateDownloadCmd)
 			.addSubcommand(generateUserStatusCmd)
+			.addSubcommand(generateDevCmd)
 			.execute(*args)
 	}
 }
