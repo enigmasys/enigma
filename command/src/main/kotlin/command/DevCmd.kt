@@ -2,7 +2,7 @@ package command
 
 //import common.services.PremonitionProcessServiceImpl
 import common.services.TestClientService
-import common.services.UserInfo
+import common.services.auth.AuthService
 import common.util.prettyJsonPrint
 import org.springframework.stereotype.Component
 import picocli.CommandLine
@@ -16,14 +16,22 @@ import java.util.concurrent.Callable
 )
 class DevCmd(
     private val testClientServiceObj: TestClientService,
+    private val AuthServiceObj: AuthService
 )
     : Callable<Int>
 {
-
     @CommandLine.Option(names = ["-l", "--list"], description = ["Display process list"])
     var procStatus = false
+//
+    @CommandLine.ParentCommand
+    val parent: EnigmaCommand? = null
 
     override fun call(): Int {
+        parent?.let { it ->
+            if (it.token?.length?.compareTo(0) ?:  0  > 0){
+                parent?.token?.let { it -> AuthServiceObj.setAuthToken(it) }
+            } }
+
         when{
             procStatus ->{
                 print("hello")

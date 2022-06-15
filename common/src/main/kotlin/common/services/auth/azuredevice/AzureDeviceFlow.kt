@@ -4,12 +4,13 @@ import com.microsoft.aad.msal4j.*
 import com.nimbusds.jwt.JWTParser
 import com.nimbusds.jwt.SignedJWT
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Component
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 @Component
-//@ConditionalOnProperty("authentication.security.deviceflow.enabled", havingValue = "true")
+@ConditionalOnProperty("authentication.security.deviceflow.enabled", havingValue = "true")
 class AzureDeviceFlow(
     @Value("\${spring.security.oauth2.client.registration.premonition.client-id}")
     private var client_id: String,
@@ -19,11 +20,6 @@ class AzureDeviceFlow(
     private var scope: Set<String>
 ) {
 
-
-    //    private val authority: String? =
-//        "https://login.microsoftonline.com/ba5a7f39-e3be-4ab3-b450-67fa80faecad/oauth2/v2.0/devicecode"
-//    private val scope: Set<String>? = setOf("api://52094e65-d33d-4c6b-bd32-943bf4adec13/.default")
-//    private val clientId: String? = "e98c2a73-e7b3-464c-a21a-51a5a2671094"
 
     //    @Throws(Exception::class)
     fun acquireTokenDeviceCode(): IAuthenticationResult? {

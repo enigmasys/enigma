@@ -38,6 +38,10 @@ class ClientCredentialAuthService(
         return token
     }
 
+    override fun setAuthToken(authToken: String) {
+//        TODO("Not yet implemented")
+    }
+
     fun fetchToken() {
         logger.info("Fetching the tokens")
         val dataMap = LinkedMultiValueMap<String, String>().apply {

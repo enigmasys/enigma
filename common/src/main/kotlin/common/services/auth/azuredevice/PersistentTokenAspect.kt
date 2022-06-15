@@ -1,14 +1,16 @@
 package common.services.auth.azuredevice
 
 import com.microsoft.aad.msal4j.ITokenCacheAccessAspect
-import com.microsoft.aad.msal4j.ITokenCacheAccessContext
 import com.microsoft.aad.msal4jextensions.PersistenceSettings
 import com.microsoft.aad.msal4jextensions.PersistenceTokenCacheAccessAspect
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import java.io.IOException
 import java.nio.file.Path
 import java.nio.file.Paths
 
 
+
+@ConditionalOnProperty("authentication.security.deviceflow.enabled", havingValue = "true")
 class PersistentTokenAspect{
 
     @Throws(IOException::class)

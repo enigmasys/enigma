@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import common.model.observation.EgressResult
 import common.services.ObservationServiceImpl
 import common.services.PremonitionProcessServiceImpl
+import common.services.auth.AuthService
 import common.util.prettyJsonPrint
 import org.springframework.stereotype.Component
 import picocli.CommandLine
@@ -23,8 +24,10 @@ import kotlin.system.exitProcess
 class DownloadCmd(
     private val ObservationDownloadServiceObj: ObservationServiceImpl,
     private val ProcessServiceObj: PremonitionProcessServiceImpl,
+    private val AuthServiceObj: AuthService
 
-    ): Callable<Int>
+
+): Callable<Int>
 {
 
     @CommandLine.Option(required = true, names=["-d","--dir"], description = ["Directory Path"])
@@ -43,8 +46,17 @@ class DownloadCmd(
     @CommandLine.Option(names = ["-h", "--help"], usageHelp = true, description = ["Utility for Test Commandline Options..."])
     var help = false
 
+    @CommandLine.ParentCommand
+    val parent: EnigmaCommand? = null
+
     override fun call(): Int {
-    when{
+        parent?.let { it ->
+            if (it.token?.length?.compareTo(0) ?:  0  > 0){
+                parent?.token?.let { it -> AuthServiceObj.setAuthToken(it) }
+            } }
+
+
+        when{
         help -> exitProcess(0)
         else ->{
 
