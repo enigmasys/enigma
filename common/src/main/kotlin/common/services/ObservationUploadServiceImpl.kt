@@ -3,6 +3,7 @@ package common.services
 
 import common.util.prettyJsonPrint
 import common.model.observation.UploadObservationObject
+import common.services.auth.AuthService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -15,13 +16,18 @@ import reactor.core.publisher.Mono
 
 
 @Service
-class ObservationUploadServiceImpl(@Qualifier("premonitionApiWebClient") private val webClient: WebClient) {
+//class ObservationUploadServiceImpl(@Qualifier("premonitionApiWebClient") private val webClient: WebClient) {
+class ObservationUploadServiceImpl(private val webClient: WebClient,
+                                   val authService: AuthService
+) {
     val logger = LoggerFactory.getLogger(this::class.java)
     @Autowired
     lateinit var premonitionProcessObj: PremonitionProcessServiceImpl
     var apiVersion:String = "/v2"
 
     fun appendObservation(  observationObject: UploadObservationObject) : String?{
+        val token = authService.getAuthToken()
+
         val processID = observationObject.processId
         // Get the processState for the number of observation counts
         val processStat = premonitionProcessObj.getProcessState(processID)
@@ -37,6 +43,7 @@ class ObservationUploadServiceImpl(@Qualifier("premonitionApiWebClient") private
                     .queryParam("processId", processID)
                     .build()
             }
+            .headers { it.setBearerAuth(token) }
             .contentType(MediaType.APPLICATION_JSON)
 //            .body(Mono.just(observationObject),UploadObservationObject::class.java)
             .body(BodyInserters.fromPublisher(Mono.just(observationObject), UploadObservationObject::class.java))

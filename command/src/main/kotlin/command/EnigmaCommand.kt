@@ -19,6 +19,7 @@ import common.services.FileUploader
 import common.services.ObservationServiceImpl
 import common.services.ObservationUploadServiceImpl
 import common.services.PremonitionProcessServiceImpl
+import common.services.auth.AuthService
 
 
 //@Component
@@ -28,21 +29,26 @@ import common.services.PremonitionProcessServiceImpl
     mixinStandardHelpOptions = true,
 //    version = ["premcli"],
     description = ["Command for premonition datalake"],
-    scope = CommandLine.ScopeType.LOCAL,
+//    scope = CommandLine.ScopeType.LOCAL,
+//    subcommands = [UploadCmd::class, UserInfoCmd::class,ProcessCmd::class,DownloadCmd::class, DevCmd::class]
 )
 //@ComponentScan(basePackages = ["common/services","common","common/model","common/config","common/util"])
 @ComponentScan(basePackages = ["common","common.util"])
 class EnigmaCommand(
-    private val ProcessServiceObj: PremonitionProcessServiceImpl,
-    private val ObservationUploadServiceObj: ObservationUploadServiceImpl,
-    private val ObservationDownloadServiceObj: ObservationServiceImpl,
-    private val FileUploaderObj: FileUploader
+//    private val ProcessServiceObj: PremonitionProcessServiceImpl,
+//    private val ObservationUploadServiceObj: ObservationUploadServiceImpl,
+//    private val ObservationDownloadServiceObj: ObservationServiceImpl,
+//    private val FileUploaderObj: FileUploader
 //    private val FileDownloaderObj: FileDownloader
 
-
 ) : Callable<Int> {
+
+    @Option(names = ["-t", "--token"], description = ["Auth Token to pass when using Auth Passthrough Mode!"], scope = CommandLine.ScopeType.INHERIT)
+    var token:String? = null
     override fun call(): Int {
 //        TODO("Not yet implemented")
+
+
         return 0
     }
 

@@ -6,6 +6,7 @@ import common.model.Directory
 import common.model.TransferStat
 import common.model.observation.EgressResult
 import common.model.observation.UploadObservationObject
+import common.services.auth.AuthService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -18,7 +19,9 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 @Service
-class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val webClient: WebClient) {
+class ObservationServiceImpl(private val webClient: WebClient,
+                             val authService: AuthService
+) {
     var logger = LoggerFactory.getLogger(this::class.java)
     var apiVersion:String = "/v2"
 
@@ -27,6 +30,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
         expiresInMins: Int = 360,
         isUpload: Boolean = false
     ): Directory? {
+        val token = authService.getAuthToken()
+
         val response = webClient
             .put()
             .uri { uriBuilder: UriBuilder ->
@@ -36,6 +41,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
                     .queryParam("isUpload",isUpload)
                     .build()
             }
+            .headers { it.setBearerAuth(token) }
+
             .retrieve()
             .bodyToMono(Directory::class.java)
         val reply = response.share().block()
@@ -48,6 +55,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
         startObsIndex: String,
         endObsIndex: String
     ): String {
+        val token = authService.getAuthToken()
+
         val response = webClient
             .put()
             .uri { uriBuilder: UriBuilder ->
@@ -59,6 +68,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
                     .queryParam("filePattern", "**/*.*")
                     .build()
             }
+            .headers { it.setBearerAuth(token) }
+
             .retrieve()
             .bodyToMono(String::class.java)
         val transferId = response.share().block().toString()
@@ -85,6 +96,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
         expiresInMin: String = "60",
 //        authorizedClient: OAuth2AuthorizedClient?
     ): EgressResult? {
+        val token = authService.getAuthToken()
+
         apiVersion="/v3"
         val response = webClient
             .put()
@@ -96,6 +109,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
                     .queryParam("expiresInMins",expiresInMin)
                     .build()
             }
+            .headers { it.setBearerAuth(token) }
+
 //            .headers { header -> header.setBearerAuth(authorizedClient?.accessToken?.tokenValue.toString()) }
             .retrieve()
             .bodyToMono(EgressResult::class.java)
@@ -115,6 +130,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
         version: String,
 //        authorizedClient: OAuth2AuthorizedClient?
     ): UploadObservationObject? {
+        val token = authService.getAuthToken()
+
         apiVersion="/v2"
         val response = webClient
             .get()
@@ -125,6 +142,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
                     .queryParam("version", version)
                     .build()
             }
+            .headers { it.setBearerAuth(token) }
+
 //            .headers { header -> header.setBearerAuth(authorizedClient?.accessToken?.tokenValue.toString()) }
             .retrieve()
             .bodyToMono(UploadObservationObject::class.java)
@@ -139,6 +158,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
         directoryID: String,
         transferId: String,
     ): TransferStat? {
+        val token = authService.getAuthToken()
+
         val response = webClient
             .get()
             .uri { uriBuilder: UriBuilder ->
@@ -148,6 +169,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
                     .queryParam("transferId", transferId)
                     .build()
             }
+            .headers { it.setBearerAuth(token) }
+
             .retrieve()
             .bodyToMono(TransferStat::class.java)
         val transString = response.share().block()
@@ -155,6 +178,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
     }
 
     fun getObservationFilesV3(processID: String, startObsIndex: String, endObsIndex: String, expiresInMins: String): EgressResult? {
+        val token = authService.getAuthToken()
+
         apiVersion="/v3"
         val response = webClient
             .put()
@@ -167,6 +192,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
                     .queryParam("filePattern", "**/*.*")
                     .build()
             }
+            .headers { it.setBearerAuth(token) }
+
             .retrieve()
             .bodyToMono(EgressResult::class.java)
 
@@ -177,6 +204,7 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
 
     fun listDirectories(processID: String, isUpload: String): String?{
         apiVersion = "/v2"
+        val token = authService.getAuthToken()
 
         val response = webClient
             .get()
@@ -186,6 +214,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
                     .queryParam("isUpload",isUpload)
                     .build()
             }
+            .headers { it.setBearerAuth(token) }
+
 //            .headers { header -> header.setBearerAuth(authorizedClient?.accessToken?.tokenValue.toString()) }
             .retrieve()
             .bodyToMono(String::class.java)
@@ -202,6 +232,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
 //                            authorizedClient: OAuth2AuthorizedClient?
     ): String {
         apiVersion="/v2"
+        val token = authService.getAuthToken()
+
         val response = webClient
             .put()
             .uri { uriBuilder: UriBuilder ->
@@ -213,6 +245,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
                     .queryParam("version", version)
                     .build()
             }
+            .headers { it.setBearerAuth(token) }
+
             .bodyValue(dataFiles)
             .retrieve()
             .bodyToMono(String::class.java)
@@ -221,6 +255,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
     }
 
     fun appendVersions(observationObject: UploadObservationObject) : String? {
+        val token = authService.getAuthToken()
+
         apiVersion = "/v2"
         val response = webClient
             .post()
@@ -228,6 +264,8 @@ class ObservationServiceImpl(@Qualifier("premonitionApiWebClient") private val w
                 uriBuilder.path(apiVersion+"/Process/AppendVersion")
                     .build()
             }
+            .headers { it.setBearerAuth(token) }
+
             .body(BodyInserters.fromPublisher(Mono.just(observationObject), UploadObservationObject::class.java))
             .retrieve()
             .bodyToMono(String::class.java)

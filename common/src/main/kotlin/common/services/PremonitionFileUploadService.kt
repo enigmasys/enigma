@@ -1,5 +1,6 @@
 package common.services
 
+import common.services.auth.AuthService
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -13,13 +14,18 @@ import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
 
 @Service
-class PremonitionFileUploadService(private val webClient: WebClient) {
+class PremonitionFileUploadService(private val webClient: WebClient,
+                                   val authService: AuthService
+) {
 
     fun uploadFile(resource: Resource,uploadURL: String): Mono<HttpStatus> {
+        val token = authService.getAuthToken()
         val url =
             UriComponentsBuilder.fromHttpUrl(uploadURL).build().toUri()
         return webClient.post()
             .uri(url)
+            .headers { it.setBearerAuth(token) }
+
 //            .contentType()
             .body(BodyInserters.fromResource(resource))
             .exchangeToMono { response: ClientResponse ->
@@ -33,12 +39,16 @@ class PremonitionFileUploadService(private val webClient: WebClient) {
     }
 
     fun uploadMultipart(multipartFile: MultipartFile, uploadURL: String): Mono<HttpStatus> {
+        val token = authService.getAuthToken()
+
         val url =
             UriComponentsBuilder.fromHttpUrl(uploadURL).build().toUri()
         val builder = MultipartBodyBuilder()
         builder.part("file", multipartFile.resource)
         return webClient.post()
             .uri(url)
+            .headers { it.setBearerAuth(token) }
+
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .body(BodyInserters.fromMultipartData(builder.build()))
             .exchangeToMono { response: ClientResponse ->

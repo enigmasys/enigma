@@ -1,9 +1,7 @@
 package command
 
-
-
-import common.services.PremonitionProcessServiceImpl
-import common.services.UserInfo
+//import common.services.PremonitionProcessServiceImpl
+import common.services.TestClientService
 import common.services.auth.AuthService
 import common.util.prettyJsonPrint
 import org.springframework.stereotype.Component
@@ -12,21 +10,19 @@ import java.util.concurrent.Callable
 
 @Component
 @CommandLine.Command(
-    name = "userinfo",
-    aliases = ["user"],
+    name = "dev",
+    aliases = ["test"],
     mixinStandardHelpOptions = true,
 )
-class UserInfoCmd(
-    private val UserInfoObj: UserInfo,
+class DevCmd(
+    private val testClientServiceObj: TestClientService,
     private val AuthServiceObj: AuthService
-
 )
     : Callable<Int>
 {
-
-    @CommandLine.Option(names = ["-s", "--status"], description = ["Display the Status of this Application/User."])
-    var appStatus = false
-
+    @CommandLine.Option(names = ["-l", "--list"], description = ["Display process list"])
+    var procStatus = false
+//
     @CommandLine.ParentCommand
     val parent: EnigmaCommand? = null
 
@@ -37,8 +33,9 @@ class UserInfoCmd(
             } }
 
         when{
-            appStatus ->{
-                val result =  UserInfoObj.getUserRegistration()
+            procStatus ->{
+                print("hello")
+                val result =  testClientServiceObj.getTestMessage()
                 if (result != null) {
 //                    prettyPrint(result)
                     prettyJsonPrint(result)

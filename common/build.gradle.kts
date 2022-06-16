@@ -31,6 +31,9 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+
+    implementation("com.microsoft.azure:msal4j:1.11.3")
+    implementation("com.microsoft.azure:msal4j-persistence-extension:1.1.0")
 }
 
 tasks.getByName<Test>("test") {

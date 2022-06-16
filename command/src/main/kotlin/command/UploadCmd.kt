@@ -2,6 +2,7 @@ package command
 
 import common.services.FileUploader
 import common.services.UserInfo
+import common.services.auth.AuthService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import picocli.CommandLine
@@ -22,6 +23,8 @@ import org.springframework.context.annotation.ComponentScan
 class UploadCmd(
     private val FileUploaderObj: FileUploader,
     private val UserInfoObj: UserInfo,
+    private val AuthServiceObj: AuthService
+
 
 ): Callable<Int> {
 
@@ -43,7 +46,14 @@ class UploadCmd(
     @CommandLine.Option(names = ["-h", "--help"], usageHelp = true, description = ["Utility for Test Commandline Options..."])
     var help = false
 
+    @CommandLine.ParentCommand
+    val parent: EnigmaCommand? = null
+
     override fun call(): Int  {
+        parent?.let { it ->
+            if (it.token?.length?.compareTo(0) ?:  0  > 0){
+                parent?.token?.let { it -> AuthServiceObj.setAuthToken(it) }
+            } }
 
         when{
             help -> exitProcess(0)
