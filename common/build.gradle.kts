@@ -43,6 +43,9 @@ dependencies {
 
     implementation("com.microsoft.azure:msal4j:1.11.3")
     implementation("com.microsoft.azure:msal4j-persistence-extension:1.1.0")
+
+    implementation("com.networknt:json-schema-validator:1.0.71")
+
 }
 
 tasks.getByName<Test>("test") {

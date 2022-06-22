@@ -38,3 +38,7 @@ tasks.withType<KotlinCompile> {
 tasks.getByName<Jar>("jar") {
     enabled = false
 }
+
+tasks.bootJar{
+    exclude("application.yml")
+}
