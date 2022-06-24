@@ -16,13 +16,13 @@ class FileDownloader {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         @JvmStatic
         private val logger = LoggerFactory.getLogger(javaClass.enclosingClass)
+
         @Throws(IOException::class)
         fun get(fileURL: String?, localFilename: String?) {
             logger.info("Current file: $localFilename")
             val url = URL(fileURL)
             logger.info("Remote File size ${fileURL?.let { getFileSizeOfUrl(it) }}")
-            if(Files.exists(Paths.get(localFilename)))
-            {
+            if (Files.exists(Paths.get(localFilename))) {
                 logger.info("Local File Size ${Files.size(Paths.get(localFilename))}")
             }
 
@@ -43,7 +43,6 @@ class FileDownloader {
             }
 
 
-
         }
 
         fun getFileSizeOfUrl(url: String): Long {
@@ -62,22 +61,20 @@ class FileDownloader {
             return -1
         }
 
-        fun isAvailable(fileURL: String?, localFilename: String? ) : Boolean{
+        fun isAvailable(fileURL: String?, localFilename: String?): Boolean {
             val url = URL(fileURL)
 //            logger.info("File size ${fileURL?.let { getFileSizeOfUrl(it) }}")
-            val remoteSize =fileURL?.let { getFileSizeOfUrl(it) }
+            val remoteSize = fileURL?.let { getFileSizeOfUrl(it) }
             var localSize: Long? = null
-            if(Files.exists(Paths.get(localFilename)))
-            {
+            if (Files.exists(Paths.get(localFilename))) {
 //                logger.info("*******File Size ${Files.size(Paths.get(localFilename))}")
                 localSize = Files.size(Paths.get(localFilename))
-                if (localSize !=remoteSize){
+                if (localSize != remoteSize) {
                     return false
                 }
                 return true
-            }
-            else
-                 return false
+            } else
+                return false
         }
     }
 }

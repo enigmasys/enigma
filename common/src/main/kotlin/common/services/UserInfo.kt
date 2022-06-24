@@ -1,9 +1,7 @@
 package common.services
 
-import common.model.TransferStat
 import common.model.UserRegistration
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
@@ -13,13 +11,13 @@ import java.net.InetAddress
 @Service
 class UserInfo(private val webClient: WebClient) {
 
-        var logger = LoggerFactory.getLogger(this::class.java)
+    var logger = LoggerFactory.getLogger(this::class.java)
 
 
     fun getUserRegistration(): UserRegistration? {
         var apiVersion: String = "/v2"
         val myRequest = webClient.get()
-            .uri(apiVersion+"/User/CheckRegistration")
+            .uri(apiVersion + "/User/CheckRegistration")
 
         val retrievedResource: Mono<UserRegistration> = myRequest
             .retrieve()
@@ -32,18 +30,18 @@ class UserInfo(private val webClient: WebClient) {
 
 
     fun selfRegister(): String? {
-        logger.info(InetAddress.getLocalHost().getHostName())
+        logger.info(InetAddress.getLocalHost().hostName)
         var apiVersion: String = "/v2"
         val myRequest = webClient.get()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder.path("$apiVersion/User/Register")
-                    .queryParam("displayName", "LeapService-${InetAddress.getLocalHost().getHostName()}")
+                    .queryParam("displayName", "LeapService-${InetAddress.getLocalHost().hostName}")
                     .build()
             }
             .retrieve()
             .bodyToMono(String::class.java)
 
-    //
+        //
 
 //
         val result = myRequest.share().block()

@@ -21,14 +21,13 @@ class FileUploader(
 ) {
     val logger = LoggerFactory.getLogger(this::class.java)
 
-    fun put(sasUrl: String, uploadDir: String,index:String){
+    fun put(sasUrl: String, uploadDir: String, index: String) {
         if (Files.notExists(Paths.get(uploadDir))) {
             logger.info("Folder does not exist")
             return
         }
 
-        var blobContainerClient = BlobContainerClientBuilder().
-        endpoint(sasUrl).buildClient()
+        var blobContainerClient = BlobContainerClientBuilder().endpoint(sasUrl).buildClient()
 
         logger.info(blobContainerClient.blobContainerName)
 
@@ -39,7 +38,7 @@ class FileUploader(
                 logger.info("$key: $value")
                 val blobClient = blobContainerClient.getBlobClient("$index/$key")
                 try {
-                    blobClient.uploadFromFile(value.toString(),true)
+                    blobClient.uploadFromFile(value.toString(), true)
                     logger.info("Finished Uploading $value")
                 } catch (ex: UncheckedIOException) {
                     System.err.printf("Failed to upload from file %s%n", ex.message)
@@ -54,8 +53,8 @@ class FileUploader(
         var uploadMetaData = generateUploadMetaData(processID, observerID = observerID, data) as UploadObservationObject
         val processInfo = ProcessServiceObj.getProcessState(processID)
         uploadMetaData.isFunction = processInfo!!.isFunction
-        uploadMetaData.index = processInfo!!.numObservations
-        uploadMetaData.processType = processInfo!!.processType
+        uploadMetaData.index = processInfo.numObservations
+        uploadMetaData.processType = processInfo.processType
         var relativeFilePathList = getMapofRelativeAndAbsolutePath(uploadDir.toString()).keys
         uploadMetaData.dataFiles = relativeFilePathList.map { "${uploadMetaData.index}/$it" }.toList()
         ObservationUploadServiceObj.appendObservation(uploadMetaData)
@@ -63,7 +62,7 @@ class FileUploader(
         //
         val result = ObservationDownloadServiceObj.createTemporaryDirectory(processID, isUpload = true)
         val values = result as Directory
-        put(values.sasUrl, uploadDir.toString(),uploadMetaData.index.toString())
+        put(values.sasUrl, uploadDir.toString(), uploadMetaData.index.toString())
         // putobservation
         uploadMetaData.dataFiles?.let {
             ObservationDownloadServiceObj.putObservationFiles(
@@ -73,7 +72,7 @@ class FileUploader(
         }
     }
 
-    companion object{
+    companion object {
         fun getMapofRelativeAndAbsolutePath(uploadDir: String): Map<Path, Path> {
 
             var uploadDirPath = Paths.get(uploadDir)
@@ -90,7 +89,7 @@ class FileUploader(
 
         }
 
-        private fun generateUploadMetaData(processID:String, observerID:String,data:Path?) : Any {
+        private fun generateUploadMetaData(processID: String, observerID: String, data: Path?): Any {
 //		var processID = "4935ff85-8e84-4b06-a69a-9ac160542a50"
             val uploadData = """
             {
@@ -113,7 +112,7 @@ class FileUploader(
             var uploadObs: UploadObservationObject = observationMapper.readValue(uploadData)
             uploadObs.data = emptyList()
             data?.let {
-                uploadObs.data = listOf( observationMapper.readValue(it.toFile()))
+                uploadObs.data = listOf(observationMapper.readValue(it.toFile()))
             }
 
 //        prettyPrint( observationMapper.writeValueAsString(uploadObs))

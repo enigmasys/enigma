@@ -41,7 +41,7 @@ class AzureDeviceFlow(
 
         var result: IAuthenticationResult? =
             try {
-                if(account != null) {
+                if (account != null) {
                     val silentParameters = SilentParameters
                         .builder(scope, account)
                         .build()
@@ -49,29 +49,28 @@ class AzureDeviceFlow(
                     // try to acquire token silently. This call will fail since the token cache
                     // does not have any data for the user you are trying to acquire a token for
                     pca.acquireTokenSilently(silentParameters).join()
-                }
-                else{
+                } else {
                     throw IllegalArgumentException("account** is null")
                 }
             } catch (ex: java.lang.Exception) {
-                if (ex.cause is MsalException ) {
+                if (ex.cause is MsalException) {
                     try {
                         acquireTokenUsingDeviceFlow(pca)
-                    }catch (ex: java.lang.Exception){
+                    } catch (ex: java.lang.Exception) {
                         println("Exception: ${ex.message}")
                     }
 
-                } else if(ex is IllegalArgumentException) {
+                } else if (ex is IllegalArgumentException) {
                     // Handle other exceptions accordingly
                     try {
                         acquireTokenUsingDeviceFlow(pca)
-                    }catch (ex: java.lang.Exception){
+                    } catch (ex: java.lang.Exception) {
                         println("Exception: ${ex.message}")
                     }
-                } else if (ex is MsalInteractionRequiredException){
+                } else if (ex is MsalInteractionRequiredException) {
                     try {
                         acquireTokenUsingDeviceFlow(pca)
-                    }catch (ex: java.lang.Exception){
+                    } catch (ex: java.lang.Exception) {
                         println("Exception: ${ex.message}")
                     }
                 } else {

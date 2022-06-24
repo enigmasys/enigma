@@ -14,11 +14,12 @@ import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
 
 @Service
-class PremonitionFileUploadService(private val webClient: WebClient,
-                                   val authService: AuthService
+class PremonitionFileUploadService(
+    private val webClient: WebClient,
+    val authService: AuthService
 ) {
 
-    fun uploadFile(resource: Resource,uploadURL: String): Mono<HttpStatus> {
+    fun uploadFile(resource: Resource, uploadURL: String): Mono<HttpStatus> {
         val token = authService.getAuthToken()
         val url =
             UriComponentsBuilder.fromHttpUrl(uploadURL).build().toUri()

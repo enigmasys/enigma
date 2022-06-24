@@ -9,9 +9,8 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 
-
 @ConditionalOnProperty("authentication.security.deviceflow.enabled", havingValue = "true")
-class PersistentTokenAspect{
+class PersistentTokenAspect {
 
     @Throws(IOException::class)
     private fun createPersistenceSettings(): PersistenceSettings? {
