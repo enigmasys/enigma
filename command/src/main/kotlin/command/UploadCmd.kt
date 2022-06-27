@@ -95,7 +95,7 @@ class UploadCmd(
                     }
                 }?:null
 
-                dependent?.validate.let {
+                dependent?.validate?.let {
                     println("Validate Flags is set to ${dependent?.validate}")
                     println("JSONSchema Path Type: ${dependent?.type}")
                     println("JSONSCHEMA Path: ${dependent?.path}")
