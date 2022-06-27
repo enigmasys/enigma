@@ -1,6 +1,7 @@
 package common.services
 
 import common.model.UserRegistration
+import common.services.auth.AuthService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -9,15 +10,20 @@ import reactor.core.publisher.Mono
 import java.net.InetAddress
 
 @Service
-class UserInfo(private val webClient: WebClient) {
+class UserInfo(private val webClient: WebClient,
+               val authService: AuthService
+) {
 
     var logger = LoggerFactory.getLogger(this::class.java)
 
 
     fun getUserRegistration(): UserRegistration? {
+        val token = authService.getAuthToken()
         var apiVersion: String = "/v2"
         val myRequest = webClient.get()
             .uri(apiVersion + "/User/CheckRegistration")
+            .headers { it.setBearerAuth(token) }
+
 
         val retrievedResource: Mono<UserRegistration> = myRequest
             .retrieve()

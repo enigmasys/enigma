@@ -44,7 +44,7 @@ class JSONSchemaValidator {
         schemasourcetype: ResourceSourceType,
         jsonSchemaPath: String,
         metadataPath: String
-    ) {
+    ): Boolean {
         val objectMapper = ObjectMapper()
         val schemaStream = when (schemasourcetype) {
             ResourceSourceType.FILE -> inputStreamFromFilepath(jsonSchemaPath)
@@ -52,14 +52,14 @@ class JSONSchemaValidator {
             ResourceSourceType.RESOURCE -> inputStreamFromClasspath(jsonSchemaPath)
         }
         val jsonStream = inputStreamFromFilepath(metadataPath)
-        validateSchema(objectMapper, jsonStream, schemaStream)
+        return validateSchema(objectMapper, jsonStream, schemaStream)
     }
 
     private fun validateSchema(
         objectMapper: ObjectMapper,
         jsonStream: InputStream,
         schemaStream: InputStream
-    ) {
+    ): Boolean {
 
 //        val schemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V201909)
 
@@ -75,6 +75,8 @@ class JSONSchemaValidator {
         val validationResult: Set<ValidationMessage> = schema!!.validate(json)
         if (validationResult.isEmpty()) {
             log.info("no validation errors :-)")
+            return true
+
         } else {
 
             TODO("Need to emit error here.. Also, need to properly upload the data once this is success")
@@ -83,6 +85,7 @@ class JSONSchemaValidator {
                     vm.message
                 )
             })
+            return false
         }
     }
 }

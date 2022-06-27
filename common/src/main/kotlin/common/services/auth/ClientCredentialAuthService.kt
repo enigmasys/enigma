@@ -47,7 +47,7 @@ class ClientCredentialAuthService(
     }
 
     fun fetchToken() {
-        logger.info("Fetching the tokens")
+        logger.debug("Fetching the tokens")
         val dataMap = LinkedMultiValueMap<String, String>().apply {
             add("grant_type", "client_credentials")
             add("client_id", client_id)
@@ -63,7 +63,7 @@ class ClientCredentialAuthService(
             .map { it.access_token }
             .onErrorReturn("").share().block().toString()
         sleep(100)
-        logger.info("Token ${token}")
+//        logger.info("Token ${token}")
     }
 
 }

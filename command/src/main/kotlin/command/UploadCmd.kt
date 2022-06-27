@@ -99,7 +99,7 @@ class UploadCmd(
                     println("Validate Flags is set to ${dependent?.validate}")
                     println("JSONSchema Path Type: ${dependent?.type}")
                     println("JSONSCHEMA Path: ${dependent?.path}")
-
+                    var validationResult:Boolean = false
                     when(dependent?.type){
                         "file" -> {
                             var jsonSchemaFilePath: Path? =  dependent?.path?.run {
@@ -108,17 +108,23 @@ class UploadCmd(
                                     else -> Paths.get(dependent?.path)
                                 }
                             }?:null
-                            JSONSchemaValidatorObj.validate(ResourceSourceType.FILE, jsonSchemaFilePath.toString(),jsonFilePath.toString() )
-                                }
+                             validationResult = JSONSchemaValidatorObj.validate(
+                                ResourceSourceType.FILE,
+                                jsonSchemaFilePath.toString(),
+                                jsonFilePath.toString()
+                            )
+                        }
                         "url"->{
-                            JSONSchemaValidatorObj.validate(ResourceSourceType.URL, dependent?.path.toString(),jsonFilePath.toString() )
-
+                            validationResult = JSONSchemaValidatorObj.validate(
+                                ResourceSourceType.URL,
+                                dependent?.path.toString(),
+                                jsonFilePath.toString()
+                            )
                         }
                     }
-                    exitProcess(0)
+                    if (!validationResult)
+                        exitProcess(0)
                 }
-
-
 
                 val uploadDir = Paths.get(dir?.let { tryExtendPath(it) })
 //                val uploadDir = when(Paths.get(dir).isAbsolute){
