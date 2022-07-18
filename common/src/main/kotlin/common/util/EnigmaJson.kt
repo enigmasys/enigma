@@ -7,7 +7,7 @@ import java.lang.invoke.MethodHandles
 
 private val logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().`package`.name)
 
-public fun prettyJsonPrint(uploadData: Any) {
+fun prettyJsonPrint(uploadData: Any) {
     val mapper = ObjectMapper()
     try {
 //        val jsonObject: Any = mapper.readValue(uploadData, Any::class.java)

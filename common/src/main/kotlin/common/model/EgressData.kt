@@ -1,7 +1,6 @@
 package common.model
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import common.model.DataLakeFile
 
 @JsonInclude(JsonInclude.Include.ALWAYS)
 data class EgressData(

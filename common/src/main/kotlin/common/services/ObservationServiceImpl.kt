@@ -1,14 +1,12 @@
 package common.services
 
 import com.azure.storage.blob.BlobClientBuilder
-
 import common.model.Directory
 import common.model.TransferStat
 import common.model.observation.EgressResult
 import common.model.observation.UploadObservationObject
 import common.services.auth.AuthService
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
@@ -19,11 +17,12 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 @Service
-class ObservationServiceImpl(private val webClient: WebClient,
-                             val authService: AuthService
+class ObservationServiceImpl(
+    private val webClient: WebClient,
+    val authService: AuthService
 ) {
     var logger = LoggerFactory.getLogger(this::class.java)
-    var apiVersion:String = "/v2"
+    var apiVersion: String = "/v2"
 
     fun createTemporaryDirectory(
         processID: String,
@@ -35,10 +34,10 @@ class ObservationServiceImpl(private val webClient: WebClient,
         val response = webClient
             .put()
             .uri { uriBuilder: UriBuilder ->
-                uriBuilder.path(apiVersion+"/Files/CreateDirectory")
+                uriBuilder.path(apiVersion + "/Files/CreateDirectory")
                     .queryParam("processId", processID)
                     .queryParam("expiresInMins", expiresInMins)
-                    .queryParam("isUpload",isUpload)
+                    .queryParam("isUpload", isUpload)
                     .build()
             }
             .headers { it.setBearerAuth(token) }
@@ -60,7 +59,7 @@ class ObservationServiceImpl(private val webClient: WebClient,
         val response = webClient
             .put()
             .uri { uriBuilder: UriBuilder ->
-                uriBuilder.path(apiVersion+"/Files/GetObservationFiles")
+                uriBuilder.path(apiVersion + "/Files/GetObservationFiles")
                     .queryParam("processId", processID)
                     .queryParam("directoryId", directoryID)
                     .queryParam("obsIndex", startObsIndex)
@@ -81,10 +80,10 @@ class ObservationServiceImpl(private val webClient: WebClient,
             .endpoint(url)
             .buildClient()
         val dataSize = blobClient.properties.blobSize.toInt()
-        return blobClient.downloadStream(outputStream);
+        return blobClient.downloadStream(outputStream)
     }
 
-    fun downloadResourceFile(url: String){
+    fun downloadResourceFile(url: String) {
 
     }
 
@@ -98,7 +97,7 @@ class ObservationServiceImpl(private val webClient: WebClient,
     ): EgressResult? {
         val token = authService.getAuthToken()
 
-        apiVersion="/v3"
+        apiVersion = "/v3"
         val response = webClient
             .put()
             .uri { uriBuilder: UriBuilder ->
@@ -106,7 +105,7 @@ class ObservationServiceImpl(private val webClient: WebClient,
                     .queryParam("processId", processID)
                     .queryParam("obsIndex", startObsIndex)
                     .queryParam("endObsIndex", endObsIndex)
-                    .queryParam("expiresInMins",expiresInMin)
+                    .queryParam("expiresInMins", expiresInMin)
                     .build()
             }
             .headers { it.setBearerAuth(token) }
@@ -115,8 +114,8 @@ class ObservationServiceImpl(private val webClient: WebClient,
             .retrieve()
             .bodyToMono(EgressResult::class.java)
         val data = response.share().block()
-        val sasUrlList:ArrayList<String> =ArrayList<String>()
-        data?.files?.forEach { it -> sasUrlList.add(it.sasUrl)}
+        val sasUrlList: ArrayList<String> = ArrayList<String>()
+        data?.files?.forEach { it -> sasUrlList.add(it.sasUrl) }
         logger.info(data.toString())
         return data
 
@@ -132,7 +131,7 @@ class ObservationServiceImpl(private val webClient: WebClient,
     ): UploadObservationObject? {
         val token = authService.getAuthToken()
 
-        apiVersion="/v2"
+        apiVersion = "/v2"
         val response = webClient
             .get()
             .uri { uriBuilder: UriBuilder ->
@@ -177,18 +176,23 @@ class ObservationServiceImpl(private val webClient: WebClient,
         return transString
     }
 
-    fun getObservationFilesV3(processID: String, startObsIndex: String, endObsIndex: String, expiresInMins: String): EgressResult? {
+    fun getObservationFilesV3(
+        processID: String,
+        startObsIndex: String,
+        endObsIndex: String,
+        expiresInMins: String
+    ): EgressResult? {
         val token = authService.getAuthToken()
 
-        apiVersion="/v3"
+        apiVersion = "/v3"
         val response = webClient
             .put()
             .uri { uriBuilder: UriBuilder ->
-                uriBuilder.path(apiVersion+"/Files/GetObservationFiles")
+                uriBuilder.path(apiVersion + "/Files/GetObservationFiles")
                     .queryParam("processId", processID)
                     .queryParam("obsIndex", startObsIndex)
                     .queryParam("endObsIndex", endObsIndex)
-                    .queryParam("expiresInMins",expiresInMins)
+                    .queryParam("expiresInMins", expiresInMins)
                     .queryParam("filePattern", "**/*.*")
                     .build()
             }
@@ -197,21 +201,21 @@ class ObservationServiceImpl(private val webClient: WebClient,
             .retrieve()
             .bodyToMono(EgressResult::class.java)
 
-        val result  = response.share().block()
+        val result = response.share().block()
         return result
     }
 
 
-    fun listDirectories(processID: String, isUpload: String): String?{
+    fun listDirectories(processID: String, isUpload: String): String? {
         apiVersion = "/v2"
         val token = authService.getAuthToken()
 
         val response = webClient
             .get()
             .uri { uriBuilder: UriBuilder ->
-                uriBuilder.path(apiVersion+"/Files/ListDirectories")
+                uriBuilder.path(apiVersion + "/Files/ListDirectories")
                     .queryParam("processId", processID)
-                    .queryParam("isUpload",isUpload)
+                    .queryParam("isUpload", isUpload)
                     .build()
             }
             .headers { it.setBearerAuth(token) }
@@ -223,21 +227,22 @@ class ObservationServiceImpl(private val webClient: WebClient,
         return transferId
     }
 
-    fun putObservationFiles(processID: String,
-                            directoryId: String,
-                            startObsIndex: String,
-                            endObsIndex: String,
-                            version: String,
-                            dataFiles: List<String>
+    fun putObservationFiles(
+        processID: String,
+        directoryId: String,
+        startObsIndex: String,
+        endObsIndex: String,
+        version: String,
+        dataFiles: List<String>
 //                            authorizedClient: OAuth2AuthorizedClient?
     ): String {
-        apiVersion="/v2"
+        apiVersion = "/v2"
         val token = authService.getAuthToken()
 
         val response = webClient
             .put()
             .uri { uriBuilder: UriBuilder ->
-                uriBuilder.path(apiVersion+"/Files/PutObservationFiles")
+                uriBuilder.path(apiVersion + "/Files/PutObservationFiles")
                     .queryParam("processId", processID)
                     .queryParam("directoryId", directoryId)
                     .queryParam("obsIndex", startObsIndex)
@@ -254,14 +259,14 @@ class ObservationServiceImpl(private val webClient: WebClient,
         return transferId
     }
 
-    fun appendVersions(observationObject: UploadObservationObject) : String? {
+    fun appendVersions(observationObject: UploadObservationObject): String? {
         val token = authService.getAuthToken()
 
         apiVersion = "/v2"
         val response = webClient
             .post()
             .uri { uriBuilder: UriBuilder ->
-                uriBuilder.path(apiVersion+"/Process/AppendVersion")
+                uriBuilder.path(apiVersion + "/Process/AppendVersion")
                     .build()
             }
             .headers { it.setBearerAuth(token) }
@@ -275,12 +280,12 @@ class ObservationServiceImpl(private val webClient: WebClient,
 
     fun DownloadFiles(values: EgressResult, dir: String) {
         var fileDownLoadMap: HashMap<String, String> = HashMap<String, String>()
-        values?.files?.forEach {
+        values.files?.forEach {
             fileDownLoadMap.put(it.name, it.sasUrl)
         }
 
 
-        val downloadDir = when(Paths.get(dir).isAbsolute){
+        val downloadDir = when (Paths.get(dir).isAbsolute) {
             false -> Paths.get(dir).toAbsolutePath().normalize()
             else -> Paths.get(dir)
         }

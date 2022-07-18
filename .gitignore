@@ -48,3 +48,6 @@ out/
 /outputFile/
 /src-to-delete/
 /upload/
+/gradle/wrapper/gradle-wrapper.jar
+/gradlew
+/gradlew.bat

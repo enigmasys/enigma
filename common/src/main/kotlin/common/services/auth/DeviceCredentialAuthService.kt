@@ -8,31 +8,28 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
-import common.services.auth.AuthService as AuthService
 
 @Component
 @ConditionalOnProperty("authentication.security.deviceflow.enabled", havingValue = "true")
 @ComponentScan(basePackages = ["common.services.auth.azuredevice"])
 class DeviceCredentialAuthService(
     val webClient: WebClient,
-): AuthService {
+) : AuthService {
 
     val logger = LoggerFactory.getLogger(this::class.java)
 
     @Value("\${spring.security.oauth2.client.provider.aad.token-uri}")
-    private lateinit var token_uri: String
+    private lateinit var tokenUri: String
+
     @Value("\${spring.security.oauth2.client.registration.premonition.client-id}")
-    private lateinit var client_id: String
-    @Value("\${spring.security.oauth2.client.registration.premonition.client-secret}")
-    private lateinit var  client_secret: String
+    private lateinit var clientId: String
+
     @Value("\${spring.security.oauth2.client.registration.premonition.scope}")
-    private lateinit var  scope: Set<String>
-    @Value("\${spring.security.oauth2.client.registration.premonition.authorization-grant-type}")
-    private lateinit var  authorizationGrantType: String
+    private lateinit var scope: Set<String>
 
-    private var token:String = ""
+    private var token: String = ""
 
-    override fun getAuthToken() : String{
+    override fun getAuthToken(): String {
         fetchToken()
         return token
     }
@@ -45,8 +42,8 @@ class DeviceCredentialAuthService(
         logger.info("Fetching Device Code Token,,,")
         var result: IAuthenticationResult? = null
         try {
-            result = AzureDeviceFlow(client_id,token_uri,scope).acquireTokenDeviceCode()
-        }catch(ex:Exception){
+            result = AzureDeviceFlow(clientId, tokenUri, scope).acquireTokenDeviceCode()
+        } catch (ex: Exception) {
             println("Encounter Exception: $ex")
         }
 

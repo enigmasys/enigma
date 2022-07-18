@@ -26,7 +26,7 @@ class PremonitionProcessServiceImpl(
         val token = authService.getAuthToken()
         val myRequest = webClient.get()
 //            .uri(apiVersion+"/Process/ListOwnedProcesses")
-              .uri(apiVersion+"/Process/ListProcesses?permission=read")
+            .uri(apiVersion + "/Process/ListProcesses?permission=read")
             .headers { it.setBearerAuth(token) }
 //            .attributes(ServerOAuth2AuthorizedClientExchangeFilterFunction.oauth2AuthorizedClient(authorizedClient))
 //            .headers { header -> header.setBearerAuth(authorizedClient?.accessToken?.tokenValue.toString()) }
@@ -38,7 +38,7 @@ class PremonitionProcessServiceImpl(
     }
 
 
-    fun getProcessState(processId: String) : ProcessState?{
+    fun getProcessState(processId: String): ProcessState? {
         val token = authService.getAuthToken()
         val myRequest = webClient.get()
             .uri { uriBuilder: UriBuilder ->
