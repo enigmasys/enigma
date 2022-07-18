@@ -60,9 +60,9 @@ class UploadCmd(
         @CommandLine.Option(names = ["-validate"], required = true)
         var validate:Boolean = false
 
-        @CommandLine.Option(names = ["-type"], required = true, description = ["type can be either url or file"])
+        @CommandLine.Option(names = ["-type"], required = true, description = ["Taxonomy input source can be either of type either url or file"])
         var type = ""
-        @CommandLine.Option(names = ["-path"], required = true)
+        @CommandLine.Option(names = ["-path"], required = true, description = ["Taxonomy input source path - (file path/ URL address)"])
         var path = ""
     }
 

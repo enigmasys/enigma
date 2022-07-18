@@ -19,19 +19,13 @@ class DeviceCredentialAuthService(
     val logger = LoggerFactory.getLogger(this::class.java)
 
     @Value("\${spring.security.oauth2.client.provider.aad.token-uri}")
-    private lateinit var token_uri: String
+    private lateinit var tokenUri: String
 
     @Value("\${spring.security.oauth2.client.registration.premonition.client-id}")
-    private lateinit var client_id: String
-
-    @Value("\${spring.security.oauth2.client.registration.premonition.client-secret}")
-    private lateinit var client_secret: String
+    private lateinit var clientId: String
 
     @Value("\${spring.security.oauth2.client.registration.premonition.scope}")
     private lateinit var scope: Set<String>
-
-    @Value("\${spring.security.oauth2.client.registration.premonition.authorization-grant-type}")
-    private lateinit var authorizationGrantType: String
 
     private var token: String = ""
 
@@ -48,7 +42,7 @@ class DeviceCredentialAuthService(
         logger.info("Fetching Device Code Token,,,")
         var result: IAuthenticationResult? = null
         try {
-            result = AzureDeviceFlow(client_id, token_uri, scope).acquireTokenDeviceCode()
+            result = AzureDeviceFlow(clientId, tokenUri, scope).acquireTokenDeviceCode()
         } catch (ex: Exception) {
             println("Encounter Exception: $ex")
         }

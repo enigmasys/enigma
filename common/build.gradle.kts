@@ -23,7 +23,7 @@ version = "0.0.1-SNAPSHOT"
 
 dependencies {
 
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+//    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.6")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")

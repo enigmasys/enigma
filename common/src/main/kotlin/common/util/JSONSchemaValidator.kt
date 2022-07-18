@@ -79,7 +79,7 @@ class JSONSchemaValidator {
 
         } else {
 
-            TODO("Need to emit error here.. Also, need to properly upload the data once this is success")
+//            TODO("Need to emit error here.. Also, need to properly upload the data once this is success")
             validationResult.forEach(Consumer { vm: ValidationMessage ->
                 println(
                     vm.message
