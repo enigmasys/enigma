@@ -32,7 +32,7 @@ class FileDownloader {
                 if (Files.notExists(Paths.get(localFilename)))
                     Files.createFile(Paths.get(localFilename))
                 try {
-                    BufferedInputStream(URL(url.toString().replace(" ","%20")).openStream()).use { `in` ->
+                    BufferedInputStream(URL(url.toString().replace(" ", "%20")).openStream()).use { `in` ->
                         FileOutputStream(localFilename).use { fileOutputStream ->
                             val dataBuffer = ByteArray(1024)
                             var bytesRead: Int
@@ -45,20 +45,8 @@ class FileDownloader {
                     // handle exception
                     logger.error("exception caught:" + e)
                 }
-
-//                Channels.newChannel(url.openStream()).use { readableByteChannel ->
-//                    FileOutputStream(localFilename).use { fileOutputStream ->
-//                        fileOutputStream.channel.use { fileChannel ->
-//                            fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE)
-//                            fileOutputStream.close()
-//                        }
-//                    }
-//                }
-
                 logger.info("Finished Downloading file: $localFilename")
             }
-
-
         }
 
         fun getFileSizeOfUrl(url: String): Long {
