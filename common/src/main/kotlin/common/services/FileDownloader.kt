@@ -1,15 +1,12 @@
 package common.services
 
-import org.apache.commons.codec.net.URLCodec
 import org.slf4j.LoggerFactory
 import java.io.BufferedInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
-import java.net.URI
 import java.net.URL
 import java.net.URLConnection
-import java.nio.channels.Channels
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -35,7 +32,7 @@ class FileDownloader {
                 if (Files.notExists(Paths.get(localFilename)))
                     Files.createFile(Paths.get(localFilename))
                 try {
-                        BufferedInputStream(URL(url.toString().replace(" ","%20")).openStream()).use { `in` ->
+                    BufferedInputStream(URL(url.toString().replace(" ", "%20")).openStream()).use { `in` ->
                         FileOutputStream(localFilename).use { fileOutputStream ->
                             val dataBuffer = ByteArray(1024)
                             var bytesRead: Int
@@ -48,20 +45,8 @@ class FileDownloader {
                     // handle exception
                     logger.error("exception caught:" + e)
                 }
-
-//                Channels.newChannel(url.openStream()).use { readableByteChannel ->
-//                    FileOutputStream(localFilename).use { fileOutputStream ->
-//                        fileOutputStream.channel.use { fileChannel ->
-//                            fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE)
-//                            fileOutputStream.close()
-//                        }
-//                    }
-//                }
-
                 logger.info("Finished Downloading file: $localFilename")
             }
-
-
         }
 
         fun getFileSizeOfUrl(url: String): Long {
@@ -81,7 +66,6 @@ class FileDownloader {
         }
 
         fun isAvailable(fileURL: String?, localFilename: String?): Boolean {
-            val url = URL(fileURL)
 //            logger.info("File size ${fileURL?.let { getFileSizeOfUrl(it) }}")
             val remoteSize = fileURL?.let { getFileSizeOfUrl(it) }
             var localSize: Long? = null
