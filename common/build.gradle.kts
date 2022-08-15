@@ -38,6 +38,13 @@ dependencies {
 
     implementation("com.microsoft.azure:msal4j:1.11.3")
     implementation("com.microsoft.azure:msal4j-persistence-extension:1.1.0")
+    constraints {
+
+        implementation("net.java.dev.jna:jna:5.12.1")
+        implementation("net.java.dev.jna:jna-platform:5.12.1")
+    }
+
+    implementation("commons-codec:commons-codec:1.15")
     implementation("com.networknt:json-schema-validator:1.0.71")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")

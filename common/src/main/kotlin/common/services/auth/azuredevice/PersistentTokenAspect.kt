@@ -18,7 +18,7 @@ class PersistentTokenAspect {
         val path: Path = Paths.get("").toAbsolutePath()
         println("File path is $path")
         return PersistenceSettings.builder("testCacheFile", path)
-            .setMacKeychain("MsalTestService", "MsalTestAccount")
+            .setMacKeychain("LEAP_CLI", "MsalTestAccount")
             .setLinuxKeyring(
                 null,
                 "MsalTestSchema",

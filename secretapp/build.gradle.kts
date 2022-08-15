@@ -49,6 +49,10 @@ tasks.getByName<Jar>("jar") {
 
 tasks.bootJar{
     exclude("application.yml")
+    exclude("application-clientcredential.yml")
+    exclude("application-passthrough.yml")
+//    exclude("application-device.yml")
+
 }
 
 

@@ -29,6 +29,8 @@ fun App(_context: ConfigurableApplicationContext) {
 //    val processService = _context.getBean(PremonitionProcessServiceImpl::class.java)
 //    var processList = mutableStateListOf<String>()
 
+    val stopwatch = remember { ProcessView(_context) }
+    stopwatch.start()
 
     MaterialTheme {
 
@@ -39,7 +41,6 @@ fun App(_context: ConfigurableApplicationContext) {
             horizontalAlignment = Alignment.CenterHorizontally
 
         ) {
-            val stopwatch = remember { ProcessView(_context) }
 
 
 //            stopwatch.processList
@@ -80,7 +81,9 @@ private fun LazyFunction(
     var processStateInfo = stopwatch.processState
     var onStartClick = stopwatch::start
     var tindex by remember { mutableStateOf(0) }
-    var tprocessid by remember { mutableStateOf("") }
+    var tprocessid by remember { mutableStateOf(stopwatch.getFirstProcessID()) }
+
+//    onStartClick()
 
     Button(onStartClick) {
         Text("Refresh")
@@ -95,6 +98,9 @@ private fun LazyFunction(
                 .padding(10.dp)
         ) {
             val state = rememberLazyListState()
+
+
+
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp), state = state
             )

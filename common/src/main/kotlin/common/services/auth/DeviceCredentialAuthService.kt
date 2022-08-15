@@ -47,12 +47,12 @@ class DeviceCredentialAuthService(
             println("Encounter Exception: $ex")
         }
 
-        println("Access token: " + result?.accessToken())
+//        println("Access token: " + result?.accessToken())
         token = result?.accessToken().toString()
 //        println("Id token: " + result?.idToken())
 //        println("Account username: " + result?.account()?.username())
 //        println("Observer ID:"+ (result?.account()?.homeAccountId()?.split(".")?.get(0)))
-        logger.info("Token ${token}")
+//        logger.info("Token ${token}")
     }
 
 }

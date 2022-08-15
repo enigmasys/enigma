@@ -1,9 +1,12 @@
 package common.services
 
+import org.apache.commons.codec.net.URLCodec
 import org.slf4j.LoggerFactory
+import java.io.BufferedInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
+import java.net.URI
 import java.net.URL
 import java.net.URLConnection
 import java.nio.channels.Channels
@@ -31,14 +34,30 @@ class FileDownloader {
                 logger.info("Starting Download..")
                 if (Files.notExists(Paths.get(localFilename)))
                     Files.createFile(Paths.get(localFilename))
-                Channels.newChannel(url.openStream()).use { readableByteChannel ->
-                    FileOutputStream(localFilename).use { fileOutputStream ->
-                        fileOutputStream.channel.use { fileChannel ->
-                            fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE)
-                            fileOutputStream.close()
+                try {
+                        BufferedInputStream(URL(url.toString().replace(" ","%20")).openStream()).use { `in` ->
+                        FileOutputStream(localFilename).use { fileOutputStream ->
+                            val dataBuffer = ByteArray(1024)
+                            var bytesRead: Int
+                            while (`in`.read(dataBuffer, 0, 1024).also { bytesRead = it } != -1) {
+                                fileOutputStream.write(dataBuffer, 0, bytesRead)
+                            }
                         }
                     }
+                } catch (e: IOException) {
+                    // handle exception
+                    logger.error("exception caught:" + e)
                 }
+
+//                Channels.newChannel(url.openStream()).use { readableByteChannel ->
+//                    FileOutputStream(localFilename).use { fileOutputStream ->
+//                        fileOutputStream.channel.use { fileChannel ->
+//                            fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE)
+//                            fileOutputStream.close()
+//                        }
+//                    }
+//                }
+
                 logger.info("Finished Downloading file: $localFilename")
             }
 

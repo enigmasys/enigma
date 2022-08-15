@@ -15,15 +15,20 @@ import org.springframework.stereotype.Component
 @Component
 class ProcessView(_context: ConfigurableApplicationContext) {
     var processObj: PremonitionProcessServiceImpl = _context.getBean(PremonitionProcessServiceImpl::class.java)
-    
     var processList = mutableStateListOf<String>()
 //    var processMap = mutableStateMapOf<String,List<String>>()
     var processMap = mutableStateMapOf<String,List<ProcessOwnedItem>>()
-    var coroutineScope = CoroutineScope(Dispatchers.Main)
-
+    var coroutineScope = CoroutineScope(Dispatchers.IO)
     var processState = mutableStateMapOf<String, ProcessState>()
-//    private var isActive = false
 
+    fun getFirstProcessID(): String {
+        return when(processList.isNotEmpty()){
+            true -> processList.get(0)
+            false -> ""
+        }
+
+    }
+//    private var isActive = false
     fun start(){
 //        if(this@Process.isActive) return
 
