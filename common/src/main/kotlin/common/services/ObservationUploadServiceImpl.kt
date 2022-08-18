@@ -36,7 +36,7 @@ class ObservationUploadServiceImpl(
         val observationID = processStat?.numObservations
         observationObject.index = observationID!!
         apiVersion = "/v2"
-        logger.info(observationObject.toString())
+        logger.debug(observationObject.toString())
         prettyJsonPrint(observationObject)
         val request = webClient.post()
             .uri { uriBuilder: UriBuilder ->
@@ -66,7 +66,7 @@ class ObservationUploadServiceImpl(
 //            .bodyToMono(String::class.java)
         val data = request.share().block()
 //        val data = response.share().block()
-        logger.info(data)
+        logger.debug(data)
         return data
     }
 

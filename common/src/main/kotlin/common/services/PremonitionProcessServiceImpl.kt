@@ -56,7 +56,7 @@ class PremonitionProcessServiceImpl(
             .retrieve()
             .bodyToMono(ProcessState::class.java)
         val response = retrievedResource.share().block()
-        logger.info(response.toString())
+//        logger.info(response.toString())
 //        return retrievedResource.share().block()
         return response
     }

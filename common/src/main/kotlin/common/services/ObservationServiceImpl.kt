@@ -116,7 +116,7 @@ class ObservationServiceImpl(
         val data = response.share().block()
         val sasUrlList: ArrayList<String> = ArrayList<String>()
         data?.files?.forEach { it -> sasUrlList.add(it.sasUrl) }
-        logger.info(data.toString())
+        logger.debug(data.toString())
         return data
 
 //        return sasUrlList
@@ -158,11 +158,12 @@ class ObservationServiceImpl(
         transferId: String,
     ): TransferStat? {
         val token = authService.getAuthToken()
+        apiVersion = "/v2"
 
         val response = webClient
             .get()
             .uri { uriBuilder: UriBuilder ->
-                uriBuilder.path("/Files/GetTransferState")
+                uriBuilder.path("$apiVersion/Files/GetTransferState")
                     .queryParam("processId", processID)
                     .queryParam("directoryId", directoryID)
                     .queryParam("transferId", transferId)
@@ -308,7 +309,7 @@ class ObservationServiceImpl(
 
         // Here we need to check the status of the transfer ID
 
-        Thread.sleep(30000)
+//        Thread.sleep(30000)
 
         fileDownLoadMap.entries.forEach {
             val fname = it.key
