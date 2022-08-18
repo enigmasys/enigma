@@ -30,7 +30,8 @@ class DeviceCredentialAuthService(
     private var token: String = ""
 
     override fun getAuthToken(): String {
-        fetchToken()
+        if(token=="")
+            fetchToken()
         return token
     }
 
@@ -39,20 +40,20 @@ class DeviceCredentialAuthService(
     }
 
     fun fetchToken() {
-        logger.info("Fetching Device Code Token,,,")
+        logger.debug("Fetching Device Code Token,,,")
         var result: IAuthenticationResult? = null
         try {
             result = AzureDeviceFlow(clientId, tokenUri, scope).acquireTokenDeviceCode()
         } catch (ex: Exception) {
-            println("Encounter Exception: $ex")
+            logger.error("Encounter Exception: $ex")
         }
 
-        println("Access token: " + result?.accessToken())
+//        println("Access token: " + result?.accessToken())
         token = result?.accessToken().toString()
 //        println("Id token: " + result?.idToken())
 //        println("Account username: " + result?.account()?.username())
 //        println("Observer ID:"+ (result?.account()?.homeAccountId()?.split(".")?.get(0)))
-        logger.info("Token ${token}")
+//        logger.info("Token ${token}")
     }
 
 }

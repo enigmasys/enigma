@@ -15,7 +15,7 @@ class GenericWebClient : ClientConfig {
 
     @Bean
     override fun apiWebClient(): WebClient {
-        logger.info("Calling the Generic WebClient...")
+        logger.debug("Calling the Generic WebClient...")
         return WebClient.builder()
             .baseUrl(baseUrl)
             .build()

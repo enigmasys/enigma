@@ -6,6 +6,7 @@ import common.services.ObservationServiceImpl
 import common.services.PremonitionProcessServiceImpl
 import common.services.auth.AuthService
 import common.util.prettyJsonPrint
+import kotlinx.coroutines.delay
 import org.springframework.stereotype.Component
 import picocli.CommandLine
 import java.io.File
@@ -60,7 +61,7 @@ class DownloadCmd(
         help -> exitProcess(0)
         else ->{
 
-            val expiresInMins = "600"
+            val expiresInMins = "2"
             var startObsIndex:String? =  null
             var endObsIndex:String? = null
 
@@ -84,7 +85,7 @@ class DownloadCmd(
                 version= "0"
             )
             resultData?.let {
-                prettyJsonPrint(it)
+//                prettyJsonPrint(it)
                 val mapper = ObjectMapper()
 
                 val downloadDir = when(Paths.get(dir).isAbsolute){
@@ -106,10 +107,35 @@ class DownloadCmd(
                 mapper.writeValue(file,it)
             }
 
-            val result = ObservationDownloadServiceObj.getObservationFilesV3(processID,
+            var result = ObservationDownloadServiceObj.getObservationFilesV3(processID,
                 startObsIndex, endObsIndex!!, expiresInMins)
 
             val values = result as EgressResult
+
+            var notFound:Boolean = true
+            println("TransferID: ${values.transferId}")
+            values.transferId?.let {
+                while (notFound){
+                    var transferStatus = ObservationDownloadServiceObj.getTransferStat(
+                        processID = processID,
+                        transferId = values.transferId!!,
+                        directoryID = values.directoryId
+                    )
+                    when (transferStatus?.status){
+                        "Succeeded" -> {
+                            notFound=false
+                        }
+                        else -> {
+                            notFound=true
+                            println("Sleeping...")
+                            Thread.sleep(1000)
+                        }
+                    }
+                }
+            }
+
+
+
             ObservationDownloadServiceObj.DownloadFiles(values,dir)
         }
     }

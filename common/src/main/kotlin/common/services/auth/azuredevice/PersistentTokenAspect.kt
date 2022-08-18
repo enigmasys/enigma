@@ -16,13 +16,13 @@ class PersistentTokenAspect {
     private fun createPersistenceSettings(): PersistenceSettings? {
 //        val path: Path = Paths.get(System.getProperty("user.home"), "MSAL", "testCache")
         val path: Path = Paths.get("").toAbsolutePath()
-        println("File path is $path")
+//        println("File path is $path")
         return PersistenceSettings.builder("testCacheFile", path)
-            .setMacKeychain("MsalTestService", "MsalTestAccount")
+            .setMacKeychain("LEAP-CLI", "LEAP")
             .setLinuxKeyring(
                 null,
-                "MsalTestSchema",
-                "MsalTestSecretLabel",
+                "LEAP-CLI-Schema",
+                "LEAP-CLI",
                 "MsalTestAttribute1Key",
                 "MsalTestAttribute1Value",
                 "MsalTestAttribute2Key",

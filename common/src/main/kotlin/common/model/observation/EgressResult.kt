@@ -8,5 +8,5 @@ data class EgressResult(
     val expiresOn: String,
     val files: List<File>?,
     val processId: String,
-    val transferId: Any?
+    val transferId: String?
 )
