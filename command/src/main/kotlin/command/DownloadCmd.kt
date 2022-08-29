@@ -7,6 +7,7 @@ import common.services.PremonitionProcessServiceImpl
 import common.services.auth.AuthService
 import common.util.prettyJsonPrint
 import kotlinx.coroutines.delay
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import picocli.CommandLine
 import java.io.File
@@ -47,8 +48,13 @@ class DownloadCmd(
     @CommandLine.Option(names = ["-h", "--help"], usageHelp = true, description = ["Utility for Test Commandline Options..."])
     var help = false
 
+    @CommandLine.Option(required = false, names=["-m","--metadata"], description = ["Download all Observations(without datafiles)"])
+    var peek = false
+
     @CommandLine.ParentCommand
     val parent: EnigmaCommand? = null
+
+    val logger = LoggerFactory.getLogger(this::class.java)
 
     override fun call(): Int {
         parent?.let { it ->
@@ -59,6 +65,26 @@ class DownloadCmd(
 
         when{
         help -> exitProcess(0)
+        peek -> {
+            obsIndex = (ProcessServiceObj.getProcessState(processID)!!.numObservations -1).toString()
+            obsIndex?.let {
+                it -> when(it){
+                    "-1" -> logger.info("No Observations for Process ID: $processID ")
+                    else ->
+                    {
+                        val resultData = ObservationDownloadServiceObj.getAllPeekObservations(processID = processID,
+                            version= "0",
+                            endObsIndex = obsIndex.toString()
+                        )
+                        resultData?.let {
+                            prettyJsonPrint(it)
+                        }
+
+                    }
+                }
+            }
+
+        }
         else ->{
 
             val expiresInMins = "2"
@@ -113,7 +139,8 @@ class DownloadCmd(
             val values = result as EgressResult
 
             var notFound:Boolean = true
-            println("TransferID: ${values.transferId}")
+//            println("TransferID: ${values.transferId}")
+            logger.info("Waiting for transfer to start.... ")
             values.transferId?.let {
                 while (notFound){
                     var transferStatus = ObservationDownloadServiceObj.getTransferStat(
@@ -121,13 +148,16 @@ class DownloadCmd(
                         transferId = values.transferId!!,
                         directoryID = values.directoryId
                     )
+                    logger.info(".")
+//                    logger.info("No Observations for Process ID: $processID ")
                     when (transferStatus?.status){
                         "Succeeded" -> {
+                            logger.info("Download started.. ")
+
                             notFound=false
                         }
                         else -> {
                             notFound=true
-                            println("Sleeping...")
                             Thread.sleep(1000)
                         }
                     }
