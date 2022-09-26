@@ -36,6 +36,9 @@ dependencies {
     implementation("junit:junit:4.13.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+
+    implementation("io.github.serpro69:kotlin-faker:1.11.0")
+
 }
 
 tasks.getByName<Test>("test") {
@@ -62,6 +65,10 @@ repositories {
     maven {
         isAllowInsecureProtocol = true
         url = uri("http://$archivaHostId:$archivaPort/repository/enigma-test-snapshot/")
+    }
+    maven {
+        isAllowInsecureProtocol = true
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
     }
 }
 
