@@ -157,10 +157,10 @@ class FileUploader(
             val uploadData = """
             {
               "isFunction": false,
-              "processType": "datanew",
+              "processType": "testdata",
               "processId": "$processID",
               "isMeasure": true,
-              "index": 1,
+              "index": 0,
               "version": 0,
               "observerId": "$observerID",
               "startTime": "",

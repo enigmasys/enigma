@@ -77,6 +77,17 @@ class UploadCmd(
 
     }
 
+    fun generateDataProcessProfileObs(): String{
+        var dataprocessProfile = """
+            {
+             "displayName" : "MSSM-Sandbox-MRI-1",
+             "taxonomyTags" :[],
+             "profile":{"Creator": "Yogesh B.", "Created":"09-29-2022"}
+             }
+            }
+        """.trimIndent()
+        return dataprocessProfile
+    }
     fun generateEntry(): String {
 
         val faker = Faker()
@@ -96,7 +107,7 @@ class UploadCmd(
     var releasev1aData =
       """  
      {
-    "displayName" : "VUMC-Test-1",
+    "displayName" : "MSSM-Sandbox-MRI-1",
     "taxonomyTags" :[
                 {
                     "c26ff14b-302b-8824-88b3-2b8314dc315b": {
@@ -267,7 +278,9 @@ class UploadCmd(
                     observerID as String
 
 
-                repeat(20){
+                repeat(1){
+//                    var dummydata = generateDataProcessProfileObs()
+
                     var dummydata = generateEntry()
 
 

@@ -65,26 +65,26 @@ class DownloadCmd(
 
         when{
         help -> exitProcess(0)
-        peek -> {
-            obsIndex = (ProcessServiceObj.getProcessState(processID)!!.numObservations -1).toString()
-            obsIndex?.let {
-                it -> when(it){
-                    "-1" -> logger.info("No Observations for Process ID: $processID ")
-                    else ->
-                    {
-                        val resultData = ObservationDownloadServiceObj.getAllPeekObservations(processID = processID,
-                            version= "0",
-                            endObsIndex = obsIndex.toString()
-                        )
-                        resultData?.let {
-                            prettyJsonPrint(it)
-                        }
+//        peek -> {
+//            obsIndex = (ProcessServiceObj.getProcessState(processID)!!.numObservations -1).toString()
+//            obsIndex?.let {
+//                it -> when(it){
+//                    "-1" -> logger.info("No Observations for Process ID: $processID ")
+//                    else ->
+//                    {
+//                        val resultData = ObservationDownloadServiceObj.getAllPeekObservations(processID = processID,
+//                            version= "0",
+//                            endObsIndex = obsIndex.toString()
+//                        )
+//                        resultData?.let {
+//                            prettyJsonPrint(it)
+//                        }
+//
+//                    }
+//                }
+//            }
 
-                    }
-                }
-            }
-
-        }
+//        }
         else ->{
 
             val expiresInMins = "2"
