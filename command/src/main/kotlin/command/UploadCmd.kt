@@ -80,9 +80,9 @@ class UploadCmd(
     fun generateDataProcessProfileObs(): String{
         var dataprocessProfile = """
             {
-             "displayName" : "MSSM-Sandbox-MRI-1",
+             "displayName" : "MSSM_SANDBOX_DATASET_1",
              "taxonomyTags" :[],
-             "profile":{"Creator": "Yogesh B.", "Created":"09-29-2022"}
+             "profile":{"Creator": "Yogesh B.", "Created":"10-25-2022"}
              }
             }
         """.trimIndent()
@@ -107,11 +107,11 @@ class UploadCmd(
     var releasev1aData =
       """  
      {
-    "displayName" : "MSSM-Sandbox-MRI-1",
+    "displayName" : "MSSM_SANDBOX_DATASET_1",
     "taxonomyTags" :[
                 {
                     "c26ff14b-302b-8824-88b3-2b8314dc315b": {
-                        "124ad295-6f66-fe85-7921-b6ba587e6dd6": "Vanderbilt University Medical Center",
+                        "124ad295-6f66-fe85-7921-b6ba587e6dd6": "Icahn School of Medicine at Mount Sinai",
                         "ID": "c26ff14b-302b-8824-88b3-2b8314dc315b"
                     },
                     "ae99737b-2590-2bd6-1533-f6add5407946": "Main Campus",
@@ -122,12 +122,12 @@ class UploadCmd(
                     "ID": "1ae95799-911c-5365-d928-78dd7e363546"
                 },
                 {
-                    "aebba08c-d629-2bc5-3e46-225e1430c9da": "VUMC-Test-1",
+                    "aebba08c-d629-2bc5-3e46-225e1430c9da": "AALTO_SANDBOX_1",
                     "ID": "70c5eddd-5efa-d23f-8c1b-424b1c9ed350"
                 },
                 {
                     "70c5eddd-5efa-d23f-8c1b-424b1c9ed350": {
-                        "aebba08c-d629-2bc5-3e46-225e1430c9da": "VU-ISIS-Test-1",
+                        "aebba08c-d629-2bc5-3e46-225e1430c9da": "AALTO_SANDBOX_1",
                         "ID": "70c5eddd-5efa-d23f-8c1b-424b1c9ed350"
                     },
                     "d495dff7-5c98-e1c4-5090-df6be1b8a48d": "DP Sleep",
@@ -141,7 +141,7 @@ class UploadCmd(
         var newdummyData =
 """
     {
-    "displayName" : "VUMC-Test-1",
+    "displayName" : "MSSM_SANDBOX_DATASET_1",
     "taxonomyTags" :
     [{"47c67f13-47b2-6c35-097f-9458d53614a5":"$subject_enddate",
     "8d56c5a3-3d81-fbdc-2890-55330744d344":"$subject_startdate",
@@ -279,6 +279,17 @@ class UploadCmd(
 
 
                 repeat(1){
+                    var dummydata = generateDataProcessProfileObs()
+
+//                    var dummydata = generateEntry()
+
+
+                    processID?.let {
+                        logger.info("$it ::  $oid  ::  $uploadDir :: $jsonFilePath")
+                        FileUploaderObj.uploadDirectoryNew(it, oid, uploadDir, dataJSON = dummydata )
+                    }
+                }
+                repeat(1){
 //                    var dummydata = generateDataProcessProfileObs()
 
                     var dummydata = generateEntry()
@@ -289,6 +300,7 @@ class UploadCmd(
                         FileUploaderObj.uploadDirectoryNew(it, oid, uploadDir, dataJSON = dummydata )
                     }
                 }
+
             }
             else -> {
 //
