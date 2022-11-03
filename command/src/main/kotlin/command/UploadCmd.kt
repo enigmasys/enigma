@@ -144,6 +144,7 @@ class UploadCmd(
 
                 processID?.let {
                     logger.info("$it ::  $oid  ::  $uploadDir :: $jsonFilePath")
+
                     FileUploaderObj.uploadDirectory(it, oid, uploadDir, jsonFilePath)
                 }
             }

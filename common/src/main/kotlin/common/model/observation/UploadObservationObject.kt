@@ -16,6 +16,8 @@ data class UploadObservationObject(
     var processType: String?,
     var startTime: String?,
     var version: Int?,
-    var `data`: List<Any>? = emptyList(),
+//    var `data`: List<Any>? = emptyList(),
+    var `data`: Any?,
+//    var `data`: TaxonomyData?,
     var dataFiles: List<String>? = emptyList()
 )
