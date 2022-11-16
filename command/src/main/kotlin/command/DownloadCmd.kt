@@ -1,6 +1,7 @@
 package command
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import common.model.observation.EgressResult
 import common.model.observation.TaxonomyData
 import common.model.observation.UploadObservationObject
@@ -150,18 +151,19 @@ class DownloadCmd(
                 }else
                     tmp_baseurl = tmpTaxonomyData[0].taxonomyVersion!!.url.toString()
 
-                if (tmp_baseurl != null) {
-                    val tmpdata = tmpTaxonomyData[0].taxonomyVersion!!.branch?.let { it1 ->
-                        tmpTaxonomyData[0].taxonomyVersion!!.id?.let { it2 ->
-                            TaxonomyServerClient().getHumanTags(tmp_baseurl, it2,
-                                it1, mapper.writeValueAsString(tmpTags))
-                        }
-                    }
-                    if (tmpdata != null) {
-                        (it.data?.get(0) as TaxonomyData).taxonomyTags = ObjectMapper().readTree(tmpdata).toList()
+                val tmpdata = tmpTaxonomyData[0].taxonomyVersion!!.branch?.let { it1 ->
+                    tmpTaxonomyData[0].taxonomyVersion!!.id?.let { it2 ->
+                        TaxonomyServerClient().getHumanTags(tmp_baseurl, it2,
+                            it1, mapper.writeValueAsString(tmpTags))
                     }
                 }
+                if (tmpdata != null) {
+                    tmpTaxonomyData[0].taxonomyTags = mapper.readValue(tmpdata)
+                    it.data = tmpTaxonomyData.toList()
 
+//                    (it.data?.get(0) as TaxonomyData).taxonomyTags = ObjectMapper().readTree(tmpdata).toList()
+//                    (it.data?.get(0) as TaxonomyData).taxonomyTags = mapper.readValue(tmpdata!!)
+                }
 //                val uploadMetaData = tmpTaxonomyData[0].taxonomyVersion!!.branch?.let { branchID ->
 //                    tmpTaxonomyData[0].taxonomyVersion!!.id?.let { projectID ->
 //                        FileUploader.generateUploadMetaData(
