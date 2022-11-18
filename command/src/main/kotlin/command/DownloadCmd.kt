@@ -151,19 +151,24 @@ class DownloadCmd(
                 }else
                     tmp_baseurl = tmpTaxonomyData[0].taxonomyVersion!!.url.toString()
 
-                val tmpdata = tmpTaxonomyData[0].taxonomyVersion!!.branch?.let { it1 ->
+
+                if(tmpTags?.size!! > 0)
+                {val tmpdata = tmpTaxonomyData[0].taxonomyVersion!!.branch?.let { it1 ->
                     tmpTaxonomyData[0].taxonomyVersion!!.id?.let { it2 ->
                         TaxonomyServerClient().getHumanTags(tmp_baseurl, it2,
                             it1, mapper.writeValueAsString(tmpTags))
                     }
                 }
-                if (tmpdata != null) {
-                    tmpTaxonomyData[0].taxonomyTags = mapper.readValue(tmpdata)
-                    it.data = tmpTaxonomyData.toList()
+                    if (tmpdata != null) {
+                        tmpTaxonomyData[0].taxonomyTags = mapper.readValue(tmpdata)
 
 //                    (it.data?.get(0) as TaxonomyData).taxonomyTags = ObjectMapper().readTree(tmpdata).toList()
 //                    (it.data?.get(0) as TaxonomyData).taxonomyTags = mapper.readValue(tmpdata!!)
+                    }
                 }
+
+                it.data = tmpTaxonomyData.toList()
+
 //                val uploadMetaData = tmpTaxonomyData[0].taxonomyVersion!!.branch?.let { branchID ->
 //                    tmpTaxonomyData[0].taxonomyVersion!!.id?.let { projectID ->
 //                        FileUploader.generateUploadMetaData(

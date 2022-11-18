@@ -23,9 +23,12 @@ class AzureDeviceFlow(
 
     //    @Throws(Exception::class)
     fun acquireTokenDeviceCode(): IAuthenticationResult? {
+
+        val tokenCacheAspect = TokenCacheAspect(".sample_cache.json")
         val pca = PublicClientApplication.builder(client_id)
             .authority(token_uri)
-            .setTokenCacheAccessAspect(PersistentTokenAspect().createPersistenceAspect())
+            .setTokenCacheAccessAspect(tokenCacheAspect)
+//            .setTokenCacheAccessAspect(PersistentTokenAspect().createPersistenceAspect())
             .build()
 
         val accountsInCache = pca.accounts.join()
