@@ -1,9 +1,14 @@
 package command
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import common.model.observation.EgressResult
+import common.model.observation.TaxonomyData
+import common.model.observation.UploadObservationObject
+import common.services.FileUploader
 import common.services.ObservationServiceImpl
 import common.services.PremonitionProcessServiceImpl
+import common.services.TaxonomyServerClient
 import common.services.auth.AuthService
 import common.util.prettyJsonPrint
 import kotlinx.coroutines.delay
@@ -121,6 +126,61 @@ class DownloadCmd(
                 val nFile = "$downloadDir/$startObsIndex/observation.json"
 
 
+              var tmpTags = mapper.convertValue(it.data,Array<TaxonomyData>::class.java)[0].taxonomyTags
+                val processInfo = ProcessServiceObj.getProcessState(processID)
+
+                var index0_data = ObservationDownloadServiceObj.getObservation(processID = processID,
+                    startObsIndex = 0.toString(),
+                    version= processInfo?.lastVersionIndex.toString()
+                )
+
+//        mapper.readValue<TaxonomyData>(mapper.writeValueAsString(teest))
+//        mapper.configure(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES,false)
+
+//        val teest: List<TaxonomyData> = index0_data.data as List<TaxonomyData>
+                val tmpTaxonomyData =   mapper.convertValue(index0_data!!.data,Array<TaxonomyData>::class.java)
+//        val tmpTaxonomyData:TaxonomyData = mapper.convertValue(index0TaxonomyData,jacksonTypeRef<List<TaxonomyData>>())[0]
+//        val tmpTaxonomyData:TaxonomyData = mapper.convertValue(index0TaxonomyData,jacksonTypeRef<List<TaxonomyData>>())[0]
+
+
+                val displayName = tmpTaxonomyData[0].displayName
+                // This will be the tagFormatter URL to be called for the given taxonomy data.
+                var tmp_baseurl = ""
+                if (!tmpTaxonomyData[0].taxonomyVersion!!.url?.contains("http")!!){
+                    tmp_baseurl = "http://"+tmpTaxonomyData[0].taxonomyVersion!!.url
+                }else
+                    tmp_baseurl = tmpTaxonomyData[0].taxonomyVersion!!.url.toString()
+
+
+                if(tmpTags?.size!! > 0)
+                {val tmpdata = tmpTaxonomyData[0].taxonomyVersion!!.branch?.let { it1 ->
+                    tmpTaxonomyData[0].taxonomyVersion!!.id?.let { it2 ->
+                        TaxonomyServerClient().getHumanTags(tmp_baseurl, it2,
+                            it1, mapper.writeValueAsString(tmpTags))
+                    }
+                }
+                    if (tmpdata != null) {
+                        tmpTaxonomyData[0].taxonomyTags = mapper.readValue(tmpdata)
+
+//                    (it.data?.get(0) as TaxonomyData).taxonomyTags = ObjectMapper().readTree(tmpdata).toList()
+//                    (it.data?.get(0) as TaxonomyData).taxonomyTags = mapper.readValue(tmpdata!!)
+                    }
+                }
+
+                it.data = tmpTaxonomyData.toList()
+
+//                val uploadMetaData = tmpTaxonomyData[0].taxonomyVersion!!.branch?.let { branchID ->
+//                    tmpTaxonomyData[0].taxonomyVersion!!.id?.let { projectID ->
+//                        FileUploader.generateUploadMetaData(
+//                            processID, observerID = observerID, data, displayName, tmp_baseurl, projectID,
+//                            branchID
+//                        )
+//                    }
+//                } as UploadObservationObject
+
+                // call the machine to human tag conversion...
+//                machineToHuman(tmpTags)
+//                it.data =
 
 //                val patt = "$outputDir/obervation$i.json"
                 val file = File(nFile)

@@ -18,6 +18,10 @@ class GenericWebClient : ClientConfig {
         logger.debug("Calling the Generic WebClient...")
         return WebClient.builder()
             .baseUrl(baseUrl)
+            .filters { exchangeFilterFunctions ->
+                exchangeFilterFunctions.add(LogFilter.logRequest())
+                exchangeFilterFunctions.add(LogFilter.logResponse())
+            }
             .build()
     }
 }

@@ -30,7 +30,7 @@ class UserInfo(private val webClient: WebClient,
             .bodyToMono(UserRegistration::class.java)
 
         val result = retrievedResource.share().block()
-        logger.info(result.toString())
+//        logger.info(result.toString())
         return result
     }
 
@@ -51,7 +51,7 @@ class UserInfo(private val webClient: WebClient,
 
 //
         val result = myRequest.share().block()
-        logger.info(result.toString())
+//        logger.info(result.toString())
         return result
     }
 
