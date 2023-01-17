@@ -77,17 +77,6 @@ class UploadCmd(
             help -> exitProcess(0)
 
             else -> {
-//
-//                var processID = "4935ff85-8e84-4b06-a69a-9ac160542a50" // TestSim/
-//                var observerID = "d798e5be-344e-4e5e-994f-48d43e93d6d6"
-//                val processID = "3d9adc35-e21e-43cc-b867-69b07305e75a"
-
-                // createobservation
-                //Here we first create the observationMetaData
-//                val path = Paths.get("").toAbsolutePath()
-//                val uploadDir = Paths.get("$path/upload/dat")
-
-
                 var jsonFilePath: Path? =  metadata?.run {
                     when(Paths.get(metadata).isAbsolute){
                         false -> Paths.get(metadata).toAbsolutePath().normalize()
@@ -134,8 +123,6 @@ class UploadCmd(
 //                }
 
                 var oid: String = if (observerID==null){
-                    // need to acquire the observerID
-//                    "d798e5be-344e-4e5e-994f-48d43e93d6d6"
                     UserInfoObj.getUserRegistration()!!.userId
 
                 } else

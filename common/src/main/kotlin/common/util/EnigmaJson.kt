@@ -12,7 +12,8 @@ fun prettyJsonPrint(uploadData: Any) {
     try {
 //        val jsonObject: Any = mapper.readValue(uploadData, Any::class.java)
         val prettyJson = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(uploadData)
-        logger.info(prettyJson)
+//        logger.info(prettyJson)
+        println(prettyJson)
     } catch (e: IOException) {
         e.printStackTrace()
     }

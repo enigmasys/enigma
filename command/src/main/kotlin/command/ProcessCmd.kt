@@ -1,5 +1,6 @@
 package command
 
+import common.model.process.ProcessOwned
 import common.services.PremonitionProcessServiceImpl
 import common.services.auth.AuthService
 import common.util.prettyJsonPrint
@@ -36,11 +37,17 @@ class ProcessCmd(
 
         when{
             listofProcesses ->{
-                val result =  ProcessServiceObj.getListofProcesses()
-                if (result != null) {
-//                    prettyPrint(result)
-                    prettyJsonPrint(result)
+                val result =  ProcessServiceObj.getListofProcesses() as ProcessOwned
+
+                println("=============================================")
+                println("Repository ID                         | Content Type | Description              | Is Function")
+                if (result.size > 0){
+                    result.forEach {
+                        println( it.processId + "  |  " + it.processType + "  |  " + it.description + "  |  " + it.isFunction)
+                    }
                 }
+                println("=============================================")
+
             }
                 else -> 0
         }
