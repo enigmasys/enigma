@@ -36,35 +36,35 @@ class UploadCmd(
     @CommandLine.Option(required = true, names=["-d","--dir"], description = ["Directory Path"])
     var dir: String? = null
 
-    @CommandLine.Option(required = true, names=["-p","--process"], description = ["ProcessID"])
+    @CommandLine.Option(required = true, names=["-p","--process","-repo"], description = ["Repository ID (a.k.a. ProcessID) of the repository"])
     var processID: String? = null
+//
+//    @CommandLine.Option(required = false, names=["-o","--oid"], description = ["Observer ID"])
+//    var observerID:String? = null
 
-    @CommandLine.Option(required = false, names=["-o","--oid"], description = ["Observer ID"])
-    var observerID:String? = null
-
-    @CommandLine.Option(required = false, names=["-f"], description = ["JSON file path of metadata for the observation"])
+    @CommandLine.Option(required = false, names=["-f"], description = ["JSON file path of metadata for the record"])
     var metadata:String? = null
 
 
-    @CommandLine.Option(names = ["-h", "--help"], usageHelp = true, description = ["Utility for Test Commandline Options..."])
+    @CommandLine.Option(names = ["-h", "--help"], usageHelp = true, description = ["Helps in uploading of records to a repository."])
     var help = false
 
     @CommandLine.ParentCommand
     val parent: EnigmaCommand? = null
 
 
-    @CommandLine.ArgGroup(exclusive = false,multiplicity = "0..1")
-    var dependent: Dependent? = null
+//    @CommandLine.ArgGroup(exclusive = false,multiplicity = "0..1")
+//    var dependent: Dependent? = null
 
-    class Dependent {
-        @CommandLine.Option(names = ["-validate"], required = true)
-        var validate:Boolean = false
-
-        @CommandLine.Option(names = ["-type"], required = true, description = ["Taxonomy input source can be either of type either url or file"])
-        var type = ""
-        @CommandLine.Option(names = ["-path"], required = true, description = ["Taxonomy input source path - (file path/ URL address)"])
-        var path = ""
-    }
+//    class Dependent {
+//        @CommandLine.Option(names = ["-validate"], required = true)
+//        var validate:Boolean = false
+//
+//        @CommandLine.Option(names = ["-type"], required = true, description = ["Taxonomy input source can be either of type either url or file"])
+//        var type = ""
+//        @CommandLine.Option(names = ["-path"], required = true, description = ["Taxonomy input source path - (file path/ URL address)"])
+//        var path = ""
+//    }
 
 
     override fun call(): Int  {
@@ -77,17 +77,6 @@ class UploadCmd(
             help -> exitProcess(0)
 
             else -> {
-//
-//                var processID = "4935ff85-8e84-4b06-a69a-9ac160542a50" // TestSim/
-//                var observerID = "d798e5be-344e-4e5e-994f-48d43e93d6d6"
-//                val processID = "3d9adc35-e21e-43cc-b867-69b07305e75a"
-
-                // createobservation
-                //Here we first create the observationMetaData
-//                val path = Paths.get("").toAbsolutePath()
-//                val uploadDir = Paths.get("$path/upload/dat")
-
-
                 var jsonFilePath: Path? =  metadata?.run {
                     when(Paths.get(metadata).isAbsolute){
                         false -> Paths.get(metadata).toAbsolutePath().normalize()
@@ -95,36 +84,36 @@ class UploadCmd(
                     }
                 }?:null
 
-                dependent?.validate?.let {
-                    println("Validate Flags is set to ${dependent?.validate}")
-                    println("JSONSchema Path Type: ${dependent?.type}")
-                    println("JSONSCHEMA Path: ${dependent?.path}")
-                    var validationResult:Boolean = false
-                    when(dependent?.type){
-                        "file" -> {
-                            var jsonSchemaFilePath: Path? =  dependent?.path?.run {
-                                when(Paths.get(dependent?.path).isAbsolute){
-                                    false -> Paths.get(dependent?.path).toAbsolutePath().normalize()
-                                    else -> Paths.get(dependent?.path)
-                                }
-                            }?:null
-                             validationResult = JSONSchemaValidatorObj.validate(
-                                ResourceSourceType.FILE,
-                                jsonSchemaFilePath.toString(),
-                                jsonFilePath.toString()
-                            )
-                        }
-                        "url"->{
-                            validationResult = JSONSchemaValidatorObj.validate(
-                                ResourceSourceType.URL,
-                                dependent?.path.toString(),
-                                jsonFilePath.toString()
-                            )
-                        }
-                    }
-                    if (!validationResult)
-                        exitProcess(0)
-                }
+//                dependent?.validate?.let {
+//                    println("Validate Flags is set to ${dependent?.validate}")
+//                    println("JSONSchema Path Type: ${dependent?.type}")
+//                    println("JSONSCHEMA Path: ${dependent?.path}")
+//                    var validationResult:Boolean = false
+//                    when(dependent?.type){
+//                        "file" -> {
+//                            var jsonSchemaFilePath: Path? =  dependent?.path?.run {
+//                                when(Paths.get(dependent?.path).isAbsolute){
+//                                    false -> Paths.get(dependent?.path).toAbsolutePath().normalize()
+//                                    else -> Paths.get(dependent?.path)
+//                                }
+//                            }?:null
+//                             validationResult = JSONSchemaValidatorObj.validate(
+//                                ResourceSourceType.FILE,
+//                                jsonSchemaFilePath.toString(),
+//                                jsonFilePath.toString()
+//                            )
+//                        }
+//                        "url"->{
+//                            validationResult = JSONSchemaValidatorObj.validate(
+//                                ResourceSourceType.URL,
+//                                dependent?.path.toString(),
+//                                jsonFilePath.toString()
+//                            )
+//                        }
+//                    }
+//                    if (!validationResult)
+//                        exitProcess(0)
+//                }
 
                 val uploadDir = Paths.get(dir?.let { tryExtendPath(it) })
 //                val uploadDir = when(Paths.get(dir).isAbsolute){
@@ -133,13 +122,14 @@ class UploadCmd(
 //                    else -> Paths.get(dir)
 //                }
 
-                var oid: String = if (observerID==null){
-                    // need to acquire the observerID
-//                    "d798e5be-344e-4e5e-994f-48d43e93d6d6"
-                    UserInfoObj.getUserRegistration()!!.userId
+                var oid: String = UserInfoObj.getUserRegistration()!!.userId
 
-                } else
-                    observerID as String
+
+//                var oid: String = if (observerID==null){
+//                    UserInfoObj.getUserRegistration()!!.userId
+//
+//                } else
+//                    observerID as String
 
 
                 processID?.let {

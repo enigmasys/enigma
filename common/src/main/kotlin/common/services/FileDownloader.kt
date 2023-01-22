@@ -19,16 +19,16 @@ class FileDownloader {
 
         @Throws(IOException::class)
         fun get(fileURL: String?, localFilename: String?) {
-            logger.info("Current file: $localFilename")
+            println("Downloading file: $localFilename")
             val url = URL(fileURL)
-            logger.info("Remote File size ${fileURL?.let { getFileSizeOfUrl(it) }}")
+            println("Remote File size ${fileURL?.let { getFileSizeOfUrl(it) }}")
             if (Files.exists(Paths.get(localFilename))) {
-                logger.info("Local File Size ${Files.size(Paths.get(localFilename))}")
+                println("Local File Size ${Files.size(Paths.get(localFilename))}")
             }
 
             val isPresent = isAvailable(fileURL, localFilename)
             if (!isPresent) {
-                logger.info("Starting Download..")
+                println("Starting Download..")
                 if (Files.notExists(Paths.get(localFilename)))
                     Files.createFile(Paths.get(localFilename))
                 try {
@@ -45,7 +45,7 @@ class FileDownloader {
                     // handle exception
                     logger.error("exception caught:" + e)
                 }
-                logger.info("Finished Downloading file: $localFilename")
+                println("Finished Downloading file: $localFilename")
             }
         }
 

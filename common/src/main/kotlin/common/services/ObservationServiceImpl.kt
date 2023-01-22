@@ -328,6 +328,7 @@ class ObservationServiceImpl(
 
             FileDownloader.get(url, filePath)
         }
+        println("Download Operation Completed")
     }
 
 
