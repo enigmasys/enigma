@@ -11,7 +11,7 @@ import java.util.concurrent.Callable
 @Component
 @CommandLine.Command(
     name = "process",
-    aliases = ["proc"],
+    aliases = ["proc","repository","repo"],
     mixinStandardHelpOptions = true,
 )
 class ProcessCmd(
@@ -22,7 +22,7 @@ class ProcessCmd(
 : Callable<Int>
 {
 
-    @CommandLine.Option(names = ["-l", "--listofProcesses"], description = ["Display the list of owned processes."])
+    @CommandLine.Option(names = ["-l", "--listofProcesses","--list"], description = ["Display the list of owned Repositories(a.k.a Process)."])
     var listofProcesses = false
 
     @CommandLine.ParentCommand
