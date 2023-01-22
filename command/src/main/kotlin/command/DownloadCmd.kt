@@ -84,8 +84,9 @@ class DownloadCmd(
                         resultData?.let { it ->
                             resultData.forEach{ mt ->
                                 saveMetadata(mt,mt.index.toString())
+                                mt.data?.let { it1 -> prettyJsonPrint(it1[0]) }
                             }
-                            prettyJsonPrint(it)
+//                            prettyJsonPrint(it)
                         }
 
                     }
