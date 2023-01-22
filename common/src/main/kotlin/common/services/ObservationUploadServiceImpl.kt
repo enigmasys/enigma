@@ -37,7 +37,7 @@ class ObservationUploadServiceImpl(
         observationObject.index = observationID!!
         apiVersion = "/v2"
         logger.debug(observationObject.toString())
-        prettyJsonPrint(observationObject)
+//        prettyJsonPrint(observationObject)
         val request = webClient.post()
             .uri { uriBuilder: UriBuilder ->
                 uriBuilder.path("$apiVersion/Process/AppendObservation")

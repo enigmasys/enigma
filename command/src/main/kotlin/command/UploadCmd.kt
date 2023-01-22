@@ -131,11 +131,15 @@ class UploadCmd(
 //                } else
 //                    observerID as String
 
-
+                println("Upload Command Invoked.")
+                println("=====================================")
+                println("Uploading records from $uploadDir to repository $processID")
                 processID?.let {
                     logger.info("$it ::  $oid  ::  $uploadDir :: $jsonFilePath")
                     FileUploaderObj.uploadDirectory(it, oid, uploadDir, jsonFilePath)
                 }
+                println("Upload Complete")
+                println("=====================================")
             }
         }
         return 0
