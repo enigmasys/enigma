@@ -127,7 +127,11 @@ class DownloadCmd(
 
             var notFound:Boolean = true
 //            println("TransferID: ${values.transferId}")
+            println("Download Command Invoked.")
+            println("=====================================")
+            println("Downloading records from repository $processID")
             println("Waiting for transfer to start.... ")
+            println("Download started.. ")
             values.transferId?.let {
                 while (notFound){
                     var transferStatus = ObservationDownloadServiceObj.getTransferStat(
@@ -139,7 +143,6 @@ class DownloadCmd(
 //                    logger.info("No Observations for Process ID: $processID ")
                     when (transferStatus?.status){
                         "Succeeded" -> {
-                            println("Download started.. ")
                             notFound=false
                         }
                         else -> {
@@ -149,7 +152,11 @@ class DownloadCmd(
                     }
                 }
             }
+
             ObservationDownloadServiceObj.DownloadFiles(values,dir)
+            println("=====================================")
+            println("Download Operation Completed")
+            println("=====================================")
         }
     }
         return 0
@@ -164,7 +171,7 @@ class DownloadCmd(
                 false -> Paths.get(dir).toAbsolutePath().normalize()
                 else -> Paths.get(dir)
             }
-            val nFile = "$downloadDir/$startObsIndex/observation.json"
+            val nFile = "$downloadDir/metadata/$startObsIndex/metadata.json"
             var tmpTags = mapper.convertValue(it.data, Array<TaxonomyData>::class.java)[0].taxonomyTags
             val processInfo = ProcessServiceObj.getProcessState(processID)
             var index0_data = ObservationDownloadServiceObj.getObservation(
@@ -204,25 +211,14 @@ class DownloadCmd(
             }
 
             it.data = tmpTaxonomyData.toList()
-            //                val uploadMetaData = tmpTaxonomyData[0].taxonomyVersion!!.branch?.let { branchID ->
-    //                    tmpTaxonomyData[0].taxonomyVersion!!.id?.let { projectID ->
-    //                        FileUploader.generateUploadMetaData(
-    //                            processID, observerID = observerID, data, displayName, tmp_baseurl, projectID,
-    //                            branchID
-    //                        )
-    //                    }
-    //                } as UploadObservationObject
-            // call the machine to human tag conversion...
-    //                machineToHuman(tmpTags)
-    //                it.data =
-            //                val patt = "$outputDir/obervation$i.json"
             val file = File(nFile)
             val tmpDir = Paths.get(nFile).parent
 
             if (Files.notExists(tmpDir))
                 Files.createDirectories(tmpDir)
+            println("Saving metadata to ${file.absolutePath}")
             file.createNewFile()
-            mapper.writeValue(file, it)
+            mapper.writeValue(file, (it.data as List<*>)[0])
         }
     }
 }

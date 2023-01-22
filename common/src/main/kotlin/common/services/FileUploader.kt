@@ -35,17 +35,20 @@ class FileUploader(
 
         var blobContainerClient = BlobContainerClientBuilder().endpoint(sasUrl).buildClient()
 
-        logger.info(blobContainerClient.blobContainerName)
+//        logger.info(blobContainerClient.blobContainerName)
 
         var fileMap = getMapofRelativeAndAbsolutePath(uploadDir)
 
         fileMap.forEach { (key, value) ->
             run {
                 logger.info("$key: $value")
+                println("Uploading File: $value")
                 val blobClient = blobContainerClient.getBlobClient("$index/$key")
                 try {
                     blobClient.uploadFromFile(value.toString(), true)
-                    logger.info("Finished Uploading $value")
+                    println("Finished Uploading: $value")
+//                    logger.info("Finished Uploading $value")
+
                 } catch (ex: UncheckedIOException) {
                     System.err.printf("Failed to upload from file %s%n", ex.message)
                 }
