@@ -25,8 +25,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 //@Component
 @Configuration
 @Command(
+    version = ["LEAP_CLI", "1.0.0"],
     mixinStandardHelpOptions = true,
-    description = ["Command for premonition datalake"],
+    description = ["Command for accessing the UDCP"],
 )
 @ComponentScan(basePackages = ["common","common.util"])
 class EnigmaCommand(
