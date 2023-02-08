@@ -50,6 +50,12 @@ class DownloadCmd(
     var obsIndex:String? = null
 
 
+    @CommandLine.Option(required = false, names=["-e","--end"], description = ["end index of the record"])
+    var endIndex:String? = null
+
+    @CommandLine.Option(required = false, names=["-all"], description = ["Download all the records"])
+    var allEntries:Boolean? = null
+
     @CommandLine.Option(names = ["-h", "--help"], usageHelp = true, description = ["Helps in downloading of records from a repository."])
     var help = false
 
@@ -96,7 +102,7 @@ class DownloadCmd(
         }
         else ->{
 
-            val expiresInMins = "2"
+            val expiresInMins = "1440"  // 24 hours time to live for the download link.
             var startObsIndex:String? =  null
             var endObsIndex:String? = null
 
@@ -113,48 +119,63 @@ class DownloadCmd(
                 endObsIndex = obsIndex
             }
 
-            // We need to also download the Observation Meta Data.
+            if (endIndex!=null && endIndex!!.toInt() >= startObsIndex!!.toInt()){
+                endObsIndex = endIndex!!.toInt().toString()
+            }
 
-            val resultData = ObservationDownloadServiceObj.getObservation(processID = processID,
-                startObsIndex = startObsIndex!!,
-                version= "0"
-            )
-            saveMetadata(resultData, startObsIndex)
+            if (allEntries==true){
+                startObsIndex = "0"
+                endObsIndex = (ProcessServiceObj.getProcessState(processID)!!.numObservations -1).toString()
+            }
 
-            var result = ObservationDownloadServiceObj.getObservationFilesV3(processID,
-                startObsIndex, endObsIndex!!, expiresInMins)
 
-            val values = result as EgressResult
+            if (startObsIndex!!.toInt() < 0){
+                logger.info("Start Index needs to be 0 or above: $processID ")
+                exitProcess(0)
+            }
 
-            var notFound:Boolean = true
+            for( i in (startObsIndex.toInt().. endObsIndex!!.toInt())){
+                logger.info("Downloading record $i of $processID ")
+                val resultData = ObservationDownloadServiceObj.getObservation(processID = processID,
+                    startObsIndex = i.toString(),
+                    version= "0"
+                )
+                saveMetadata(resultData, i.toString())
+
+                var result = ObservationDownloadServiceObj.getObservationFilesV3(processID,
+                    i.toString(), i.toString(), expiresInMins)
+
+                val values = result as EgressResult
+
+                var notFound:Boolean = true
 //            println("TransferID: ${values.transferId}")
-            println("Download Command Invoked.")
-            println("=====================================")
-            println("Downloading records from repository $processID")
-            println("Waiting for transfer to start.... ")
-            println("Download started.. ")
-            values.transferId?.let {
-                while (notFound){
-                    var transferStatus = ObservationDownloadServiceObj.getTransferStat(
-                        processID = processID,
-                        transferId = values.transferId!!,
-                        directoryID = values.directoryId
-                    )
-                    print(".")
+                println("Download Command Invoked.")
+                println("=====================================")
+                println("Downloading records from repository $processID")
+                println("Waiting for transfer to start.... ")
+                println("Download started.. ")
+                values.transferId?.let {
+                    while (notFound){
+                        var transferStatus = ObservationDownloadServiceObj.getTransferStat(
+                            processID = processID,
+                            transferId = values.transferId!!,
+                            directoryID = values.directoryId
+                        )
+                        print(".")
 //                    logger.info("No Observations for Process ID: $processID ")
-                    when (transferStatus?.status){
-                        "Succeeded" -> {
-                            notFound=false
-                        }
-                        else -> {
-                            notFound=true
-                            Thread.sleep(1000)
+                        when (transferStatus?.status){
+                            "Succeeded" -> {
+                                notFound=false
+                            }
+                            else -> {
+                                notFound=true
+                                Thread.sleep(1000)
+                            }
                         }
                     }
                 }
+                ObservationDownloadServiceObj.DownloadFiles(values,dir, index = i.toString())
             }
-
-            ObservationDownloadServiceObj.DownloadFiles(values,dir)
             println("=====================================")
             println("Download Operation Completed")
             println("=====================================")
@@ -164,7 +185,7 @@ class DownloadCmd(
 
     }
 
-    private fun saveMetadata(resultData: UploadObservationObject?, startObsIndex: String?) {
+    private fun saveMetadata(resultData: UploadObservationObject?, ObsIndex: String?,version:String="0") {
         resultData?.let {
     //                prettyJsonPrint(it)
             val mapper = ObjectMapper()
@@ -172,21 +193,17 @@ class DownloadCmd(
                 false -> Paths.get(dir).toAbsolutePath().normalize()
                 else -> Paths.get(dir)
             }
-            val nFile = "$downloadDir/metadata/$startObsIndex/metadata.json"
+//            val nFile = "$downloadDir/metadata/$startObsIndex/metadata.json"
+            val nFile = "$downloadDir/$ObsIndex/$version/metadata.json"
             var tmpTags = mapper.convertValue(it.data, Array<TaxonomyData>::class.java)[0].taxonomyTags
             val processInfo = ProcessServiceObj.getProcessState(processID)
             var index0_data = ObservationDownloadServiceObj.getObservation(
                 processID = processID,
-                startObsIndex = 0.toString(),
+                startObsIndex = 0.toString(), // We always download from the 0th index.
                 version = processInfo?.lastVersionIndex.toString()
             )
-            //        mapper.readValue<TaxonomyData>(mapper.writeValueAsString(teest))
-    //        mapper.configure(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES,false)
-            //        val teest: List<TaxonomyData> = index0_data.data as List<TaxonomyData>
             val tmpTaxonomyData = mapper.convertValue(index0_data!!.data, Array<TaxonomyData>::class.java)
-    //        val tmpTaxonomyData:TaxonomyData = mapper.convertValue(index0TaxonomyData,jacksonTypeRef<List<TaxonomyData>>())[0]
-    //        val tmpTaxonomyData:TaxonomyData = mapper.convertValue(index0TaxonomyData,jacksonTypeRef<List<TaxonomyData>>())[0]
-            val displayName = tmpTaxonomyData[0].displayName
+//            val displayName = tmpTaxonomyData[0].displayName
             // This will be the tagFormatter URL to be called for the given taxonomy data.
             var tmp_baseurl = ""
             if (!tmpTaxonomyData[0].taxonomyVersion!!.url?.contains("http")!!) {

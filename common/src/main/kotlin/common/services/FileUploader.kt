@@ -34,7 +34,8 @@ class FileUploader(
             run {
                 logger.info("$key: $value")
                 println("Uploading File: $value")
-                val blobClient = blobContainerClient.getBlobClient("$index/$key")
+//                val blobClient = blobContainerClient.getBlobClient("$index/$key")
+                val blobClient = blobContainerClient.getBlobClient("$key")
                 try {
                     blobClient.uploadFromFile(value.toString(), true)
                     println("Finished Uploading: $value")
@@ -80,7 +81,9 @@ class FileUploader(
         uploadMetaData.index = processInfo.numObservations
         uploadMetaData.processType = processInfo.processType
         var relativeFilePathList = getMapofRelativeAndAbsolutePath(uploadDir.toString()).keys
-        uploadMetaData.dataFiles = relativeFilePathList.map { "${uploadMetaData.index}/$it" }.toList()
+        // FIXME  we ideally want to have the index/version/files* to upload
+//        uploadMetaData.dataFiles = relativeFilePathList.map { "${uploadMetaData.index}/$it" }.toList()
+        uploadMetaData.dataFiles = relativeFilePathList.map{it.toString()}.toList()
 
         // TODO: Let's comment out for now
         ObservationUploadServiceObj.appendObservation(uploadMetaData)
