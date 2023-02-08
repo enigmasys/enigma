@@ -284,48 +284,36 @@ class ObservationServiceImpl(
         return result
     }
 
-    fun DownloadFiles(values: EgressResult, dir: String) {
+    fun DownloadFiles(values: EgressResult, dir: String, index:String, version: String="0") {
+//        HashMap(Pair<index,filename>, sasUrl)
+//        var fileDownLoadMap: HashMap<Pair<String,String>, String> = HashMap<Pair<String,String>, String>()
         var fileDownLoadMap: HashMap<String, String> = HashMap<String, String>()
-        values.files?.forEach {
-            fileDownLoadMap.put(it.name, it.sasUrl)
-        }
 
+        values.files?.forEach {
+//            fileDownLoadMap.put(Pair(it.name.substringAfter("/").split("/")[0],it.name.substringAfter("/").substringAfter("/")),it.sasUrl)
+            fileDownLoadMap.put(it.name,it.sasUrl)
+        }
 
         val downloadDir = when (Paths.get(dir).isAbsolute) {
             false -> Paths.get(dir).toAbsolutePath().normalize()
             else -> Paths.get(dir)
         }
 
-
-//        val path = Paths.get("").toAbsolutePath()
-
-//        val outputDir = "$path/outputFile/"
-
-//        if (Files.notExists(Paths.get(outputDir)))
-//            Files.createDirectories(Paths.get(outputDir))
-
         if (Files.notExists(downloadDir))
             Files.createDirectories(downloadDir)
 
-        //            logger.info(fileDownLoadMap.entries)
-//        fileDownLoadMap.filter { it.key == "dat/0/col_source/dataset/120.xml" }
-//        logger.info(fileDownLoadMap.size)
-
-
-        // Here we need to check the status of the transfer ID
-
-//        Thread.sleep(30000)
+//        values.files?.get(1).name.substringAfter("/").split("/")
 
         fileDownLoadMap.entries.forEach {
+            val f_index = index//it.key.first
+            val f_version = version
+//            val fname = it.key.second
             val fname = it.key
             val url = it.value
-            val filePath = "$downloadDir/${fname}"
-
+            val filePath = "$downloadDir/$f_index/$f_version/${fname}"
             val tmpDir = Paths.get(filePath).parent
-
             if (Files.notExists(tmpDir))
                 Files.createDirectories(tmpDir)
-
             FileDownloader.get(url, filePath)
         }
     }
