@@ -13,6 +13,8 @@ import java.io.UncheckedIOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Service
 class FileUploader(
@@ -137,6 +139,9 @@ class FileUploader(
             data?.let {
                 rawData = observationMapper.readValue(it.toFile())
             }
+            val currentDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(Date()).toString()
+//            println("Current Date: $currentDate")
+            uploadObs.startTime = currentDate
             if (ToGuidTagURL != null) {
                 val tmpdata =  TaxonomyServerClient().getGuidTags(ToGuidTagURL, projectID , projectBranch, ObjectMapper().writeValueAsString(rawData!!.taxonomyTags))
                 if (tmpdata != null) {
