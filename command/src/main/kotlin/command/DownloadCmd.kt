@@ -11,8 +11,11 @@ import common.services.PremonitionProcessServiceImpl
 import common.services.TaxonomyServerClient
 import common.services.auth.AuthService
 import common.util.prettyJsonPrint
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.stereotype.Component
 import picocli.CommandLine
 import java.io.File
@@ -28,12 +31,11 @@ import kotlin.system.exitProcess
     aliases = ["pull"],
     mixinStandardHelpOptions = true,
 )
+@ComponentScan(basePackages = ["common","common.services.ObservationServiceImpl","common.services.PremonitionProcessServiceImpl","common.services.auth.AuthService"])
 class DownloadCmd(
     private val ObservationDownloadServiceObj: ObservationServiceImpl,
     private val ProcessServiceObj: PremonitionProcessServiceImpl,
     private val AuthServiceObj: AuthService
-
-
 ): Callable<Int>
 {
 
@@ -145,10 +147,13 @@ class DownloadCmd(
                 var result = ObservationDownloadServiceObj.getObservationFilesV3(processID,
                     i.toString(), i.toString(), expiresInMins)
 
+                // TODO Create an interface for the DownloadService, that provides download metadata and download files.
+                // TODO Create a separate class for the download service that implements the interface for metaddata and files.
+
                 val values = result as EgressResult
 
                 var notFound:Boolean = true
-//            println("TransferID: ${values.transferId}")
+//              println("TransferID: ${values.transferId}")
                 println("Download Command Invoked.")
                 println("=====================================")
                 println("Downloading records from repository $processID")
@@ -174,7 +179,13 @@ class DownloadCmd(
                         }
                     }
                 }
-                ObservationDownloadServiceObj.DownloadFiles(values,dir, index = i.toString())
+                runBlocking {
+                    val deferred = async {
+                        ObservationDownloadServiceObj.DownloadFiles(values,dir, index = i.toString())
+                    }
+                    deferred.await()
+                }
+
             }
             println("=====================================")
             println("Download Operation Completed")

@@ -7,6 +7,10 @@ import common.model.observation.EgressResult
 import common.model.observation.PeekObservationResult
 import common.model.observation.UploadObservationObject
 import common.services.auth.AuthService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -199,7 +203,7 @@ class ObservationServiceImpl(
                     .queryParam("obsIndex", startObsIndex)
                     .queryParam("endObsIndex", endObsIndex)
                     .queryParam("expiresInMins", expiresInMins)
-                    .queryParam("filePattern", "**/*.*")
+                    .queryParam("filePattern", "**/**")
                     .build()
             }
             .headers { it.setBearerAuth(token) }
@@ -284,7 +288,7 @@ class ObservationServiceImpl(
         return result
     }
 
-    fun DownloadFiles(values: EgressResult, dir: String, index:String, version: String="0") {
+    suspend fun DownloadFiles(values: EgressResult, dir: String, index:String, version: String="0") {
 //        HashMap(Pair<index,filename>, sasUrl)
 //        var fileDownLoadMap: HashMap<Pair<String,String>, String> = HashMap<Pair<String,String>, String>()
         var fileDownLoadMap: HashMap<String, String> = HashMap<String, String>()
@@ -304,18 +308,34 @@ class ObservationServiceImpl(
 
 //        values.files?.get(1).name.substringAfter("/").split("/")
 
-        fileDownLoadMap.entries.forEach {
-            val f_index = index//it.key.first
-            val f_version = version
-//            val fname = it.key.second
-            val fname = it.key
-            val url = it.value
-            val filePath = "$downloadDir/$f_index/$f_version/${fname}"
-            val tmpDir = Paths.get(filePath).parent
-            if (Files.notExists(tmpDir))
-                Files.createDirectories(tmpDir)
-            FileDownloader.get(url, filePath)
+        coroutineScope {
+            fileDownLoadMap.map { file ->
+                async(Dispatchers.IO) {
+                    println("Downloading ${file.key} from ${file.value}")
+                    val filePath = "$downloadDir/$index/$version/${file.key}"
+                    val tmpDir = Paths.get(filePath).parent
+                    if (Files.notExists(tmpDir))
+                        Files.createDirectories(tmpDir)
+                    FileDownloader.downloadFile(file.value, filePath)
+                }
+            }.awaitAll()
         }
+
+//            fileDownLoadMap.entries.forEach {
+//                val f_index = index//it.key.first
+//                val f_version = version
+////            val fname = it.key.second
+//                val fname = it.key
+//                val url = it.value
+//                val filePath = "$downloadDir/$f_index/$f_version/${fname}"
+//                val tmpDir = Paths.get(filePath).parent
+//                if (Files.notExists(tmpDir))
+//                    Files.createDirectories(tmpDir)
+////            FileDownloader.get(url, filePath)
+//                FileDownloader.downloadFile(url, filePath)
+//            }
+
+
     }
 
 
