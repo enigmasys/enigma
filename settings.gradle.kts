@@ -3,8 +3,6 @@ include("common")
 include("secretapp")
 include("command")
 
-
-
 val archivaHostId: String? by settings
 val archivaPort: String? by settings
 
