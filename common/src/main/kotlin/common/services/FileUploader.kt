@@ -108,7 +108,7 @@ class FileUploader(
             var fileList = Files.walk(uploadDirPath)
                 .filter(Files::isRegularFile)
                 .toList()
-            var relativeFileList = fileList.map { uploadDirPath.relativize(it) }
+            var relativeFileList = fileList.map { it: Path -> uploadDirPath.relativize(it) }
             var fileMap = relativeFileList.zip(fileList).toMap()
             return fileMap
         }
