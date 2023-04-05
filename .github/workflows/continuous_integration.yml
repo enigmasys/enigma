@@ -9,7 +9,7 @@ on:
 jobs:
   gradle:
     env:
-      java_version: 17
+      java_version: 1.8
     strategy:
       matrix:
           # the following defines different platforms to target for different actions

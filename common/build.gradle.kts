@@ -18,6 +18,12 @@ plugins {
     id("maven-publish")
 }
 
+//java {
+//    toolchain {
+//        languageVersion.set(JavaLanguageVersion.of(8))
+//    }
+//}
+
 group = "edu.vanderbilt"
 version = "0.0.1-SNAPSHOT"
 
@@ -43,12 +49,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 
-    testImplementation(kotlin("test"))
-
-}
-
-tasks.test {
-    useJUnitPlatform()
 }
 
 tasks.getByName<Test>("test") {
@@ -60,8 +60,12 @@ tasks.getByName<Test>("test") {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "17"
+        jvmTarget = "1.8"
     }
+}
+
+tasks.withType<JavaCompile> {
+    options.compilerArgs.addAll(listOf("-source", "1.8", "-target",  "1.8"))
 }
 
 tasks.getByName<BootJar>("bootJar") {

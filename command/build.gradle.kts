@@ -20,6 +20,12 @@ plugins {
 group = "edu.vanderbilt"
 version = "0.0.1-SNAPSHOT"
 
+//java {
+//    toolchain {
+//        languageVersion.set(JavaLanguageVersion.of(8))
+//    }
+//}
+
 dependencies {
 
     implementation(project(":common"))
@@ -40,10 +46,6 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
@@ -51,8 +53,12 @@ tasks.getByName<Test>("test") {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "17"
+        jvmTarget = "1.8"
     }
+}
+
+tasks.withType<JavaCompile> {
+    options.compilerArgs.addAll(listOf("-source", "1.8", "-target",  "1.8"))
 }
 
 tasks.getByName<BootJar>("bootJar") {
