@@ -45,7 +45,7 @@ tasks.getByName<Test>("test") {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = project.extra["jvmTarget"].toString()
+        jvmTarget = "11"
     }
 }
 
@@ -88,7 +88,5 @@ publishing {
                 }
             }
         }
-
-
     }
 }

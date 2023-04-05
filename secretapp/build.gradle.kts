@@ -38,7 +38,7 @@ tasks.getByName<Test>("test") {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = project.extra["jvmTarget"].toString()
+        jvmTarget = "11"
     }
 }
 
@@ -103,9 +103,9 @@ publishing {
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = project.extra["jvmTarget"].toString()
+    jvmTarget = "1.8"
 }
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-    jvmTarget = project.extra["jvmTarget"].toString()
+    jvmTarget = "1.8"
 }
