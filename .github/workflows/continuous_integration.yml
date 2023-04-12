@@ -9,7 +9,7 @@ on:
 jobs:
   gradle:
     env:
-      java_version: 1.8
+      java_version: 17
     strategy:
       matrix:
           # the following defines different platforms to target for different actions
@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 8
+          java-version: "${{ env.java_version }}"
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
