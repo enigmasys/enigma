@@ -14,7 +14,7 @@ jobs:
       matrix:
           # the following defines different platforms to target for different actions
           # os: [ubuntu-latest, macos-latest, windows-latest]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -25,6 +25,7 @@ jobs:
           java-version: '${{ env.java_version }}'
           distribution: 'temurin'
 
+      # GitHub Policy: up to 10GB in caches w/removal after 7 days of no access.
       - name: Cache Gradle packages
         uses: actions/cache@v3
         env:
