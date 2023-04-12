@@ -19,22 +19,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
       - name: Set up JDK ${{ env.java_version }}
         uses: actions/setup-java@v3
         with:
-          distribution: temurin
-          java-version: "${{ env.java_version }}"
-          cache: 'gradle'
+          java-version: '${{ env.java_version }}'
+          distribution: 'temurin'
 
-#      - name: Build
-#        uses: gradle/gradle-build-action@v2
-#        with:
-#          arguments: build
-#          gradle-version: 8.0.2
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
 
-      - name: Build Code
-        run: ./gradlew build --no-daemon
-
-      - name: Run Tests
-        run: ./gradlew test --no-daemon
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: test
+          gradle-version: 8.0.2
