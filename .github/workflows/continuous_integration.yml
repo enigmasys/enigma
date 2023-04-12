@@ -20,6 +20,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+
       - name: Set up JDK ${{ env.java_version }}
         uses: actions/setup-java@v3
         with:
