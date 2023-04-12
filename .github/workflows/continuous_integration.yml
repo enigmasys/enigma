@@ -34,7 +34,7 @@ jobs:
 #          gradle-version: 8.0.2
 
       - name: Build Code
-        run: ./gradlew build --no-daemon
+        run: gradlew build --no-daemon
 
       - name: Run Tests
         run: gradlew test --no-daemon
