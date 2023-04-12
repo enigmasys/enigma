@@ -16,19 +16,21 @@ jobs:
           # os: [ubuntu-latest, macos-latest, windows-latest]
         os: [windows-latest]
     runs-on: ${{ matrix.os }}
+
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up JDK ${{ env.java_version }}
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: "${{ env.java_version }}"
 
-      - name: Build with Gradle
+      - name: Build
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build
           gradle-version: 8.0.2
 
-      - name: Test
-        run: gradle test --tests "*"
+      - name: Run Tests
+        run: gradle test
