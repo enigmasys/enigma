@@ -65,7 +65,7 @@ class FileUploader(
         val displayName = tmpTaxonomyData[0].displayName
 
         // This will be the tagFormatter URL to be called for the given taxonomy data.
-        var tmp_baseurl = ""
+        var tmp_baseurl: String
         if (!tmpTaxonomyData[0].taxonomyVersion!!.url?.contains("http")!!){
             tmp_baseurl = "http://"+tmpTaxonomyData[0].taxonomyVersion!!.url
         }else

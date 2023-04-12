@@ -1,11 +1,11 @@
 package edu.vanderbilt.enigma.secretapp
+
 import command.*
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.ComponentScan
 import picocli.CommandLine
-
 
 @SpringBootApplication
 @ComponentScan(basePackages = ["command","common"])

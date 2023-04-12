@@ -7,6 +7,8 @@ val archivaPassword: String? by project
 val archivaHostId: String? by project
 val archivaPort: String? by project
 
+group = "edu.vanderbilt"
+version = "0.0.1-SNAPSHOT"
 
 plugins {
     id("org.springframework.boot") version "2.6.3"
@@ -14,17 +16,15 @@ plugins {
     kotlin("jvm") version "1.8.20"
     kotlin("plugin.spring") version "1.8.20"
     id("maven-publish")
-
 }
 
-group = "edu.vanderbilt"
-version = "0.0.1-SNAPSHOT"
-
-//java {
-//    toolchain {
-//        languageVersion.set(JavaLanguageVersion.of(8))
-//    }
-//}
+repositories {
+    mavenCentral()
+    maven {
+        isAllowInsecureProtocol = true
+        url = uri("http://$archivaHostId:$archivaPort/repository/enigma-test-snapshot/")
+    }
+}
 
 dependencies {
 
@@ -39,26 +39,29 @@ dependencies {
     implementation ("info.picocli:picocli:4.6.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.6")
 
-    implementation("junit:junit:4.13.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
-
+    /*****************************************
+     * Begin - TESTING
+     */
     testImplementation(kotlin("test"))
+    testImplementation("io.mockk:mockk:1.9.3")
+    testImplementation("org.assertj:assertj-core:3.11.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.4.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.4.2")
+    /*****************************************
+     * End - TESTING
+     */
 }
 
-tasks.getByName<Test>("test") {
+tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
-}
-
-tasks.withType<JavaCompile> {
-    options.compilerArgs.addAll(listOf("-source", "1.8", "-target",  "1.8"))
 }
 
 tasks.getByName<BootJar>("bootJar") {
@@ -67,14 +70,6 @@ tasks.getByName<BootJar>("bootJar") {
 
 tasks.getByName<Jar>("jar") {
     enabled = true
-}
-
-repositories {
-    mavenCentral()
-    maven {
-        isAllowInsecureProtocol = true
-        url = uri("http://$archivaHostId:$archivaPort/repository/enigma-test-snapshot/")
-    }
 }
 
 publishing {

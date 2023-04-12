@@ -6,8 +6,6 @@ include("command")
 val archivaHostId: String? by settings
 val archivaPort: String? by settings
 
-
-
 dependencyResolutionManagement {
     repositories {
         mavenLocal()

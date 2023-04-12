@@ -8,7 +8,8 @@ val archivaPassword: String? by project
 val archivaHostId: String? by project
 val archivaPort: String? by project
 
-
+group = "edu.vanderbilt"
+version = "0.0.1-SNAPSHOT"
 
 plugins {
     id("org.springframework.boot") version "2.6.3"
@@ -18,14 +19,13 @@ plugins {
     id("maven-publish")
 }
 
-//java {
-//    toolchain {
-//        languageVersion.set(JavaLanguageVersion.of(8))
-//    }
-//}
-
-group = "edu.vanderbilt"
-version = "0.0.1-SNAPSHOT"
+repositories {
+    mavenCentral()
+    maven {
+        isAllowInsecureProtocol = true
+        url = uri("http://$archivaHostId:$archivaPort/repository/enigma-test-snapshot/")
+    }
+}
 
 dependencies {
 
@@ -35,10 +35,13 @@ dependencies {
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
+//    implementation(kotlin("test"))
+//    implementation(kotlin("test-junit"))
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("com.azure:azure-storage-blob:12.14.2")
     implementation("info.picocli:picocli:4.6.2")
-    implementation("junit:junit:4.13.1")
 
     implementation("com.microsoft.azure:msal4j:1.11.3")
     implementation("com.microsoft.azure:msal4j-persistence-extension:1.1.0")
@@ -46,26 +49,24 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 
+    testImplementation("io.mockk:mockk:1.9.3")
+    testImplementation("org.assertj:assertj-core:3.11.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.4.2")
+
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.4.2")
 }
 
-tasks.getByName<Test>("test") {
+tasks.withType<Test>().configureEach {
     useJUnitPlatform()
-    jvmArgs = mutableListOf("--enable-preview")
-
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
-}
-
-tasks.withType<JavaCompile> {
-    options.compilerArgs.addAll(listOf("-source", "1.8", "-target",  "1.8"))
 }
 
 tasks.getByName<BootJar>("bootJar") {
@@ -74,14 +75,6 @@ tasks.getByName<BootJar>("bootJar") {
 
 tasks.getByName<Jar>("jar") {
     enabled = true
-}
-
-repositories {
-    mavenCentral()
-    maven {
-        isAllowInsecureProtocol = true
-        url = uri("http://$archivaHostId:$archivaPort/repository/enigma-test-snapshot/")
-    }
 }
 
 publishing {

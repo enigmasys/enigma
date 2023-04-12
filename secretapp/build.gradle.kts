@@ -6,65 +6,8 @@ val archivaPassword: String? by project
 val archivaHostId: String? by project
 val archivaPort: String? by project
 
-plugins {
-    id("org.springframework.boot") version "2.6.3"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    kotlin("jvm") version "1.8.20"
-    kotlin("plugin.spring") version "1.8.20"
-    id("maven-publish")
-
-}
-
 group = "edu.vanderbilt"
 version = "0.0.1-SNAPSHOT"
-
-//java {
-//    toolchain {
-//        languageVersion.set(JavaLanguageVersion.of(8))
-//    }
-//}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation(project(":command"))
-    implementation ("info.picocli:picocli:4.6.2")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
-    implementation(kotlin("stdlib-jdk8"))
-}
-
-
-
-tasks.getByName<Test>("test") {
-    useJUnitPlatform()
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "1.8"
-    }
-}
-
-tasks.withType<JavaCompile> {
-    options.compilerArgs.addAll(listOf("-source", "1.8", "-target",  "1.8"))
-}
-
-tasks.getByName<Jar>("jar") {
-    enabled = false
-}
-
-tasks.bootJar{
-    exclude("application.yml")
-    exclude("application-clientcredential.yml")
-    exclude("application-passthrough.yml")
-    archiveFileName.set("leap_cli.jar")
-
-}
 
 repositories {
     mavenCentral()
@@ -74,17 +17,66 @@ repositories {
     }
 }
 
+plugins {
+    id("org.springframework.boot") version "2.6.3"
+    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    kotlin("jvm") version "1.8.20"
+    kotlin("plugin.spring") version "1.8.20"
+    id("maven-publish")
+}
+
+dependencies {
+    implementation(project(":command"))
+    implementation("info.picocli:picocli:4.6.2")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation(kotlin("stdlib-jdk8"))
+    implementation("org.junit.jupiter:junit-jupiter:5.8.1")
+
+    testImplementation(kotlin("test"))
+
+    testImplementation("io.mockk:mockk:1.9.3")
+    testImplementation("org.assertj:assertj-core:3.11.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.4.2")
+
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.4.2")
+
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xjsr305=strict")
+        jvmTarget = "17"
+    }
+}
+
+tasks.getByName<Jar>("jar") {
+    enabled = false
+}
+
+tasks.bootJar {
+    exclude("application.yml")
+    exclude("application-clientcredential.yml")
+    exclude("application-passthrough.yml")
+    archiveFileName.set("leap_cli.jar")
+}
+
 configurations {
     val elements = listOf(apiElements, runtimeElements)
     elements.forEach { element ->
-        element.get().outgoing.artifacts.removeIf { it -> it.buildDependencies.getDependencies(null).contains(tasks.jar.get())}
+        element.get().outgoing.artifacts.removeIf { it ->
+            it.buildDependencies.getDependencies(null).contains(tasks.jar.get())
+        }
         element.get().outgoing.artifact(tasks.bootJar.get())
     }
 }
 
-
 publishing {
-    publications.create<MavenPublication>("secretapp"){
+    publications.create<MavenPublication>("secretapp") {
         from(components["java"])
     }
 
@@ -113,12 +105,11 @@ publishing {
 
     }
 }
-
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
-}
+//val compileKotlin: KotlinCompile by tasks
+//compileKotlin.kotlinOptions {
+//    jvmTarget = "1.8"
+//}
+//val compileTestKotlin: KotlinCompile by tasks
+//compileTestKotlin.kotlinOptions {
+//    jvmTarget = "1.8"
+//}
