@@ -25,6 +25,14 @@ jobs:
           java-version: '${{ env.java_version }}'
           distribution: 'temurin'
 
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+
+      # Requires gradle-wrapper.jar checked into code
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
 
