@@ -1,3 +1,6 @@
+# Notes: look at https://fabianlee.org/2022/11/19/github-automated-github-release-for-spring-boot-jar-using-github-actions/ for 
+#   examples of publishing a release
+
 name: Build
 
 on:
