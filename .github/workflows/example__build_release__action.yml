@@ -96,7 +96,7 @@ jobs:
       # https://github.com/ncipollo/release-action
 
       - name: check_outputs
-        run: ls
+        run: ls secretapp
 
 #      - uses: ncipollo/release-action@v1
 #        with:
