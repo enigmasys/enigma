@@ -4,11 +4,23 @@
 
 name: Build and Run Tests
 
+#on:
+#  push:
+#    # Only trigger on branch unit_testing_with_github_actions
+#    branches: [unit_testing_with_github_actions]
+    # Only trigger when a tag with the prefix "rel" is provided
+    #
+    # Example (triggering the build):
+    # git tag rel123
+    # git push origin rel123
+    #
+    # Example (will not trigger build):
+    # git tag v123
+    # git push origin v123
 on:
-  push:
-    branches: [unit_testing_with_github_actions]
-#    tags:
-#    - 'rel*'
+  create:
+    tags:
+    - 'rel*'
 
 jobs:
   gradle:
@@ -18,8 +30,7 @@ jobs:
       matrix:
           # the following defines different platforms to target for different actions
           # os: [ubuntu-latest, macos-latest, windows-latest]
-          # ubuntu-latest,
-        os: [windows-latest]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -78,6 +89,7 @@ jobs:
 #          echo "prevtag=$prevtag" >> $GITHUB_OUTPUT
 #          echo "line_count=$line_count" >> $GITHUB_OUTPUT
 
+      # https://github.com/ncipollo/release-action
       - uses: ncipollo/release-action@v1
         with:
           name: ${{ env.GITHUB_REF_NAME }}
