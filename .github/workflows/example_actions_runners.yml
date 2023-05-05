@@ -21,10 +21,18 @@ jobs:
         #   windows-latest = windows-2022
         #   ubuntu-latest = ubuntu-22.04
         #   macos-latest = macos-12
+        #   macos-latest-xl = macos-12-xl <- This is a 12-core per-minute processing cost
+        #   ubuntu-18.04 is deprecated; demonstrated for legacy use
         #
-        #   Additional details at https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#choosing-github-hosted-runners
-        os: [windows-latest, windows-2019, ubuntu-18.04, macos-13, macos-12, macos-11]
-        # os: [windows-latest]
+        #   Additional details at
+        #   https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#choosing-github-hosted-runners
+        #
+        #   - There are also larger runners
+        #     (https://docs.github.com/en/actions/using-github-hosted-runners/using-larger-runners) if more are needed
+        #   - There exists an option for self-hosted runners which can leverage runners hosted outside GitHub.  This
+        #     includes multiple operating systems and architectures (x64, ARM64, and ARM32).
+        #     See https://docs.github.com/en/actions/using-github-hosted-runners/using-larger-runners for more details.
+        os: [windows-latest, windows-2019, ubuntu-20.04, ubuntu-18.04, macos-13, macos-12, macos-11]
     runs-on: ${{ matrix.os }}
 
     steps:
