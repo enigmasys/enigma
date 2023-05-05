@@ -2,8 +2,6 @@
 # Prototype to demonstrate running a build release
 #################################################################
 
-# Test
-
 name: Build and Run Tests
 
 on:
