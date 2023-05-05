@@ -6,11 +6,7 @@ name: Build and Run Tests
 
 on:
   push:
-    # only run on branch "unit_testing_with_github_actions"
     branches: [unit_testing_with_github_actions]
-
-    #  pull_request:
-    #    branches: [unit_testing_with_github_actions]
 
 jobs:
   gradle:
@@ -26,6 +22,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: unit_testing_with_github_actions
       - name: Set up JDK ${{ env.java_version }}
         uses: actions/setup-java@v3
         with:
