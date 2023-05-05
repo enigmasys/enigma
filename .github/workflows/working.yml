@@ -16,7 +16,7 @@ on:
     #    branches: [unit_testing_with_github_actions]
 
 jobs:
-  gradle:
+  test_action:
     env:
       java_version: 17
     strategy:
