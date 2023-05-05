@@ -2,6 +2,8 @@
 # Working example to validate different steps
 #################################################################
 
+# Testing with tag
+
 name: working-example
 
 on:
