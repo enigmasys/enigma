@@ -10,7 +10,7 @@ on:
   push:
     # run this when a tag with "test" as a prefix is created
     tags:
-      - test*
+      - test.*
     # only run on branch "unit_testing_with_github_actions"
     # branches: [unit_testing_with_github_actions]
 
