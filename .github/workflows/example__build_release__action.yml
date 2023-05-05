@@ -95,5 +95,5 @@ jobs:
           name: ${{ env.GITHUB_REF_NAME }}
           tag: ${{ env.GITHUB_REF_NAME }}
           artifacts: "build/libs/leap_cli.jar"
-          bodyFile: "body.log"
+#          bodyFile: "body.log"
           token: ${{ secrets.GITHUB_TOKEN }}
