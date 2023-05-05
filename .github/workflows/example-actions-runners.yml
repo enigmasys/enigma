@@ -12,7 +12,9 @@ on:
     branches: [unit_testing_with_github_actions]
 
 jobs:
-  echo-on-runners:
+  echo_on_runners:
+    env:
+      java_version: 17
     strategy:
       matrix:
         #   GitHub-hosted runners as of 5/5/23
@@ -22,7 +24,6 @@ jobs:
         #
         #   Additional details at https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#choosing-github-hosted-runners
         os: [windows-latest, windows-2019, ubuntu-latest, ubuntu-18.04, macos-13, macos-12, macos-11]
-
     runs-on: ${{ matrix.os }}
 
     steps:
