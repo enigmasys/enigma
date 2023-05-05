@@ -2,7 +2,7 @@
 # Prototype to demonstrate running a build release
 #################################################################
 
-name: Build and Run Tests
+name: Releases
 
 #on:
 #  push:
@@ -50,19 +50,19 @@ jobs:
           distribution: oracle
           cache: gradle
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-gradle
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/gradle-wrapper.properties') }} # key for this gradle instance in cache
-          restore-keys: | # keys to use in case the provided key doesn't hit the cache
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+#      - name: Cache Gradle packages
+#        uses: actions/cache@v3
+#        env:
+#          cache-name: cache-gradle
+#        with:
+#          path: |
+#            ~/.gradle/caches
+#            ~/.gradle/wrapper
+#          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/gradle-wrapper.properties') }} # key for this gradle instance in cache
+#          restore-keys: | # keys to use in case the provided key doesn't hit the cache
+#            ${{ runner.os }}-build-${{ env.cache-name }}-
+#            ${{ runner.os }}-build-
+#            ${{ runner.os }}-
 
 #      - name: Validate Gradle Wrapper
 #        uses: gradle/wrapper-validation-action@v1
@@ -95,13 +95,12 @@ jobs:
 
       # https://github.com/ncipollo/release-action
 
-      - name: check_outputs
-        run: ls secretapp
+#      - name: check_outputs
+#        run: ls secretapp
 
-#      - uses: ncipollo/release-action@v1
-#        with:
-#          name: ${{ env.GITHUB_REF_NAME }}
-#          tag: ${{ env.GITHUB_REF_NAME }}
-#          artifacts: "build/libs/leap_cli.jar"
-##          bodyFile: "body.log"
-#          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: ncipollo/release-action@v1
+        with:
+          name: ${{ env.GITHUB_REF_NAME }}
+          tag: ${{ env.GITHUB_REF_NAME }}
+          artifacts: "leap_cli.jar"
+          token: ${{ secrets.GITHUB_TOKEN }}
