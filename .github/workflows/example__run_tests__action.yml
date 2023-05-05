@@ -32,7 +32,7 @@ jobs:
           distribution: 'temurin'
 
       # GitHub Policy: up to 10GB in caches w/removal after 7 days of no access.
-      # The following caches the grandle instance for later use
+      # The following caches the gradle instance for later use
       - name: Cache Gradle packages
         uses: actions/cache@v3
         env:
