@@ -2,15 +2,15 @@
 # Working example to validate different steps
 #################################################################
 
-name: Working Example
+name: working-example
 
 on:
   push:
     # run this when a tag with "test" as a prefix is created
     tags:
-      - test.*
+      - test*
     # only run on branch "unit_testing_with_github_actions"
-    branches: [unit_testing_with_github_actions]
+    # branches: [unit_testing_with_github_actions]
 
     #  pull_request:
     #    branches: [unit_testing_with_github_actions]
@@ -29,6 +29,5 @@ jobs:
 
     steps:
       - name: noop
-        run: |
-          echo "noop"
+        run: echo noop
 
