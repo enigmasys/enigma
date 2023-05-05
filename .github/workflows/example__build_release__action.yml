@@ -43,35 +43,35 @@ jobs:
           fetch-depth: 0
           ref: unit_testing_with_github_actions
 
-#      - name: Set up JDK ${{ env.java_version }}
-#        uses: actions/setup-java@v3
-#        with:
-#          java-version: '${{ env.java_version }}'
-#          distribution: oracle
-#          cache: gradle
+      - name: Set up JDK ${{ env.java_version }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: '${{ env.java_version }}'
+          distribution: oracle
+          cache: gradle
 
-#      - name: Cache Gradle packages
-#        uses: actions/cache@v3
-#        env:
-#          cache-name: cache-gradle
-#        with:
-#          path: |
-#            ~/.gradle/caches
-#            ~/.gradle/wrapper
-#          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/gradle-wrapper.properties') }} # key for this gradle instance in cache
-#          restore-keys: | # keys to use in case the provided key doesn't hit the cache
-#            ${{ runner.os }}-build-${{ env.cache-name }}-
-#            ${{ runner.os }}-build-
-#            ${{ runner.os }}-
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-gradle
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/gradle-wrapper.properties') }} # key for this gradle instance in cache
+          restore-keys: | # keys to use in case the provided key doesn't hit the cache
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
 #      - name: Validate Gradle Wrapper
 #        uses: gradle/wrapper-validation-action@v1
 #
-#      - name: Build with Gradle
-#        uses: gradle/gradle-build-action@v2
-#        with:
-#          arguments: bootJar
-#          gradle-version: 8.0.2
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: bootJar
+          gradle-version: 8.0.2
 
 #      - name: Get semantic tag version and release notes from commit messages
 #        id: tag
@@ -98,10 +98,10 @@ jobs:
       - name: check_outputs
         run: ls
 
-      - uses: ncipollo/release-action@v1
-        with:
-          name: ${{ env.GITHUB_REF_NAME }}
-          tag: ${{ env.GITHUB_REF_NAME }}
-          artifacts: "build/libs/leap_cli.jar"
-#          bodyFile: "body.log"
-          token: ${{ secrets.GITHUB_TOKEN }}
+#      - uses: ncipollo/release-action@v1
+#        with:
+#          name: ${{ env.GITHUB_REF_NAME }}
+#          tag: ${{ env.GITHUB_REF_NAME }}
+#          artifacts: "build/libs/leap_cli.jar"
+##          bodyFile: "body.log"
+#          token: ${{ secrets.GITHUB_TOKEN }}
