@@ -100,7 +100,7 @@ jobs:
 
       - uses: ncipollo/release-action@v1
         with:
-          name: ${{ env.GITHUB_REF_NAME || "test" }}
-          tag: ${{ env.GITHUB_REF_NAME || "test"  }}
+          name: ${{ env.GITHUB_REF_NAME }}
+          tag: ${{ env.GITHUB_REF_NAME }}
           artifacts: "leap_cli.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
