@@ -12,7 +12,7 @@ on:
     tags:
       - test.*
     # only run on branch "unit_testing_with_github_actions"
-    # branches: [unit_testing_with_github_actions]
+    branches: [unit_testing_with_github_actions]
 
     #  pull_request:
     #    branches: [unit_testing_with_github_actions]
