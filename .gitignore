@@ -7,7 +7,6 @@ build/
 
 ### Enigma Specific File Extensions...
 *.properties
-*.yml
 *.env
 
 
@@ -46,7 +45,6 @@ out/
 /output/
 /outputdat/
 /outputFile/
-/src-to-delete/
 /upload/
 /gradle/wrapper/gradle-wrapper.jar
 /gradlew
