@@ -17,23 +17,8 @@ jobs:
       java_version: 17
     strategy:
       matrix:
-        # | Keyword                | Distribution                     | Available Versions                                                                    |
-        # |------------------------|----------------------------------|---------------------------------------------------------------------------------------|
-        # | temurin                | Eclipse Temurin                  | 8, 11, 16, 17, 18, 19, 20                                                             |
-        # | zulu                   | Azul Zulu OpenJDK                | STS: 9, 10, 12, 14, 16, 18, 19, and 20 EA: 21 LTS: 6, 7, 8, 11, and 17 MTS: 13 and 15 |
-        # | liberica               | Liberica JDK                     | LTS: 8, 11, and 17 Other: 9, 10, 12, 13, 14, 15, 16, 18, 19, and 20                   |
-        # | microsoft              | Microsoft Build of OpenJDK       | 8, 11, 16, and 17                                                                     |
-        # | corretto               | Amazon Corretto Build of OpenJDK | Non-LTS: 20 Other: 8, 11, and 17                                                      |
-        # | semeru                 | IBM Semeru Runtime Open Edition  | LTS: 8, 11, 17 Other: 16 and 18                                                       |
-        # | oracle                 | Oracle JDK                       | https://www.oracle.com/java/technologies/downloads/archive/                           |
-        # | *adopt or adopt-hotspot | AdoptOpenJDK Hotspot             | Migrated to Temurin                                                                   |
-        # | *adopt-openj9           | AdoptOpenJDK OpenJ9              | Migrated to Temurin                                                                   |
-        #   GitHub-supported Java versions as of 5/5/23
-        # major-versions: [8, 11, 16, 17]
-        # specific-versions: [17.0, 11.0, 11.0.4, 8.0.232, 8.0.282+8]
-        # early-access-versions: [15-ea, 15.0.0-ea, 15.0.0-ea.2, 15.0.0+2-ea]
-        distribution: ['microsoft', 'oracle']
-        java: ['8', '11', '17']
+        distribution: [ 'zulu', 'temurin' ]
+        java: [ '8', '11' ]
         os: [windows-latest]
     runs-on: ${{ matrix.os }}
     name: Using Java ${{ matrix.java }} on ${{ distribution }}
