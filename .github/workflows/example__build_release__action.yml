@@ -6,9 +6,9 @@ name: Build and Run Tests
 
 on:
   push:
-#    branches: [unit_testing_with_github_actions]
-    tags:
-    - 'rel*'
+    branches: [unit_testing_with_github_actions]
+#    tags:
+#    - 'rel*'
 
 jobs:
   gradle:
@@ -58,25 +58,25 @@ jobs:
           arguments: bootJar
           gradle-version: 8.0.2
 
-      - name: Get semantic tag version and release notes from commit messages
-        id: tag
-        run: |
-          curtag=${GITHUB_REF_NAME}
-          major_minor=$(echo "$curtag" | cut -d'.' -f1-2)
-          patch=$(echo "$curtag" | cut -d'.' -f3)
-          # avoid empty patch number
-          [ -n "$patch" ] && ((patch--)) || patch=".x"
-          prevtag="${major_minor}.${patch}"
-          echo "" > body.log
-          if git tag | grep $prevtag ; then
-            git log -q ${curtag}...${prevtag} --pretty="- %s" -q --no-color >> body.log
-          else
-            git log --pretty="- %s" -q --no-color >> body.log
-          fi
-          line_count=$(cat body.log | wc -l)
-          echo "curtag=$curtag" >> $GITHUB_OUTPUT
-          echo "prevtag=$prevtag" >> $GITHUB_OUTPUT
-          echo "line_count=$line_count" >> $GITHUB_OUTPUT
+#      - name: Get semantic tag version and release notes from commit messages
+#        id: tag
+#        run: |
+#          curtag=${GITHUB_REF_NAME}
+#          major_minor=$(echo "$curtag" | cut -d'.' -f1-2)
+#          patch=$(echo "$curtag" | cut -d'.' -f3)
+#          # avoid empty patch number
+#          [ -n "$patch" ] && ((patch--)) || patch=".x"
+#          prevtag="${major_minor}.${patch}"
+#          echo "" > body.log
+#          if git tag | grep $prevtag ; then
+#            git log -q ${curtag}...${prevtag} --pretty="- %s" -q --no-color >> body.log
+#          else
+#            git log --pretty="- %s" -q --no-color >> body.log
+#          fi
+#          line_count=$(cat body.log | wc -l)
+#          echo "curtag=$curtag" >> $GITHUB_OUTPUT
+#          echo "prevtag=$prevtag" >> $GITHUB_OUTPUT
+#          echo "line_count=$line_count" >> $GITHUB_OUTPUT
 
       - uses: ncipollo/release-action@v1
         with:
