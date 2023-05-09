@@ -1,5 +1,4 @@
 package common.config
-
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -7,21 +6,22 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
-import org.springframework.context.annotation.Primary
+import org.springframework.beans.factory.annotation.Qualifier
+
 
 @Configuration
-class GenericWebClient : ClientConfig {
+class WebGMEClient : ClientConfig {
     val logger = LoggerFactory.getLogger(this::class.java)
 
-    @Value("\${base_url:https://premonition.azurewebsites.net/}")
-    private lateinit var baseUrl: String
+    @Value("\${cliclient.taxonomyServiceUrl:https://wellcomewebgme.centralus.cloudapp.azure.com12}")
+    private lateinit var WebGME_URL: String
 
-    @Bean
-    @Primary
+    @Bean(name = ["WebGMEWebClient"])
+//    @Qualifier("WebGMEWebClient")
     override fun apiWebClient(): WebClient {
         logger.debug("Calling the Generic WebClient...")
         return WebClient.builder()
-            .baseUrl(baseUrl)
+            .baseUrl(WebGME_URL)
             .clientConnector(
                 ReactorClientHttpConnector(
                     HttpClient.create().followRedirect(true)

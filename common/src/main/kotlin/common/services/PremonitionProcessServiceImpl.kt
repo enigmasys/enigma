@@ -23,6 +23,10 @@ class PremonitionProcessServiceImpl(
     var apiVersion: String = "/v2"
 
     fun getListofProcesses(): ProcessOwned? {
+//        var token = _token
+//        if(token == null) {
+//            token = authService.getAuthToken()
+//        }
         val token = authService.getAuthToken()
         val myRequest = webClient.get()
 //            .uri(apiVersion+"/Process/ListOwnedProcesses")

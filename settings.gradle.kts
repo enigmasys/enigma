@@ -2,7 +2,8 @@ rootProject.name = "enigma"
 include("common")
 include("secretapp")
 include("command")
-
+include("api")
+include("client")
 
 
 val archivaHostId: String? by settings
@@ -22,3 +23,5 @@ dependencyResolutionManagement {
         }
     }
 }
+include("client")
+include("client")

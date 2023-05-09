@@ -1,0 +1,31 @@
+package edu.vanderbilt.enigma.client
+import command.*
+import org.springframework.boot.CommandLineRunner
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+import org.springframework.context.annotation.ComponentScan
+import picocli.CommandLine
+
+@SpringBootApplication
+@ComponentScan(basePackages = ["command","common"])
+class ClientApp
+    (
+    private val generateEnigmaCommand: EnigmaCommand,
+    private val generateProcessCmd: ProcessCmdv1,
+    private val generateDownloadCmdv1: DownloadCmdv1
+
+//	private val generateDevCmd: DevCmd
+
+): CommandLineRunner
+{
+    override fun run(vararg args: String?) {
+        CommandLine(generateEnigmaCommand)
+            .addSubcommand(generateProcessCmd)
+            .addSubcommand(generateDownloadCmdv1)
+            .execute(*args)
+    }
+}
+
+fun main(args: Array<String>) {
+    runApplication<ClientApp>(*args)
+}

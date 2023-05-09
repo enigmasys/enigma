@@ -15,6 +15,7 @@ class LogFilter {
             return ExchangeFilterFunction.ofRequestProcessor { clientRequest ->
                 logger.debug("==================================================")
                 logger.debug("Request: {} {}", clientRequest.method(), clientRequest.url())
+                logHeaders(clientRequest)
                 logger.debug("==================================================")
                 Mono.just(clientRequest)
             }

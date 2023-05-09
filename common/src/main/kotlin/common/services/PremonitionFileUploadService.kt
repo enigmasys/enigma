@@ -22,7 +22,7 @@ class PremonitionFileUploadService(
     fun uploadFile(resource: Resource, uploadURL: String): Mono<HttpStatus> {
         val token = authService.getAuthToken()
         val url =
-            UriComponentsBuilder.fromHttpUrl(uploadURL).build().toUri()
+            UriComponentsBuilder.fromHttpUrl(uploadURL).build(false).toUri()
         return webClient.post()
             .uri(url)
             .headers { it.setBearerAuth(token) }
@@ -43,7 +43,7 @@ class PremonitionFileUploadService(
         val token = authService.getAuthToken()
 
         val url =
-            UriComponentsBuilder.fromHttpUrl(uploadURL).build().toUri()
+            UriComponentsBuilder.fromHttpUrl(uploadURL).build(false).toUri()
         val builder = MultipartBodyBuilder()
         builder.part("file", multipartFile.resource)
         return webClient.post()
