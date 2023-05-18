@@ -7,12 +7,22 @@ val archivaPassword: String? by project
 val archivaHostId: String? by project
 val archivaPort: String? by project
 
+//
+//plugins {
+//    id("org.springframework.boot") version "2.6.3"
+//    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+//    kotlin("jvm") version "1.6.10"
+//    kotlin("plugin.spring") version "1.6.10"
+//    id("maven-publish")
+//
+//}
+
 
 plugins {
-    id("org.springframework.boot") version "2.6.3"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.spring") version "1.6.10"
+    id("org.springframework.boot") version "3.0.6"
+    id("io.spring.dependency-management") version "1.1.0"
+    kotlin("jvm") version "1.7.22"
+    kotlin("plugin.spring") version "1.7.22"
     id("maven-publish")
 
 }
@@ -23,19 +33,34 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
 
     implementation(project(":common"))
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.0.6")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.21")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.21")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.1")
+    implementation("info.picocli:picocli:4.7.3")
+    implementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+
+//
+//
+//
+//    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+//    implementation("org.jetbrains.kotlin:kotlin-reflect")
+//    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+//    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.0.6")
 
 
-    implementation ("info.picocli:picocli:4.6.2")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.6")
+//    implementation ("info.picocli:picocli:4.6.2")
+//    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.6")
 
-    implementation("junit:junit:4.13.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+//    implementation("junit:junit:4.13.1")
+//    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
+//    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 }
 
 tasks.getByName<Test>("test") {
@@ -45,7 +70,7 @@ tasks.getByName<Test>("test") {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 

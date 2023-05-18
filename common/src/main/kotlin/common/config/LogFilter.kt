@@ -32,8 +32,10 @@ class LogFilter {
         }
 
         private fun logStatus(response: ClientResponse) {
-            val status: HttpStatus = response.statusCode()
-            logger.debug("Returned status code {} ({})", status.value(), status.reasonPhrase)
+//            val status: HttpStatus = response.statusCode()
+            val status = response.statusCode()
+
+            logger.debug("Returned status code {} ({})", status.value(), status.toString())
         }
 
 

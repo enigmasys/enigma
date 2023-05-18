@@ -11,12 +11,15 @@ val archivaPort: String? by project
 
 
 plugins {
-    id("org.springframework.boot") version "2.6.3"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.spring") version "1.6.10"
+    id("org.springframework.boot") version "3.0.6"
+    id("io.spring.dependency-management") version "1.1.0"
+    kotlin("jvm") version "1.7.22"
+    kotlin("plugin.spring") version "1.7.22"
     id("maven-publish")
 }
+
+java.sourceCompatibility = JavaVersion.VERSION_17
+//java.targetCompatibility = JavaVersion.VERSION_17
 
 group = "edu.vanderbilt"
 version = "0.0.1-SNAPSHOT"
@@ -24,24 +27,24 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
 
 //    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.6")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    implementation("com.azure:azure-storage-blob:12.14.2")
-    implementation("info.picocli:picocli:4.6.2")
-    implementation("junit:junit:4.13.1")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.0.6")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.21")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.21")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.1")
+    implementation("com.azure:azure-storage-blob:12.22.0")
+    implementation("info.picocli:picocli:4.7.3")
+    implementation("junit:junit:4.13.2")
 
-    implementation("com.microsoft.azure:msal4j:1.11.3")
-    implementation("com.microsoft.azure:msal4j-persistence-extension:1.1.0")
-    implementation("com.networknt:json-schema-validator:1.0.71")
+    implementation("com.microsoft.azure:msal4j:1.13.8")
+    implementation("com.microsoft.azure:msal4j-persistence-extension:1.2.0")
+    implementation("com.networknt:json-schema-validator:1.0.81")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("io.projectreactor:reactor-test")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.0.6")
+    testImplementation("io.projectreactor:reactor-test:3.5.6")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
 
 
 }
@@ -55,7 +58,7 @@ tasks.getByName<Test>("test") {
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
