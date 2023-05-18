@@ -294,16 +294,24 @@ class TaxonomyInfoService(
     }
 
     @OptIn(ExperimentalTime::class)
-    fun uploadToRepository(repositoryID: String, uploadDir: Path, metadataFilePath: Path?) {
+    fun uploadToRepository(repositoryID: String, uploadDir: Path, metadataFilePath: Path?, displayName : String? = null) {
         val observationMapper = jacksonObjectMapper()
         var rawData: TaxonomyData? = null
+        // Read the metadata file
         metadataFilePath?.let {
             rawData = observationMapper.readValue(it.toFile(), TaxonomyData::class.java)
         }
+
+        displayName?.let {
+            rawData?.displayName = displayName
+        }
+
         val fileinfo = FileUploader.getMapofRelativeAndAbsolutePath(uploadDir.toString())
         val tmpdirUUID = UUID.randomUUID().toString()
         val listofFiles = fileinfo.keys.map{ "$tmpdirUUID/$it" }.toList()
+
         var tmpAppendMetadata = AppendMetadata(filenames = listofFiles, metadata = rawData!!)
+
         println(tmpAppendMetadata)
 
         var response =

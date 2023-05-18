@@ -43,16 +43,18 @@ class UploadCmdv1(
 
     @CommandLine.Option(required = true, names=["-p","--process","-repo"], description = ["Repository ID (a.k.a. ProcessID) of the repository"])
     var processID: String? = null
-//
-//    @CommandLine.Option(required = false, names=["-o","--oid"], description = ["Observer ID"])
-//    var observerID:String? = null
 
     @CommandLine.Option(required = false, names=["-f"], description = ["JSON file path of metadata for the record"])
     var metadata:String? = null
 
+    @CommandLine.Option(required = false, names=["-m","-msg"], description = ["Add a description to the uploads"])
+    var displayName:String? = null
+
 
     @CommandLine.Option(names = ["-h", "--help"], usageHelp = true, description = ["Helps in uploading of records to a repository."])
     var help = false
+
+
 
     @CommandLine.ParentCommand
     val parent: EnigmaCommand? = null
@@ -82,7 +84,7 @@ class UploadCmdv1(
                 TaxonomyInfoServceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
                 processID?.let {
                     logger.info("$it ::  $uploadDir :: $jsonFilePath")
-                    TaxonomyInfoServceObj.uploadToRepository(it, uploadDir, jsonFilePath)
+                    TaxonomyInfoServceObj.uploadToRepository(it, uploadDir, jsonFilePath, displayName)
                 }
                 println("Upload Complete")
                 println("=====================================")
