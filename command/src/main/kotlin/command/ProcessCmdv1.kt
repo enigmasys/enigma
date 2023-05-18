@@ -50,19 +50,19 @@ class ProcessCmdv1(
                 var result: Any = Any()
 //                taxonomyServiceObj.initTaxonomyInfoService("AllLeap+TaxonomyBootcamp", "master")
                 taxonomyServiceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
-//                result = taxonomyServiceObj.getListofRepositories() as HashMap<*, *>
-//                println("=====================================================================")
-//                println("Repository ID                         | Content Type | Description")
-//                println("=====================================================================")
-//                if (result is HashMap<*, *>) {
-//                    result.forEach { (key, value) ->
-//                        value as List<*>
-//                        value.forEach {
-//                            (it as Pair<* , *> )
-//                                println("${it.first}  |  " + key.toString() + "  |  ${it.second} ")
-//                        }
-//                    }
-//                }
+                result = taxonomyServiceObj.getListofRepositories() as HashMap<*, *>
+                println("=====================================================================")
+                println("Repository ID                         | Content Type | Description")
+                println("=====================================================================")
+                if (result is HashMap<*, *>) {
+                    result.forEach { (key, value) ->
+                        value as List<*>
+                        value.forEach {
+                            (it as Pair<* , *> )
+                                println("${it.first}  |  " + key.toString() + "  |  ${it.second} ")
+                        }
+                    }
+                }
                 println("=============================================")
 //                println(taxonomyServiceObj.getContentTypeOfRepository())
 //                println(taxonomyServiceObj.getPathofContentType())
@@ -71,42 +71,42 @@ class ProcessCmdv1(
                 //get contentype path
 
 
-                // download file from a repository and index hashmap
-                var mapOfRepoIndexList = hashMapOf<String,ArrayList<String>>()
-//                mapOfRepoIndexList["87dc1607-5d63-4073-9424-720f86ecef43"] = arrayListOf("1_0","2_0","3_0")
-
-//                mapOfRepoIndexList["6e9da372-8cc7-4b11-bf85-23ed9d83a301"] = arrayListOf("54_0","55_0","53_0","9_0","15_0","14_0","12_0","10_0")
+//                // download file from a repository and index hashmap
+//                var mapOfRepoIndexList = hashMapOf<String,ArrayList<String>>()
+////                mapOfRepoIndexList["87dc1607-5d63-4073-9424-720f86ecef43"] = arrayListOf("1_0","2_0","3_0")
 //
-                mapOfRepoIndexList["6e9da372-8cc7-4b11-bf85-23ed9d83a301"] = arrayListOf("54_0","55_0","53_0")
-
-//                https://wellcomewebgme.centralus.cloudapp.azure.com/routers/Search/AllLeap%2BTaxonomyBootcamp/branch/master/%2Ft/artifacts/6e9da372-8cc7-4b11-bf85-23ed9d83a301/download?ids=%5B%2254_0%22%2C%2255_0%22%2C%2253_0%22%2C%229_0%22%2C%2215_0%22%2C%2214_0%22%2C%2212_0%22%2C%2210_0%22%5D
-
-
-                runBlocking {
-                    val contentType = taxonomyServiceObj.getContentTypeOfRepository("87dc1607-5d63-4073-9424-720f86ecef43")
-                    val tpath = taxonomyServiceObj.getPathofContentType(contentType)
-                    println("contentType: $contentType tpath: $tpath")
-
-                    val differed = mapOfRepoIndexList.map { (repoId, indexList) ->
-                        println("repoId: $repoId indexList: $indexList")
-                        val tmp = indexList.joinToString(
-                            prefix = "[",
-                            postfix = "]",
-                            separator = ","
-                        ) { "\"$it\"" }
-                            val deferred = async {
-                                // Will this be thread safe?
-                                taxonomyServiceObj.downloadFile(repoId, tmp, tpath, "./newResult")
-                            }
-                            deferred
-                    }
-                    differed.forEach { it.await() }
-
-//                    val deferred = async {
-//                        taxonomyServiceObj.downloadFile( "87dc1607-5d63-4073-9424-720f86ecef43","[\"1_0\"]",tpath, "./newResult")
+////                mapOfRepoIndexList["6e9da372-8cc7-4b11-bf85-23ed9d83a301"] = arrayListOf("54_0","55_0","53_0","9_0","15_0","14_0","12_0","10_0")
+////
+//                mapOfRepoIndexList["6e9da372-8cc7-4b11-bf85-23ed9d83a301"] = arrayListOf("54_0","55_0","53_0")
+//
+////                https://wellcomewebgme.centralus.cloudapp.azure.com/routers/Search/AllLeap%2BTaxonomyBootcamp/branch/master/%2Ft/artifacts/6e9da372-8cc7-4b11-bf85-23ed9d83a301/download?ids=%5B%2254_0%22%2C%2255_0%22%2C%2253_0%22%2C%229_0%22%2C%2215_0%22%2C%2214_0%22%2C%2212_0%22%2C%2210_0%22%5D
+//
+//
+//                runBlocking {
+//                    val contentType = taxonomyServiceObj.getContentTypeOfRepository("87dc1607-5d63-4073-9424-720f86ecef43")
+//                    val tpath = taxonomyServiceObj.getPathofContentType(contentType)
+//                    println("contentType: $contentType tpath: $tpath")
+//
+//                    val differed = mapOfRepoIndexList.map { (repoId, indexList) ->
+//                        println("repoId: $repoId indexList: $indexList")
+//                        val tmp = indexList.joinToString(
+//                            prefix = "[",
+//                            postfix = "]",
+//                            separator = ","
+//                        ) { "\"$it\"" }
+//                            val deferred = async {
+//                                // Will this be thread safe?
+//                                taxonomyServiceObj.downloadFile(repoId, tmp, tpath, "./newResult")
+//                            }
+//                            deferred
 //                    }
-//                    deferred.await()
-                }
+//                    differed.forEach { it.await() }
+//
+////                    val deferred = async {
+////                        taxonomyServiceObj.downloadFile( "87dc1607-5d63-4073-9424-720f86ecef43","[\"1_0\"]",tpath, "./newResult")
+////                    }
+////                    deferred.await()
+//                }
 
 
 

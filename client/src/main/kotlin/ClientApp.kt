@@ -12,7 +12,8 @@ class ClientApp
     (
     private val generateEnigmaCommand: EnigmaCommand,
     private val generateProcessCmd: ProcessCmdv1,
-    private val generateDownloadCmdv1: DownloadCmdv1
+    private val generateDownloadCmdv1: DownloadCmdv1,
+    private val generateUploadCmdv1: UploadCmdv1
 
 //	private val generateDevCmd: DevCmd
 
@@ -22,6 +23,7 @@ class ClientApp
         CommandLine(generateEnigmaCommand)
             .addSubcommand(generateProcessCmd)
             .addSubcommand(generateDownloadCmdv1)
+            .addSubcommand(generateUploadCmdv1)
             .execute(*args)
     }
 }

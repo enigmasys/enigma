@@ -60,7 +60,7 @@ class DownloadCmdv1(
     @CommandLine.Option(names = ["-h", "--help"], usageHelp = true, description = ["Helps in downloading of records from a repository."])
     var help = false
 
-    @CommandLine.Option(required = false, names=["-m","--metadata"], description = ["Download ONLY all metadata files (without the data files)"])
+    @CommandLine.Option(required = false, names=["-m","--metadata"], description = ["Download ONLY all metadata appendFiles (without the data appendFiles)"])
     var peek = false
 
     @CommandLine.ParentCommand
@@ -374,7 +374,7 @@ class DownloadCmdv1(
 //            }
 //
 //            it.data = tmpTaxonomyData.toList()
-//            val file = File(nFile)
+//            val file = AppendFile(nFile)
 //            val tmpDir = Paths.get(nFile).parent
 //
 //            if (Files.notExists(tmpDir))
