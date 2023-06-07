@@ -31,6 +31,8 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 import java.util.logging.Logger
 import kotlin.time.ExperimentalTime
@@ -305,13 +307,11 @@ class TaxonomyInfoService(
         displayName?.let {
             rawData?.displayName = displayName
         }
-
+        rawData?.displayName = rawData?.displayName ?: "Submission ${LocalDateTime.now()}"
         val fileinfo = FileUploader.getMapofRelativeAndAbsolutePath(uploadDir.toString())
         val tmpdirUUID = UUID.randomUUID().toString()
         val listofFiles = fileinfo.keys.map{ "$tmpdirUUID/$it" }.toList()
-
         var tmpAppendMetadata = AppendMetadata(filenames = listofFiles, metadata = rawData!!)
-
         println(tmpAppendMetadata)
 
         var response =
