@@ -21,15 +21,15 @@ import kotlin.io.path.notExists
 import kotlin.system.exitProcess
 
 @Component
-@CommandLine.Command(
+@Command(
     name = "download",
     aliases = ["pull"],
     mixinStandardHelpOptions = true,
 )
 @ComponentScan(basePackages = ["common","common.services.ObservationServiceImpl","common.services.PremonitionProcessServiceImpl","common.services.auth.AuthService"])
 class DownloadCmdv1(
-    private val ObservationDownloadServiceObj: ObservationServiceImpl,
-    private val ProcessServiceObj: PremonitionProcessServiceImpl,
+//    private val ObservationDownloadServiceObj: ObservationServiceImpl,
+//    private val ProcessServiceObj: PremonitionProcessServiceImpl,
     private val taxonomyServiceObj: TaxonomyInfoService,
     private val AuthServiceObj: AuthService,
 ): Callable<Int>

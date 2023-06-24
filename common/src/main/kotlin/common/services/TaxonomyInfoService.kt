@@ -60,7 +60,8 @@ class TaxonomyInfoService(
     }
 
     fun getCookie(): String {
-        return "webgme_aad=$aadToken; access_token=$webgmeAccesstoken ;"
+//        return "webgme_aad=$aadToken; access_token=$webgmeAccesstoken ;"
+        return "udcp_taxonomy_aad=$aadToken; access_token=$webgmeAccesstoken ;"
     }
 
     fun initTaxonomyInfoService(
@@ -140,7 +141,7 @@ class TaxonomyInfoService(
                 }
                 .bodyToFlux(DataBuffer::class.java)
 
-            println("Exiting out of downloadFile")
+//            println("Exiting out of downloadFile")
             when(fileName)
             {
                 "" -> fileName = UUID.randomUUID().toString()
@@ -179,19 +180,31 @@ class TaxonomyInfoService(
             )
         }
         var combinedresult: HashMap<String, ContentContent>? = hashMapOf()
+
+
+
         runBlocking {
             val results = contentTypeURLPair?.mapNotNull {
+//
+//                val artifactResponse = getContentRecordRequest(it.second, finalCookie)
+//                println(artifactResponse)
+
+
+
                 if (it.first in requestedContentType || requestedContentType.isEmpty()) {
-                    async {
+                    async{
                         val artifactResponse = getContentRecordRequest(it.second, finalCookie)
 //                        println("Artifact Response: $artifactResponse")
+//                        println("Artifact Response: ${it.first to artifactResponse}")
                         it.first to artifactResponse
+
                     }
                 } else {
                     null
                 }
             }
             val tmp = results?.awaitAll() ?: emptyList()
+//            val tmp = results?: emptyList()
             tmp.forEach { (contentType, content) ->
                 content?.let { combinedresult?.set(contentType, it) }
             }
@@ -206,9 +219,12 @@ class TaxonomyInfoService(
      * @param finalCookie The cookie used for authentication.
      * @return The information about the content in [ContentContent] format, or null if no content is found.
      */
-    private suspend fun getContentRecordRequest(contentURI: String, finalCookie: String): ContentContent? {
-//        https://wellcomewebgme.centralus.cloudapp.azure.com/routers/Search/AllLeap%2BTaxonomyBootcamp/branch/master/%2FH/artifacts/
-        val artifactResponse =
+  private suspend fun getContentRecordRequest(contentURI: String, finalCookie: String): ContentContent? {
+//    private fun getContentRecordRequest(contentURI: String, finalCookie: String): ContentContent? {
+        //        https://wellcomewebgme.centralus.cloudapp.azure.com/routers/Search/AllLeap%2BTaxonomyBootcamp/branch/master/%2FH/artifacts/
+//      println("Content URI: $contentURI")
+//        println("Final Cookie: $finalCookie")
+      val artifactResponse =
             webClient.get()
                 //                            .uri(it.second.encode())
                 .uri { uriBuilder: UriBuilder ->
@@ -219,8 +235,11 @@ class TaxonomyInfoService(
                 .header(HttpHeaders.COOKIE, finalCookie)
                 .retrieve()
                 .bodyToMono(ContentContent::class.java)
+//                .bodyToMono(String::class.java)
                 .awaitSingle()
-        return artifactResponse
+
+//        println(artifactResponse)
+        return artifactResponse as ContentContent
     }
 
     fun getDownloadURL(processID: String, index: String): String {
@@ -229,7 +248,7 @@ class TaxonomyInfoService(
 
         val contentTypeName = getContentTypeOfRepository(processID)
         val contentTypePath = getPathofContentType(contentTypeName)
-        println("Content Type Path: $contentTypePath" + "Content Type Name: $contentTypeName")
+//        println("Content Type Path: $contentTypePath" + "Content Type Name: $contentTypeName")
 
 
 //            val downloadURL = "https://wellcomewebgme.centralus.cloudapp.azure.com/routers/Dashboard/$encodedProjectID/branch/$encodedProjectBranch/$contentTypeRef/$processID/download?ids=$index"
@@ -310,22 +329,29 @@ class TaxonomyInfoService(
         rawData?.displayName = rawData?.displayName ?: "Submission ${LocalDateTime.now()}"
         val fileinfo = FileUploader.getMapofRelativeAndAbsolutePath(uploadDir.toString())
         val tmpdirUUID = UUID.randomUUID().toString()
-        val listofFiles = fileinfo.keys.map{ "$tmpdirUUID/$it" }.toList()
+
+//        val listofFiles = fileinfo.keys.map{ "$tmpdirUUID/$it" }.toList()
+        // FIX ME! Here we could remove the tmpdirUUID from the list of files
+        val listofFiles = fileinfo.keys.map { "$it" }.toList()
+
         var tmpAppendMetadata = AppendMetadata(filenames = listofFiles, metadata = rawData!!)
-        println(tmpAppendMetadata)
+//        println(tmpAppendMetadata)
 
         var response =
             appendMetadataToRepository(repositoryID, tmpAppendMetadata)
 
         val tmpurlInfo = jacksonObjectMapper().readValue(response, AppendResponse::class.java).appendFiles.associate {
             Pair(
-                it.name,
+                it.name.split("/").last(),
                 it.params.url
             )
         }
         // FIX ME: Here we need to get the new folder structure as a response from the appendMetadataToRepository call
         // and use that to upload the files
-        val tmpMap = fileinfo.keys.map { "$tmpdirUUID/$it" to it }.toMap()
+//        val tmpMap = fileinfo.keys.map { "$tmpdirUUID/$it" to it }.toMap()
+
+        val tmpMap = fileinfo.keys.map { "$it" to it }.toMap()
+
         val measureTime = measureTime {
             val MAX_CONCURRENT_UPLOADS = 10
             runBlocking {
@@ -339,6 +365,7 @@ class TaxonomyInfoService(
                         if (tmpurl != null) {
                             uploadSemaphore.withPermit {
                                 try {
+                                    logger.info("Uploading $filePath to $tmpurl")
                                     uploadBlob(tmpurl, filePath.toString())
                                 } catch (ex: IOException) {
                                     logger.info("Failed to upload $filePath: ${ex.message}")
@@ -377,11 +404,11 @@ class TaxonomyInfoService(
         val contentTypePath = getPathofContentType(contentTypeName)
         val finalCookie = getCookie()
 
-        println("Final Cookie: $finalCookie")
-
-        println("Content Type Path: $contentTypePath  " + "Content Type Name: $contentTypeName")
-        // add content to the body of the request
-        println("Content: $content")
+//        println("Final Cookie: $finalCookie")
+//
+//        println("Content Type Path: $contentTypePath  " + "Content Type Name: $contentTypeName")
+//        // add content to the body of the request
+//        println("Content: $content")
 
 
         val response = webClient.post()

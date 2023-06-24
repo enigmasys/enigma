@@ -13,6 +13,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
@@ -312,6 +313,7 @@ class ObservationServiceImpl(
             fileDownLoadMap.map { file ->
                 async(Dispatchers.IO) {
                     println("Downloading ${file.key} from ${file.value}")
+//                    val filePath = "$downloadDir/${file.key}"
                     val filePath = "$downloadDir/$index/$version/${file.key}"
                     val tmpDir = Paths.get(filePath).parent
                     if (Files.notExists(tmpDir))
@@ -362,8 +364,12 @@ class ObservationServiceImpl(
             }
             .headers { it.setBearerAuth(token) }
             .retrieve()
-            .onStatus(HttpStatus::is4xxClientError) { Mono.error(RuntimeException("4XX Error ${it.statusCode()}, ${it.bodyToMono(String::class.java)}")) }
-            .onStatus(HttpStatus::is5xxServerError) { Mono.error(RuntimeException("5XX Error ${it.statusCode()}, ${it.bodyToMono(String::class.java)}")) }
+            .onStatus(HttpStatusCode::is4xxClientError) { Mono.error(RuntimeException("4XX Error ${it.statusCode()}, ${it.bodyToMono(String::class.java)}")) }
+            .onStatus(HttpStatusCode::is5xxServerError) { Mono.error(RuntimeException("5XX Error ${it.statusCode()}, ${it.bodyToMono(String::class.java)}")) }
+//
+//
+//            .onStatus(HttpStatus::is4xxClientError) { Mono.error(RuntimeException("4XX Error ${it.statusCode()}, ${it.bodyToMono(String::class.java)}")) }
+//            .onStatus(HttpStatus::is5xxServerError) { Mono.error(RuntimeException("5XX Error ${it.statusCode()}, ${it.bodyToMono(String::class.java)}")) }
             .bodyToMono(PeekObservationResult::class.java)
         val result = response.share().block()
         return result

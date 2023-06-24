@@ -12,13 +12,17 @@ import common.services.TaxonomyInfoService
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
 
-@Component
+//@Component
 @CommandLine.Command(
     name = "process",
     aliases = ["proc", "repository", "repo"],
     mixinStandardHelpOptions = true,
 )
+@Component
+@ComponentScan(basePackages = ["common"])
 class ProcessCmdv1(
     private val taxonomyServiceObj: TaxonomyInfoService,
     private val authServiceObj: AuthService,

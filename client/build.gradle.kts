@@ -7,10 +7,10 @@ val archivaHostId: String? by project
 val archivaPort: String? by project
 
 plugins {
-    id("org.springframework.boot") version "3.0.6"
+    id("org.springframework.boot") version "3.1.1"
     id("io.spring.dependency-management") version "1.1.0"
-    kotlin("jvm") version "1.7.22"
-    kotlin("plugin.spring") version "1.7.22"
+    kotlin("jvm") version "1.8.22"
+    kotlin("plugin.spring") version "1.8.22"
     id("maven-publish")
 }
 
@@ -27,9 +27,18 @@ repositories {
 
 dependencies {
     implementation(project(":command"))
+    implementation(project(":common"))
     implementation("info.picocli:picocli:4.7.3")
+//    implementation("org.springframework.boot:spring-boot-starter-webflux:3.0.6")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.projectreactor:reactor-test")
 
-    implementation("org.springframework.boot:spring-boot-starter-webflux:3.0.6")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.21")
@@ -52,11 +61,10 @@ tasks.getByName<Jar>("jar") {
 }
 
 tasks.bootJar{
-    exclude("application.yml")
+//    exclude("application.yml")
     exclude("application-clientcredential.yml")
     exclude("application-passthrough.yml")
     archiveFileName.set("leap_cli.jar")
-
 }
 
 repositories {

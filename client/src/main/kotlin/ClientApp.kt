@@ -1,5 +1,8 @@
 package edu.vanderbilt.enigma.client
-import command.*
+import command.EnigmaCommand
+import command.DownloadCmdv1
+import command.ProcessCmdv1
+import command.UploadCmdv1
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
