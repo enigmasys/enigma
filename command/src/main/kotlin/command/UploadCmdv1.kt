@@ -1,6 +1,7 @@
 package command
 
 import common.services.TaxonomyInfoService
+import common.services.auth.AuthService
 import common.util.tryExtendPath
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -34,6 +35,7 @@ import kotlin.system.exitProcess
 @ComponentScan(basePackages = ["common"])
 class UploadCmdv1(
     private val TaxonomyInfoServceObj: TaxonomyInfoService,
+    private val AuthServiceObj: AuthService
 ): Callable<Int> {
 
     val logger = LoggerFactory.getLogger(this::class.java)
@@ -65,6 +67,12 @@ class UploadCmdv1(
     private val TAXONOMYBRANCH: String = "master123"
 
     override fun call(): Int  {
+
+        parent?.let { it ->
+            if (it.token?.length?.compareTo(0) ?:  0  > 0){
+                parent?.token?.let { it -> AuthServiceObj.setAuthToken(it) }
+            } }
+
         when{
             help -> exitProcess(0)
 

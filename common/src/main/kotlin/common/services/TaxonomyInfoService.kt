@@ -24,9 +24,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
-import java.io.IOException
-import java.io.Serializable
-import java.io.UncheckedIOException
+import java.io.*
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -35,6 +33,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 import java.util.logging.Logger
+import java.util.zip.ZipFile
+import java.util.zip.ZipInputStream
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
@@ -56,7 +56,11 @@ class TaxonomyInfoService(
 
     fun getTokens() {
         aadToken = authServiceObj.getAuthToken()
+                logger.info("aadToken: $aadToken")
+
         webgmeAccesstoken = getWebGMEToken().toString()
+
+//        logger.info("webgmeAccesstoken: $webgmeAccesstoken")
     }
 
     fun getCookie(): String {
@@ -162,12 +166,55 @@ class TaxonomyInfoService(
                 }
             }
             Files.move(destination, renamedPath, StandardCopyOption.REPLACE_EXISTING)
+            // unzip the file if it is a zip file
+            if (fileName.endsWith(".zip")) {
+                extractZipFile(renamedPath.toString(), dir)
+                Files.delete(renamedPath)
+            }
+
+
             println("Downloaded $renamedPath")
         } catch (e: Exception) {
             println("Error in downloading file: $e")
         }
     }
 
+
+
+    // Derived from: https://www.digitalocean.com/community/tutorials/java-unzip-file-example
+    fun extractZipFile(zipFilePath: String, destinationFolderPath: String) {
+        val buffer = ByteArray(1024)
+        val zipInputStream = ZipInputStream(FileInputStream(zipFilePath))
+        var zipEntry = zipInputStream.nextEntry
+
+        while (zipEntry != null) {
+            val entryFilePath = destinationFolderPath + File.separator + zipEntry.name
+            val entryFile = File(entryFilePath)
+
+            // Create directories if necessary
+            if (zipEntry.isDirectory) {
+                entryFile.mkdirs()
+            } else {
+                // Create parent directories if necessary
+                entryFile.parentFile?.mkdirs()
+
+                // Extract the file
+                val fileOutputStream = FileOutputStream(entryFile)
+                var length = zipInputStream.read(buffer)
+
+                while (length >= 0) {
+                    fileOutputStream.write(buffer, 0, length)
+                    length = zipInputStream.read(buffer)
+                }
+
+                fileOutputStream.close()
+            }
+
+            zipEntry = zipInputStream.nextEntry
+        }
+        zipInputStream.closeEntry()
+        zipInputStream.close()
+    }
 
     private fun fetchContentRepoMap(
         requestedContentType: List<String> = listOf(),

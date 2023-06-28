@@ -47,6 +47,10 @@ class ProcessCmdv1(
     private val TAXONOMYBRANCH: String = "master123"
 
     override fun call(): Int {
+        parent?.let { it ->
+            if (it.token?.length?.compareTo(0) ?:  0  > 0){
+                parent?.token?.let { it -> authServiceObj.setAuthToken(it) }
+            } }
         when {
             listofProcesses -> {
 //                val webgmeToken = getWebGMEToken()
