@@ -90,10 +90,15 @@ class UploadCmdv1(
                 println("=====================================")
                 println("Uploading records from $uploadDir to repository $processID")
                 TaxonomyInfoServceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
-                processID?.let {
-                    logger.info("$it ::  $uploadDir :: $jsonFilePath")
-                    TaxonomyInfoServceObj.uploadToRepository(it, uploadDir, jsonFilePath, displayName)
-                }
+
+                //Stress Test with 100 records
+
+//                for (i in 1..10) {
+                    processID?.let {
+                        logger.info("$it ::  $uploadDir :: $jsonFilePath")
+                        TaxonomyInfoServceObj.uploadToRepository(it, uploadDir, jsonFilePath, displayName)
+                    }
+//                }
                 println("Upload Complete")
                 println("=====================================")
             }

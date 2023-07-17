@@ -38,7 +38,8 @@ class PremonitionProcessServiceImpl(
         val retrievedResource: Mono<ProcessOwned> = myRequest
             .retrieve()
             .bodyToMono(ProcessOwned::class.java)
-        return retrievedResource.share().block()
+        val response = retrievedResource.share().block()
+        return response
     }
 
 

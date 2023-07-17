@@ -107,7 +107,11 @@ class DownloadCmdv1(
 //                val contentType = taxonomyServiceObj.getContentTypeOfRepository("87dc1607-5d63-4073-9424-720f86ecef43")
                val contentType = taxonomyServiceObj.getContentTypeOfRepository(processID)
                val tpath = taxonomyServiceObj.getPathofContentType(contentType)
-               println("contentType: $contentType tpath: $tpath")
+
+               println("=====================================")
+               println("Starting Download Operation")
+               println("=====================================")
+               println("contentType: $contentType")
                val differed = mapOfRepoIndexList.map { (repoId, indexList) ->
                    println("repoId: $repoId indexList: $indexList")
                    val tmp = indexList.joinToString(
@@ -179,7 +183,11 @@ class DownloadCmdv1(
 //                val contentType = taxonomyServiceObj.getContentTypeOfRepository("87dc1607-5d63-4073-9424-720f86ecef43")
                 val contentType = taxonomyServiceObj.getContentTypeOfRepository(processID)
                 val tpath = taxonomyServiceObj.getPathofContentType(contentType)
-                println("contentType: $contentType tpath: $tpath")
+
+                println("=====================================")
+                println("Starting Download Operation")
+                println("=====================================")
+                println("contentType: $contentType")
                 val differed = mapOfRepoIndexList.map { (repoId, indexList) ->
                     println("repoId: $repoId indexList: $indexList")
                     val tmp = indexList.joinToString(

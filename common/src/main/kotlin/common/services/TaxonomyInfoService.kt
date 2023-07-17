@@ -56,9 +56,14 @@ class TaxonomyInfoService(
 
     fun getTokens() {
         aadToken = authServiceObj.getAuthToken()
-                logger.info("aadToken: $aadToken")
-
+        //logger.debug("aadToken: $aadToken")
+        if (aadToken == "") {
+            throw Exception("AAD token is empty, If using Passthrough, Make sure to set the AAD token using -t option")
+        }
         webgmeAccesstoken = getWebGMEToken().toString()
+        if (webgmeAccesstoken == "") {
+            throw Exception("WebGME token is empty")
+        }
 
 //        logger.info("webgmeAccesstoken: $webgmeAccesstoken")
     }
@@ -140,7 +145,7 @@ class TaxonomyInfoService(
                     {
                         "" -> fileName = UUID.randomUUID().toString()
                     }
-                      println("Filename: $fileName")
+//                      println("Filename: $fileName")
                     Mono.empty()
                 }
                 .bodyToFlux(DataBuffer::class.java)
@@ -170,10 +175,11 @@ class TaxonomyInfoService(
             if (fileName.endsWith(".zip")) {
                 extractZipFile(renamedPath.toString(), dir)
                 Files.delete(renamedPath)
+                println("Downloaded to $dir")
             }
+            else
+                println("Downloaded $renamedPath")
 
-
-            println("Downloaded $renamedPath")
         } catch (e: Exception) {
             println("Error in downloading file: $e")
         }
@@ -389,7 +395,8 @@ class TaxonomyInfoService(
 
         val tmpurlInfo = jacksonObjectMapper().readValue(response, AppendResponse::class.java).appendFiles.associate {
             Pair(
-                it.name.split("/").last(),
+//                it.name.split("/").last(),
+                it.name,
                 it.params.url
             )
         }
@@ -416,6 +423,7 @@ class TaxonomyInfoService(
                                     uploadBlob(tmpurl, filePath.toString())
                                 } catch (ex: IOException) {
                                     logger.info("Failed to upload $filePath: ${ex.message}")
+                                    println("Failed to upload $filePath: ${ex.message}")
                                 }
                             }
                         }
@@ -434,11 +442,14 @@ class TaxonomyInfoService(
         }
 
         try {
-            logger.info("Uploading file: $uploadDir to $sasUrl")
+//            logger.info("Uploading file: $uploadDir to $sasUrl")
+            println("Uploading file: $uploadDir")
             var blobclient = BlobClientBuilder().endpoint(sasUrl).buildClient().uploadFromFile(uploadDir, true)
             logger.info("Finished Uploading $uploadDir with response ${blobclient.toString()}")
+            println("Finished uploading file: $uploadDir")
         } catch (ex: UncheckedIOException) {
             logger.info("Failed to upload from file ${ex.message}")
+            println("Failed to upload from file ${ex.message}")
         }
     }
 
