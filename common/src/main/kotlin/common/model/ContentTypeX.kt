@@ -8,6 +8,6 @@ data class ContentTypeX(
     val name: String,
     @JsonProperty("path")
     val path: String,
-    @JsonProperty("url")
-    val url: String
+//    @JsonProperty("url")
+//    val url: String
 )

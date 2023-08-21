@@ -10,6 +10,7 @@ import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLConnection
+import java.net.URLEncoder
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -19,6 +20,30 @@ class FileDownloader {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         @JvmStatic
         private val logger = LoggerFactory.getLogger(javaClass.enclosingClass)
+
+
+
+        fun encodeParameterAndQuery(url: String): String {
+            val uri = URL(url)
+            val protocol = uri.protocol
+            val host = uri.host
+            val path = uri.path
+            val query = uri.query
+
+//            val encodedPath = path.split("/").joinToString("/") {
+//                URLEncoder.encode(it, "UTF-8")
+//            }
+
+            val encodedPath = path.replace(" ", "%20")
+
+            val encodedUrl = StringBuilder()
+            encodedUrl.append(protocol).append("://").append(host).append(encodedPath)
+            if (query != null) {
+                encodedUrl.append("?").append(query)
+            }
+            return encodedUrl.toString()
+        }
+
 
         suspend fun downloadFile(url: String, destination: String) {
             withContext(Dispatchers.IO) {
@@ -30,7 +55,9 @@ class FileDownloader {
                     val isPresent = async { isAvailable(url, destination)}.await()
                     if (!isPresent) {
                         logger.info("Starting download to $destination")
-                        val urlConnection = URL(url).openConnection()
+                        logger.info("Downloading from $url")
+                        val encodedUrl = encodeParameterAndQuery(url)
+                        val urlConnection = URL(encodedUrl).openConnection()
                         val inputStream = BufferedInputStream(urlConnection.getInputStream())
 
 
@@ -44,6 +71,11 @@ class FileDownloader {
                         logger.info("Finished download to $destination")
                         outputStream.close()
                         inputStream.close()
+
+
+
+
+
                     }
 
                 } catch (e: Exception) {

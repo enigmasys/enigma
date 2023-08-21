@@ -128,11 +128,7 @@ class DownloadCmdv1(
                }
                differed.forEach { it.await() }
            }
-
-
-
        }
-
         else ->{
 
             var startObsIndex:String? =  obsIndex
@@ -198,7 +194,26 @@ class DownloadCmdv1(
                     val deferred = async {
                         // Will this be thread safe?
 //                        taxonomyServiceObj.downloadFile(repoId, tmp, tpath, "./newResult")
-                        taxonomyServiceObj.downloadFile(repoId, tmp, tpath, dir)
+//                        taxonomyServiceObj.downloadFile(repoId, tmp, tpath, dir)
+
+                        val responseObj = taxonomyServiceObj.downloadFileUrls(repoId, tmp, tpath)
+//
+                        if (responseObj != null) {
+                            taxonomyServiceObj.DownloadFiles(responseObj, dir)
+                        }
+
+                            taxonomyServiceObj.saveMetadataFile(repoId, indexList[0], tpath, dir)
+
+//                        }
+
+
+
+
+//                        taxonomyServiceObj.DownloadFiles(, dir)
+
+
+//                        taxonomyServiceObj.DownloadFiles(repoId, tmp, tpath, dir)
+
                     }
                     deferred
                 }
