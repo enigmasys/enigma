@@ -34,6 +34,13 @@ tasks.create("createProperties") {
     dependsOn("processResources")
 
     doLast {
+        // Create file if not present..
+        val propertiesFile = File("$buildDir/resources/main/version.properties")
+
+        propertiesFile.parentFile.mkdirs()
+        propertiesFile.createNewFile()
+
+
         File("$buildDir/resources/main/version.properties").writer().use { w ->
             val p = Properties()
             p["version"] = CLI_VERSION
