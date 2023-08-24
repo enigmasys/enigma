@@ -22,9 +22,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew build
+#      - name: Build with Gradle
+#        run: ./gradlew build
 
+      - name: Create the properties file
+        run: ./gradlew :client:createProperties
 
       - name: Build with Gradle
         run: ./gradlew :client:bootJar
