@@ -1,57 +1,44 @@
 package common.services.auth.azuredevice
 
-import java.io.*
-import java.security.InvalidAlgorithmParameterException
-import java.security.InvalidKeyException
+import java.util.*
 import javax.crypto.Cipher
-import javax.crypto.CipherInputStream
-import javax.crypto.CipherOutputStream
-import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
-class CryptoFile(private val secretKey: SecretKey, cipher: String?) {
-    private val cipher: Cipher
+// Source: https://gist.github.com/kobeumut/17932fd08b5b6dd7ee153a85865f4c54
+object CryptHelper {
+    private const val SECONDARY_KEY = "RandomInitVector" // 16 bytes IV
 
-    init {
-        this.cipher = Cipher.getInstance(cipher)
+    fun encrypt(key: String, value: String): String? {
+        try {
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
+            val iv = IvParameterSpec(SECONDARY_KEY.toByteArray(charset("UTF-8")))
+            val skeySpec = SecretKeySpec(key.toByteArray(charset("UTF-8")), "AES")
+
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv)
+
+            val encrypted = cipher.doFinal(value.toByteArray())
+            return String(Base64.getEncoder().encode(encrypted))
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+        return null
     }
 
-    @Throws(InvalidKeyException::class, IOException::class)
-    fun encrypt(content: String, fileName: String?) {
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-        val iv = cipher.iv
-        if (fileName != null) {
-            FileOutputStream(fileName).use { fileOut ->
-                CipherOutputStream(fileOut, cipher).use { cipherOut ->
-                    fileOut.write(iv)
-                    cipherOut.write(content.toByteArray())
-                }
-            }
-        }
-    }
+    fun decrypt(key: String,  encrypted: String?): String? {
+        try {
+            val iv = IvParameterSpec(SECONDARY_KEY.toByteArray(charset("UTF-8")))
+            val skeySpec = SecretKeySpec(key.toByteArray(charset("UTF-8")), "AES")
 
-    @Throws(InvalidAlgorithmParameterException::class, InvalidKeyException::class, IOException::class)
-    fun decrypt(fileName: String?): String {
-        var content: String = ""
-        if (fileName != null) {
-            FileInputStream(fileName).use { fileIn ->
-                val fileIv = ByteArray(16)
-                fileIn.read(fileIv)
-                cipher.init(Cipher.DECRYPT_MODE, secretKey, IvParameterSpec(fileIv))
-                CipherInputStream(fileIn, cipher).use { cipherIn ->
-                    InputStreamReader(cipherIn).use { inputReader ->
-                        BufferedReader(inputReader).use { reader ->
-                            val sb = StringBuilder()
-                            var line: String?
-                            while (reader.readLine().also { line = it } != null) {
-                                sb.append(line)
-                            }
-                            content = sb.toString()
-                        }
-                    }
-                }
-            }
+            val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv)
+
+            val original = cipher.doFinal(Base64.getDecoder().decode(encrypted))
+
+            return String(original)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
-        return content
+        return null
     }
 }
