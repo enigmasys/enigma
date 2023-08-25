@@ -24,7 +24,6 @@ plugins {
     kotlin("jvm") version "1.9.10"
     kotlin("plugin.spring") version "1.9.10"
     id("maven-publish")
-
 }
 
 group = "edu.vanderbilt"
@@ -41,31 +40,11 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.3")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.10")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
     implementation("info.picocli:picocli:4.7.4")
     implementation("junit:junit:4.13.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
-
-//
-//
-//
-//    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-//    implementation("org.jetbrains.kotlin:kotlin-reflect")
-//    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-//    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.3")
-
-
-//    implementation ("info.picocli:picocli:4.6.2")
-//    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.6")
-
-//    implementation("junit:junit:4.13.1")
-//    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-//    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 }
 
 tasks.getByName<Test>("test") {
