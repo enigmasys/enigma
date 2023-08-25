@@ -30,6 +30,11 @@ plugins {
 group = "edu.vanderbilt"
 version = "0.0.1-SNAPSHOT"
 
+
+kotlin{
+    jvmToolchain(17)
+}
+
 dependencies {
 
     implementation(project(":common"))

@@ -15,13 +15,12 @@ plugins {
     id("maven-publish")
 }
 
-java.sourceCompatibility = JavaVersion.VERSION_17
-java.targetCompatibility = JavaVersion.VERSION_17
+//java.sourceCompatibility = JavaVersion.VERSION_17
+//java.targetCompatibility = JavaVersion.VERSION_17
 
 
 group = "edu.vanderbilt"
 version = "0.0.1-SNAPSHOT"
-
 //# THis is specifically testing the CLI_VERSIOn and CLI_RELEASE_URL properties
 val CLI_VERSION:String by project
 val CLI_RELEASE_URL:String by project
@@ -35,6 +34,13 @@ tasks.create("createProperties") {
     dependsOn("processResources")
 
     doLast {
+        // Create file if not present..
+        val propertiesFile = File("$buildDir/resources/main/version.properties")
+
+        propertiesFile.parentFile.mkdirs()
+        propertiesFile.createNewFile()
+
+
         File("$buildDir/resources/main/version.properties").writer().use { w ->
             val p = Properties()
             p["version"] = CLI_VERSION
@@ -78,6 +84,10 @@ tasks.withType<KotlinCompile> {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = "17"
     }
+}
+
+kotlin{
+    jvmToolchain(17)
 }
 
 tasks.getByName<Jar>("jar") {
