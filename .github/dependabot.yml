@@ -6,7 +6,8 @@ updates:
       interval: "daily"
     groups:
       all:
-        patterns: "*"
+        patterns:
+        - "*"
     target-branch: "refactor-cli"
 
 
@@ -16,7 +17,8 @@ updates:
       interval: "daily"
     groups:
       all:
-        patterns: "*"
+        patterns:
+        - "*"
     target-branch: "refactor-cli"
 
   - package-ecosystem: "gradle"
@@ -25,7 +27,8 @@ updates:
       interval: "daily"
     groups:
       all:
-        patterns: "*"
+        patterns:
+        - "*"
     target-branch: "refactor-cli"
 
 
@@ -36,5 +39,6 @@ updates:
       interval: "daily"
     groups:
       all:
-        patterns: "*"
+        patterns:
+        - "*"
     target-branch: "refactor-cli"
