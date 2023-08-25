@@ -15,9 +15,6 @@ plugins {
     id("maven-publish")
 }
 
-//java.sourceCompatibility = JavaVersion.VERSION_17
-//java.targetCompatibility = JavaVersion.VERSION_17
-
 
 group = "edu.vanderbilt"
 version = "0.0.1-SNAPSHOT"
@@ -59,19 +56,7 @@ dependencies {
     implementation(project(":command"))
     implementation(project(":common"))
     implementation("info.picocli:picocli:4.7.4")
-//    implementation("org.springframework.boot:spring-boot-starter-webflux:3.0.6")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("io.projectreactor:reactor-test")
-
-
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.3")
 }
 
 tasks.getByName<Test>("test") {

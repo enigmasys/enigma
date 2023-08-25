@@ -538,9 +538,6 @@ class TaxonomyInfoService(
         }
         rawData?.displayName = rawData?.displayName ?: "Submission ${LocalDateTime.now()}"
         val fileinfo = FileUploader.getMapofRelativeAndAbsolutePath(uploadDir.toString())
-        val tmpdirUUID = UUID.randomUUID().toString()
-
-//        val listofFiles = fileinfo.keys.map{ "$tmpdirUUID/$it" }.toList()
         // FIX ME! Here we could remove the tmpdirUUID from the list of files
         val listofFiles = fileinfo.keys.map { "$it" }.toList()
 

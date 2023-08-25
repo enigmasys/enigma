@@ -3,8 +3,6 @@ package command
 import common.services.FileUploader
 import common.services.UserInfo
 import common.services.auth.AuthService
-import common.util.JSONSchemaValidator
-import common.util.ResourceSourceType
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import picocli.CommandLine
@@ -26,7 +24,6 @@ class UploadCmd(
     private val FileUploaderObj: FileUploader,
     private val UserInfoObj: UserInfo,
     private val AuthServiceObj: AuthService,
-    private val JSONSchemaValidatorObj: JSONSchemaValidator
 ): Callable<Int> {
 
     val logger = LoggerFactory.getLogger(this::class.java)
