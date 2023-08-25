@@ -8,10 +8,10 @@ val archivaHostId: String? by project
 val archivaPort: String? by project
 
 plugins {
-    id("org.springframework.boot") version "3.1.1"
-    id("io.spring.dependency-management") version "1.1.0"
-    kotlin("jvm") version "1.8.22"
-    kotlin("plugin.spring") version "1.8.22"
+    id("org.springframework.boot") version "3.1.3"
+    id("io.spring.dependency-management") version "1.1.3"
+    kotlin("jvm") version "1.9.10"
+    kotlin("plugin.spring") version "1.9.10"
     id("maven-publish")
 }
 
@@ -58,7 +58,7 @@ repositories {
 dependencies {
     implementation(project(":command"))
     implementation(project(":common"))
-    implementation("info.picocli:picocli:4.7.3")
+    implementation("info.picocli:picocli:4.7.4")
 //    implementation("org.springframework.boot:spring-boot-starter-webflux:3.0.6")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -69,9 +69,9 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test")
 
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.21")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10")
 }
 
 tasks.getByName<Test>("test") {
