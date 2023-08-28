@@ -41,10 +41,10 @@ class ProcessCmdv1(
     @CommandLine.ParentCommand
     val parent: EnigmaCommand? = null
 
-    @Value("\${cliclient.taxonomyProject}")
-    private val TAXONOMYPROJECT: String = "AllLeap+TaxonomyBootcamp123"
-    @Value("\${cliclient.taxonomyBranch}")
-    private val TAXONOMYBRANCH: String = "master123"
+//    @Value("\${cliclient.taxonomyProject}")
+//    private val TAXONOMYPROJECT: String = "AllLeap+TaxonomyBootcamp123"
+//    @Value("\${cliclient.taxonomyBranch}")
+//    private val TAXONOMYBRANCH: String = "master123"
 
     override fun call(): Int {
         parent?.let { it ->
@@ -57,7 +57,8 @@ class ProcessCmdv1(
                 println("=============================================")
                 var result: Any = Any()
 //                taxonomyServiceObj.initTaxonomyInfoService("AllLeap+TaxonomyBootcamp", "master")
-                taxonomyServiceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
+//                taxonomyServiceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
+                taxonomyServiceObj.initTaxonomyInfoService()
                 result = taxonomyServiceObj.getListofRepositories() as HashMap<*, *>
                 println("=====================================================================")
                 println("Repository ID                         | Content Type | Description")

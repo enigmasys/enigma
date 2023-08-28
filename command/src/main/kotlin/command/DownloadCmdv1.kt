@@ -70,10 +70,10 @@ class DownloadCmdv1(
     val logger = LoggerFactory.getLogger(this::class.java)
 
 
-    @Value("\${cliclient.taxonomyProject}")
-    private val TAXONOMYPROJECT: String = "AllLeap+TaxonomyBootcamp123"
-    @Value("\${cliclient.taxonomyBranch}")
-    private val TAXONOMYBRANCH: String = "master123"
+//    @Value("\${cliclient.taxonomyProject}")
+//    private val TAXONOMYPROJECT: String = "AllLeap+TaxonomyBootcamp123"
+//    @Value("\${cliclient.taxonomyBranch}")
+//    private val TAXONOMYBRANCH: String = "master123"
 
     override fun call(): Int {
         parent?.let { it ->
@@ -95,7 +95,7 @@ class DownloadCmdv1(
              println("dir: $dir")
              Files.isDirectory(Paths.get(dir)).let {
                  if (!it){
-                     println("Directory is a file: $dir")
+                     println("Make sure to Provide Valid Directory Path(NOT a File) for: $dir")
                      println("Please provide a directory and try again.")
                      exitProcess(0)
                  }
@@ -110,7 +110,8 @@ class DownloadCmdv1(
                  }
              }
 
-           taxonomyServiceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
+//           taxonomyServiceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
+           taxonomyServiceObj.initTaxonomyInfoService()
            var mapOfRepoIndexList = hashMapOf<String,ArrayList<String>>()
 
 //            mapOfRepoIndexList["6e9da372-8cc7-4b11-bf85-23ed9d83a301"] = arrayListOf("54_0","55_0","53_0")
@@ -160,7 +161,7 @@ class DownloadCmdv1(
             println("dir: $dir")
             Files.isDirectory(Paths.get(dir)).let {
                 if (!it){
-                    println("Directory is a file: $dir")
+                    println("Make sure to Provide Valid Directory Path(NOT a File) for: $dir")
                     println("Please provide a directory and try again.")
                     exitProcess(0)
                 }
@@ -203,7 +204,8 @@ class DownloadCmdv1(
                 exitProcess(0)
             }
 
-            taxonomyServiceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
+//            taxonomyServiceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
+            taxonomyServiceObj.initTaxonomyInfoService()
             var mapOfRepoIndexList = hashMapOf<String,ArrayList<String>>()
 
 //            mapOfRepoIndexList["6e9da372-8cc7-4b11-bf85-23ed9d83a301"] = arrayListOf("54_0","55_0","53_0")

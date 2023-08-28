@@ -13,7 +13,9 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies
 class WebGMEClient : ClientConfig {
     val logger = LoggerFactory.getLogger(this::class.java)
 
-    @Value("\${cliclient.taxonomyServiceUrl:https://wellcomewebgme.centralus.cloudapp.azure.com}")
+//    @Value("\${cliclient.taxonomyServiceUrl:https://wellcomewebgme.centralus.cloudapp.azure.com}")
+
+    @Value("\${cliclient.TaxonomyServer.ServiceUrl:https://wellcomewebgme.centralus.cloudapp.azure.com}")
     private lateinit var WebGME_URL: String
 
     @Bean(name = ["WebGMEWebClient"])

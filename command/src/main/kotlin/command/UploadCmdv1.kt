@@ -63,10 +63,10 @@ class UploadCmdv1(
     @CommandLine.ParentCommand
     val parent: EnigmaCommand? = null
 
-    @Value("\${cliclient.taxonomyProject}")
-    private val TAXONOMYPROJECT: String = "AllLeap+TaxonomyBootcamp123"
-    @Value("\${cliclient.taxonomyBranch}")
-    private val TAXONOMYBRANCH: String = "master123"
+//    @Value("\${cliclient.taxonomyProject}")
+//    private val TAXONOMYPROJECT: String = "AllLeap+TaxonomyBootcamp123"
+//    @Value("\${cliclient.taxonomyBranch}")
+//    private val TAXONOMYBRANCH: String = "master123"
 
     override fun call(): Int  {
 
@@ -110,7 +110,9 @@ class UploadCmdv1(
                 println("Upload Command Invoked.")
                 println("=====================================")
                 println("Uploading records from $uploadDir to repository $processID")
-                TaxonomyInfoServceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
+//                TaxonomyInfoServceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
+                TaxonomyInfoServceObj.initTaxonomyInfoService()
+
 
                 //Stress Test with 100 records
 
