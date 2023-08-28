@@ -24,7 +24,7 @@ class AzureDeviceFlow(
     //    @Throws(Exception::class)
     fun acquireTokenDeviceCode(): IAuthenticationResult? {
 
-        val tokenCacheAspect = TokenCacheAspect(".sample_cache.json")
+        val tokenCacheAspect = TokenCacheAspect(".sample_cache_new.json")
         val pca = PublicClientApplication.builder(client_id)
             .authority(token_uri)
             .setTokenCacheAccessAspect(tokenCacheAspect)
