@@ -29,7 +29,8 @@ class DeviceCredentialAuthService(
 
     private var token: String = ""
 
-    @Value("\${TOKEN_CACHE_FILE_PATH}")
+    @Value("\${TOKEN_CACHE_FILE_PATH:.token_cache.json}")
+//    @Value("\${TOKEN_CACHE_FILE_PATH}?:.token_cache.json")
     private lateinit var TOKEN_CACHE_FILE_PATH: String
 
     override fun getAuthToken(): String {

@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 class WebGMEClient : ClientConfig {
     val logger = LoggerFactory.getLogger(this::class.java)
 
-    @Value("\${cliclient.taxonomyServiceUrl:https://wellcomewebgme.centralus.cloudapp.azure.com12}")
+    @Value("\${cliclient.taxonomyServiceUrl:https://wellcomewebgme.centralus.cloudapp.azure.com}")
     private lateinit var WebGME_URL: String
 
     @Bean(name = ["WebGMEWebClient"])

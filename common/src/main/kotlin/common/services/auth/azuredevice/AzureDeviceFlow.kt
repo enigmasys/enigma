@@ -18,7 +18,7 @@ class AzureDeviceFlow(
     private var token_uri: String,
     @Value("\${spring.security.oauth2.client.registration.premonition.scope}")
     private var scope: Set<String>,
-    @Value("\${TOKEN_CACHE_FILE_PATH}")
+    @Value("\${TOKEN_CACHE_FILE_PATH:.token_cache.json}")
     private val TOKEN_CACHE_FILE_PATH: String
 ) {
 
