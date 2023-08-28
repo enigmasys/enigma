@@ -74,6 +74,7 @@ class TaxonomyInfoService(
         // leapdev server uses the following cookie format
         return "udcp_taxonomy_aad=$aadToken; access_token=$webgmeAccesstoken ;"
 
+
     }
 
     fun initTaxonomyInfoService(
@@ -123,6 +124,125 @@ class TaxonomyInfoService(
 
 
     }
+
+
+
+    suspend fun downloadFileUrls(
+        repositoryID: String,
+        index: String,
+        contentTypePath: String,
+    ): FileUrlInfo? {
+        val finalCookie = getCookie()
+
+
+        val response = webClient.
+        get()
+            .uri { uriBuilder: UriBuilder ->
+                UriComponentsBuilder.fromUri(uriBuilder.build())
+                    //                .path("routers/TagFormat/$encodedProjectID/branch/$encodedProjectBranch/human")
+                    .path("routers/Search/{encodedProjectID}/branch/{encodedProjectBranch}/{contentTypePath}/artifacts/{repositoryID}/files")
+                    .queryParam("ids", "{index}")
+                    .encode()
+                    .build(false)
+                    .expand(encodedProjectID, encodedProjectBranch, contentTypePath, repositoryID, index)
+                    .toUri()
+            }
+            .header(HttpHeaders.COOKIE, finalCookie)
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .bodyToFlux(String::class.java)
+            .awaitSingle()
+
+            println(response)
+            // Doing the mapping manually here
+            // convert the response from string to the FileUrlInfo class using jackson object mapper
+            val fileUrlInfo = jacksonObjectMapper().readValue(response, FileUrlInfo::class.java)
+            println(fileUrlInfo)
+
+            return fileUrlInfo
+
+//            DownloadFiles(fileUrlInfo, "./tmp", index = index, version = "0")
+    }
+
+
+
+    suspend fun getMetadata(
+        repositoryID: String,
+        index: String,
+        contentTypePath: String,
+    ): TaxonomyData? {
+        val finalCookie = getCookie()
+        //http://localhost:12345/routers/Search/aadid_yogesh_p_d_p_barve_at_vanderbilt_p_edu%2BtestTax/branch/master/%2Fi/artifacts/e0de6a4a-5257-4f2c-b3ce-470e3299fc4a/6_0/metadata.json
+
+        val response = webClient.
+        get()
+            .uri { uriBuilder: UriBuilder ->
+                UriComponentsBuilder.fromUri(uriBuilder.build())
+                    //                .path("routers/TagFormat/$encodedProjectID/branch/$encodedProjectBranch/human")
+                    .path("routers/Search/{encodedProjectID}/branch/{encodedProjectBranch}/{contentTypePath}/artifacts/{repositoryID}/{index}/metadata.json")
+                    .encode()
+                    .build(false)
+                    .expand(encodedProjectID, encodedProjectBranch, contentTypePath, repositoryID, index)
+                    .toUri()
+            }
+            .header(HttpHeaders.COOKIE, finalCookie)
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .bodyToMono(TaxonomyData::class.java)
+            .awaitSingle()
+        return response
+    }
+
+
+    suspend fun saveMetadataFile(
+        repositoryID: String,
+        index: String,
+        contentTypePath: String,
+        dir: String): Unit?
+    {
+        val metadataObj = getMetadata(repositoryID, index, contentTypePath)
+        if (metadataObj != null) {
+            val observationMapper = jacksonObjectMapper()
+            val metadataFilePath = Paths.get(dir, "metadata.json")
+            val metadataFile = File(metadataFilePath.toString())
+            observationMapper.writeValue(metadataFile, metadataObj)
+        }
+
+        return Unit
+
+    }
+
+    suspend fun DownloadFiles(values: FileUrlInfo, dir: String) {
+        val fileDownLoadMap: HashMap<String, String> = HashMap<String, String>()
+        values.forEach {
+            it.files.forEach {
+                fileDownLoadMap.put(it.name,it.url)
+            }
+        }
+
+        val downloadDir = when (Paths.get(dir).isAbsolute) {
+            false -> Paths.get(dir).toAbsolutePath().normalize()
+            else -> Paths.get(dir)
+        }
+
+        if (Files.notExists(downloadDir))
+            withContext(Dispatchers.IO) {
+                Files.createDirectories(downloadDir)
+            }
+        coroutineScope {
+            fileDownLoadMap.map { file ->
+                async(Dispatchers.IO) {
+                    println("Downloading ${file.key} from ${file.value}")
+                    val filePath = "$downloadDir/${file.key}"
+                    val tmpDir = Paths.get(filePath).parent
+                    if (Files.notExists(tmpDir))
+                        Files.createDirectories(tmpDir)
+                    FileDownloader.downloadFile(file.value, filePath)
+                }
+            }.awaitAll()
+        }
+    }
+
 
 
 
@@ -376,6 +496,7 @@ class TaxonomyInfoService(
         println("ContentType URL Pair: $contentTypeURLPair")
 
         var combinedresult: HashMap<String, RepositoryList>? = hashMapOf()
+
 
 
 
