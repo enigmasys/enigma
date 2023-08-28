@@ -9,6 +9,7 @@ class CLIConfig {
     lateinit var taxonomyServiceUrl: String
     lateinit var taxonomyProject: String
     lateinit var taxonomyBranch: String
+    lateinit var cookie_key_name: String
 }
 
 

@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import picocli.CommandLine
 import picocli.CommandLine.Command
 import reactor.netty.http.client.HttpClient
+import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.Callable
 import kotlin.io.path.notExists
@@ -69,10 +70,10 @@ class DownloadCmdv1(
     val logger = LoggerFactory.getLogger(this::class.java)
 
 
-    @Value("\${cliclient.taxonomyProject}")
-    private val TAXONOMYPROJECT: String = "AllLeap+TaxonomyBootcamp123"
-    @Value("\${cliclient.taxonomyBranch}")
-    private val TAXONOMYBRANCH: String = "master123"
+//    @Value("\${cliclient.taxonomyProject}")
+//    private val TAXONOMYPROJECT: String = "AllLeap+TaxonomyBootcamp123"
+//    @Value("\${cliclient.taxonomyBranch}")
+//    private val TAXONOMYBRANCH: String = "master123"
 
     override fun call(): Int {
         parent?.let { it ->
@@ -89,7 +90,28 @@ class DownloadCmdv1(
              var version:String= 0.toString()
 
 
-           taxonomyServiceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
+             // Make sure the string is a directory and not a file
+
+             println("dir: $dir")
+             Files.isDirectory(Paths.get(dir)).let {
+                 if (!it){
+                     println("Make sure to Provide Valid Directory Path(NOT a File) for: $dir")
+                     println("Please provide a directory and try again.")
+                     exitProcess(0)
+                 }
+             }
+
+             // Make sure the directory exists
+             dir?.let {
+                 if (Paths.get(dir).notExists()){
+                     println("Directory does not exist: $dir")
+                     println("Please create the directory and try again.")
+                     exitProcess(0)
+                 }
+             }
+
+//           taxonomyServiceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
+           taxonomyServiceObj.initTaxonomyInfoService()
            var mapOfRepoIndexList = hashMapOf<String,ArrayList<String>>()
 
 //            mapOfRepoIndexList["6e9da372-8cc7-4b11-bf85-23ed9d83a301"] = arrayListOf("54_0","55_0","53_0")
@@ -136,6 +158,26 @@ class DownloadCmdv1(
             var version:String= 0.toString()
 
 
+            println("dir: $dir")
+            Files.isDirectory(Paths.get(dir)).let {
+                if (!it){
+                    println("Make sure to Provide Valid Directory Path(NOT a File) for: $dir")
+                    println("Please provide a directory and try again.")
+                    exitProcess(0)
+                }
+            }
+
+            // Make sure the directory exists
+            dir?.let {
+                if (Paths.get(dir).notExists()){
+                    println("Directory does not exist: $dir")
+                    println("Please create the directory and try again.")
+                    exitProcess(0)
+                }
+            }
+
+
+
 
             if (startObsIndex == null){
                 logger.info("Please provide either -i or -e or -all: $processID ")
@@ -162,7 +204,8 @@ class DownloadCmdv1(
                 exitProcess(0)
             }
 
-            taxonomyServiceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
+//            taxonomyServiceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
+            taxonomyServiceObj.initTaxonomyInfoService()
             var mapOfRepoIndexList = hashMapOf<String,ArrayList<String>>()
 
 //            mapOfRepoIndexList["6e9da372-8cc7-4b11-bf85-23ed9d83a301"] = arrayListOf("54_0","55_0","53_0")

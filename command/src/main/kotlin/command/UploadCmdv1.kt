@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.stereotype.Component
 import picocli.CommandLine
+import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.Callable
+import kotlin.io.path.notExists
 import kotlin.system.exitProcess
 
 /**
@@ -61,10 +63,10 @@ class UploadCmdv1(
     @CommandLine.ParentCommand
     val parent: EnigmaCommand? = null
 
-    @Value("\${cliclient.taxonomyProject}")
-    private val TAXONOMYPROJECT: String = "AllLeap+TaxonomyBootcamp123"
-    @Value("\${cliclient.taxonomyBranch}")
-    private val TAXONOMYBRANCH: String = "master123"
+//    @Value("\${cliclient.taxonomyProject}")
+//    private val TAXONOMYPROJECT: String = "AllLeap+TaxonomyBootcamp123"
+//    @Value("\${cliclient.taxonomyBranch}")
+//    private val TAXONOMYBRANCH: String = "master123"
 
     override fun call(): Int  {
 
@@ -77,6 +79,25 @@ class UploadCmdv1(
             help -> exitProcess(0)
 
             else -> {
+
+                Files.isDirectory(Paths.get(dir)).let {
+                    if (!it){
+                        println("WARNING: Specified Directory $dir is a not a valid Input Directory, Please check.")
+                        println("Please provide an INPUT DIRECTORY Path containing ONLY " +
+                                "the data to be uploaded and try again.")
+                        exitProcess(0)
+                    }
+                }
+
+                // Make sure the directory exists
+                dir?.let {
+                    if (Paths.get(dir).notExists()){
+                        println("Directory does not exist: $dir")
+                        println("Please create the directory and try again.")
+                        exitProcess(0)
+                    }
+                }
+
                 var jsonFilePath: Path? =  metadata?.run {
                     when(Paths.get(metadata).isAbsolute){
                         false -> Paths.get(metadata).toAbsolutePath().normalize()
@@ -89,7 +110,9 @@ class UploadCmdv1(
                 println("Upload Command Invoked.")
                 println("=====================================")
                 println("Uploading records from $uploadDir to repository $processID")
-                TaxonomyInfoServceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
+//                TaxonomyInfoServceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
+                TaxonomyInfoServceObj.initTaxonomyInfoService()
+
 
                 //Stress Test with 100 records
 

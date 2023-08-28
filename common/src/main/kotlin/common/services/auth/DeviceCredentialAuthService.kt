@@ -29,6 +29,10 @@ class DeviceCredentialAuthService(
 
     private var token: String = ""
 
+    @Value("\${clientcli.TOKEN_CACHE_FILE_PATH:.token_cache.json}")
+//    @Value("\${TOKEN_CACHE_FILE_PATH}?:.token_cache.json")
+    private lateinit var TOKEN_CACHE_FILE_PATH: String
+
     override fun getAuthToken(): String {
         if(token=="")
             fetchToken()
@@ -43,7 +47,7 @@ class DeviceCredentialAuthService(
         logger.debug("Fetching Device Code Token,,,")
         var result: IAuthenticationResult? = null
         try {
-            result = AzureDeviceFlow(clientId, tokenUri, scope).acquireTokenDeviceCode()
+            result = AzureDeviceFlow(clientId, tokenUri, scope, TOKEN_CACHE_FILE_PATH).acquireTokenDeviceCode()
         } catch (ex: Exception) {
             logger.error("Encounter Exception: $ex")
         }

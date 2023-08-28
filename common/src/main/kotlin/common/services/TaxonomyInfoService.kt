@@ -17,6 +17,7 @@ import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.HttpHeaders
@@ -48,12 +49,29 @@ class TaxonomyInfoService(
 ) {
     var aadToken: String = ""
     var webgmeAccesstoken: String = ""
-    var encodedProjectID: String = ""
-    var encodedProjectBranch: String = ""
+//    var encodedProjectID: String = ""
+
+    @Value("\${cliclient.TaxonomyServer.ProjectTypeValue:main}")
+    lateinit var encodedProjectTypeValue: String
+
+
+    @Value("\${cliclient.TaxonomyServer.CookieName:udcp_taxonomy_aad}")
+    lateinit var encodedCookieName: String
+
     var taxonomyContentTypeInfo: TaxonomyContentType? = null
     var contentRepoMap: Map<String, RepositoryList>? = null
 
     var logger = Logger.getLogger(TaxonomyInfoService::class.java.name)
+
+
+    @Value("\${cliclient.TaxonomyServer.ProjectID:AllLeap+TaxonomyBootcamp}")
+    lateinit var encodedProjectID: String
+
+    @Value("\${cliclient.TaxonomyServer.ProjectType:branch}")
+    lateinit var encodedProjectType: String
+
+//    @Value("\${cliclient.TaxonomyServer.ProjectTypeValue:main}")
+//    lateinit var encodedProjectTypeValue: String
 
     fun getTokens() {
         aadToken = authServiceObj.getAuthToken()
@@ -70,15 +88,15 @@ class TaxonomyInfoService(
     }
 
     fun getCookie(): String {
-        return "udcp_taxonomy_aad=$aadToken; access_token=$webgmeAccesstoken ;"
+        return "$encodedCookieName=$aadToken; access_token=$webgmeAccesstoken ;"
     }
 
     fun initTaxonomyInfoService(
-        encodedProjectID: String,
-        encodedProjectBranch: String,
+//        encodedProjectID: String,
+//        encodedProjectBranch: String,
     ) {
-        this.encodedProjectID = encodedProjectID
-        this.encodedProjectBranch = encodedProjectBranch
+//        this.encodedProjectID = encodedProjectID
+//        this.encodedProjectBranch = encodedProjectBranch
         getTokens()
         this.taxonomyContentTypeInfo = getTaxonomyContentsInfo()
 //        this.contentRepoMap = getContentRepoMap()
@@ -94,9 +112,9 @@ class TaxonomyInfoService(
                 .uri { uriBuilder: UriBuilder ->
                     UriComponentsBuilder.fromUri(uriBuilder.build())
                         //                .path("routers/TagFormat/$encodedProjectID/branch/$encodedProjectBranch/human")
-                        .path("routers/Dashboard/{encodedProjectID}/branch/{encodedProjectBranch}/info")
+                        .path("routers/Dashboard/{encodedProjectID}/{encodedProjectType}/{encodedProjectTypeValue}/info")
                         .encode()
-                        .buildAndExpand(encodedProjectID, encodedProjectBranch)
+                        .buildAndExpand(encodedProjectID, encodedProjectType, this.encodedProjectTypeValue)
                         //                .buildAndExpand(guidTagsEncoded)
                         .toUri()
                 }
@@ -136,11 +154,13 @@ class TaxonomyInfoService(
             .uri { uriBuilder: UriBuilder ->
                 UriComponentsBuilder.fromUri(uriBuilder.build())
                     //                .path("routers/TagFormat/$encodedProjectID/branch/$encodedProjectBranch/human")
-                    .path("routers/Search/{encodedProjectID}/branch/{encodedProjectBranch}/{contentTypePath}/artifacts/{repositoryID}/files")
+                    .path("routers/Search/{encodedProjectID}/{encodeProjectType}/{encodedProjectTypeValue}/{contentTypePath}/artifacts/{repositoryID}/files")
                     .queryParam("ids", "{index}")
                     .encode()
                     .build(false)
-                    .expand(encodedProjectID, encodedProjectBranch, contentTypePath, repositoryID, index)
+                    .expand(encodedProjectID,
+                        encodedProjectType,
+                        this.encodedProjectTypeValue, contentTypePath, repositoryID, index)
                     .toUri()
             }
             .header(HttpHeaders.COOKIE, finalCookie)
@@ -175,10 +195,12 @@ class TaxonomyInfoService(
             .uri { uriBuilder: UriBuilder ->
                 UriComponentsBuilder.fromUri(uriBuilder.build())
                     //                .path("routers/TagFormat/$encodedProjectID/branch/$encodedProjectBranch/human")
-                    .path("routers/Search/{encodedProjectID}/branch/{encodedProjectBranch}/{contentTypePath}/artifacts/{repositoryID}/{index}/metadata.json")
+                    .path("routers/Search/{encodedProjectID}/{encodedProjectType}/{encodedProjectTypeValue}/{contentTypePath}/artifacts/{repositoryID}/{index}/metadata.json")
                     .encode()
                     .build(false)
-                    .expand(encodedProjectID, encodedProjectBranch, contentTypePath, repositoryID, index)
+                    .expand(encodedProjectID,
+                        encodedProjectType,
+                        this.encodedProjectTypeValue, contentTypePath, repositoryID, index)
                     .toUri()
             }
             .header(HttpHeaders.COOKIE, finalCookie)
@@ -380,11 +402,13 @@ class TaxonomyInfoService(
                 .uri { uriBuilder: UriBuilder ->
                     UriComponentsBuilder.fromUri(uriBuilder.build())
                         //                .path("routers/TagFormat/$encodedProjectID/branch/$encodedProjectBranch/human")
-                        .path("routers/Search/{encodedProjectID}/branch/{encodedProjectBranch}/{contentTypePath}/artifacts/{repositoryID}/download")
+                        .path("routers/Search/{encodedProjectID}/{encodedProjectType}/{encodedProjectTypeValue}/{contentTypePath}/artifacts/{repositoryID}/download")
                         .queryParam("ids", "{index}")
                         .encode()
                         .build(false)
-                        .expand(encodedProjectID, encodedProjectBranch, contentTypePath, repositoryID, index)
+                        .expand(encodedProjectID,
+                            encodedProjectType,
+                            this.encodedProjectTypeValue, contentTypePath, repositoryID, index)
                         .toUri()
                 }
                 .header(HttpHeaders.COOKIE, finalCookie)
@@ -540,9 +564,9 @@ class TaxonomyInfoService(
             webClient.get()
                 .uri { uriBuilder: UriBuilder ->
                     UriComponentsBuilder.fromUri(uriBuilder.build())
-                        .path("/routers/Search/{encodedProjectID}/branch/{encodedProjectBranch}/{contentURI}/artifacts/")
+                        .path("/routers/Search/{encodedProjectID}/{encodedProjectType}/{encodedProjectTypeValue}/{contentURI}/artifacts/")
                         .encode()
-                        .buildAndExpand(encodedProjectID, encodedProjectBranch, contentURI)
+                        .buildAndExpand(encodedProjectID, encodedProjectType, this.encodedProjectTypeValue, contentURI)
                         .toUri()
                 }
                 .header(HttpHeaders.COOKIE, finalCookie)
@@ -567,7 +591,7 @@ class TaxonomyInfoService(
 
 //            val downloadURL = "https://wellcomewebgme.centralus.cloudapp.azure.com/routers/Dashboard/$encodedProjectID/branch/$encodedProjectBranch/$contentTypeRef/$processID/download?ids=$index"
         val downloadURL =
-            "/routers/Dashboard/$encodedProjectID/branch/$encodedProjectBranch/$contentTypePath/artifacts/$processID/$index/metadata.json"
+            "/routers/Dashboard/$encodedProjectID/$encodedProjectType/${this.encodedProjectTypeValue}/$contentTypePath/artifacts/$processID/$index/metadata.json"
         return downloadURL
     }
 
@@ -751,9 +775,11 @@ class TaxonomyInfoService(
         val response = webClient.post()
             .uri { uriBuilder: UriBuilder ->
                 UriComponentsBuilder.fromUri(uriBuilder.build())
-                    .path("/routers/Search/{encodedProjectID}/branch/{encodedProjectBranch}/{contentTypePath}/artifacts/{repositoryID}/append")
+                    .path("/routers/Search/{encodedProjectID}/{encodedProjectType}/{encodedProjectTypeValue}/{contentTypePath}/artifacts/{repositoryID}/append")
                     .encode()
-                    .buildAndExpand(encodedProjectID, encodedProjectBranch, contentTypePath, repositoryID)
+                    .buildAndExpand(encodedProjectID,
+                        encodedProjectType,
+                        this.encodedProjectTypeValue, contentTypePath, repositoryID)
                     .toUri()
             }
             .header(HttpHeaders.COOKIE, finalCookie)

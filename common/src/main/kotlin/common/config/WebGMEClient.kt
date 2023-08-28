@@ -7,13 +7,15 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import org.springframework.beans.factory.annotation.Qualifier
-
+import org.springframework.web.reactive.function.client.ExchangeStrategies
 
 @Configuration
 class WebGMEClient : ClientConfig {
     val logger = LoggerFactory.getLogger(this::class.java)
 
-    @Value("\${cliclient.taxonomyServiceUrl:https://wellcomewebgme.centralus.cloudapp.azure.com12}")
+//    @Value("\${cliclient.taxonomyServiceUrl:https://wellcomewebgme.centralus.cloudapp.azure.com}")
+
+    @Value("\${cliclient.TaxonomyServer.ServiceUrl:https://wellcomewebgme.centralus.cloudapp.azure.com}")
     private lateinit var WebGME_URL: String
 
     @Bean(name = ["WebGMEWebClient"])
@@ -31,6 +33,13 @@ class WebGMEClient : ClientConfig {
                 exchangeFilterFunctions.add(LogFilter.logRequest())
                 exchangeFilterFunctions.add(LogFilter.logResponse())
             }
+            .exchangeStrategies(
+                ExchangeStrategies.builder()
+                    .codecs { clientCodecConfigurer ->
+                        clientCodecConfigurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024)
+                    }
+                    .build()
+            )
             .build()
     }
 }
