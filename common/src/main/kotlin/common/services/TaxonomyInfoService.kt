@@ -129,11 +129,7 @@ class TaxonomyInfoService(
             return response as TaxonomyContentType
         }
         catch (e: Exception) {
-//            println("Error in getting taxonomy content info: $e")
-//            println("Response: ${e.message}")
-//            throw e
             throw Exception("Need to Login to UDCP WebPortal First Taxonomy DesignStudio First")
-//            return null
         }
 
 
@@ -624,16 +620,23 @@ class TaxonomyInfoService(
 //    }
 
     fun getWebGMEToken(): String? {
-        val response = webClient.get()
-            .uri("/aad/device")
-            .headers { it.setBearerAuth(aadToken) }
-            .accept(MediaType.ALL)
-            .exchange().block()
-//            .retrieve()
-//            .bodyToMono(String::class.java)
-//            .block()
-//            println(response)
-        val access_token = response?.cookies()?.get("access_token")?.get(0)?.value
+
+
+        // catch any exception while connecting to the taxonomy server.
+        // If there is an exception, then we need to login to the taxonomy server first
+
+        var access_token: String? = null
+        try {
+            val response = webClient.get()
+                .uri("/aad/device")
+                .headers { it.setBearerAuth(aadToken) }
+                .accept(MediaType.ALL)
+                .exchange().block()
+             access_token = response?.cookies()?.get("access_token")?.get(0)?.value
+        }catch (e: Exception) {
+            println("Error in Connecting to the Taxonomy Server... Please make sure you have internet connection")
+            throw e
+        }
         return access_token
     }
 
