@@ -54,6 +54,10 @@ class TaxonomyInfoService(
     @Value("\${cliclient.TaxonomyServer.ProjectTypeValue:main}")
     lateinit var encodedProjectTypeValue: String
 
+
+    @Value("\${cliclient.TaxonomyServer.CookieName:udcp_taxonomy_aad}")
+    lateinit var encodedCookieName: String
+
     var taxonomyContentTypeInfo: TaxonomyContentType? = null
     var contentRepoMap: Map<String, RepositoryList>? = null
 
@@ -84,7 +88,7 @@ class TaxonomyInfoService(
     }
 
     fun getCookie(): String {
-        return "udcp_taxonomy_aad=$aadToken; access_token=$webgmeAccesstoken ;"
+        return "$encodedCookieName=$aadToken; access_token=$webgmeAccesstoken ;"
     }
 
     fun initTaxonomyInfoService(
