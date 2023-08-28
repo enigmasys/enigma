@@ -7,7 +7,7 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import org.springframework.beans.factory.annotation.Qualifier
-
+import org.springframework.web.reactive.function.client.ExchangeStrategies
 
 @Configuration
 class WebGMEClient : ClientConfig {
@@ -31,6 +31,13 @@ class WebGMEClient : ClientConfig {
                 exchangeFilterFunctions.add(LogFilter.logRequest())
                 exchangeFilterFunctions.add(LogFilter.logResponse())
             }
+            .exchangeStrategies(
+                ExchangeStrategies.builder()
+                    .codecs { clientCodecConfigurer ->
+                        clientCodecConfigurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024)
+                    }
+                    .build()
+            )
             .build()
     }
 }
