@@ -4,6 +4,7 @@ package common.services
 import com.azure.storage.blob.BlobClientBuilder
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import common.model.ContentContent
+import common.model.RepositoryList
 import common.model.TaxonomyContentType
 import common.model.observation.FileUrlInfo
 import common.model.observation.TaxonomyData
@@ -50,7 +51,7 @@ class TaxonomyInfoService(
     var encodedProjectID: String = ""
     var encodedProjectBranch: String = ""
     var taxonomyContentTypeInfo: TaxonomyContentType? = null
-    var contentRepoMap: Map<String, ContentContent>? = null
+    var contentRepoMap: Map<String, RepositoryList>? = null
 
     var logger = Logger.getLogger(TaxonomyInfoService::class.java.name)
 
@@ -69,9 +70,9 @@ class TaxonomyInfoService(
     }
 
     fun getCookie(): String {
-        return "webgme_aad=$aadToken; access_token=$webgmeAccesstoken ;"
+//        return "webgme_aad=$aadToken; access_token=$webgmeAccesstoken ;"
         // leapdev server uses the following cookie format
-//        return "udcp_taxonomy_aad=$aadToken; access_token=$webgmeAccesstoken ;"
+        return "udcp_taxonomy_aad=$aadToken; access_token=$webgmeAccesstoken ;"
 
     }
 
@@ -89,24 +90,38 @@ class TaxonomyInfoService(
     private fun getTaxonomyContentsInfo(
     ): TaxonomyContentType? {
         val finalCookie = getCookie()
-
         //  https://wellcomewebgme.centralus.cloudapp.azure.com/routers/Dashboard/AllLeap%2BTaxonomyBootcamp/branch/master/static/index.html
-        val response = webClient.get()
-            .uri { uriBuilder: UriBuilder ->
-                UriComponentsBuilder.fromUri(uriBuilder.build())
-                    //                .path("routers/TagFormat/$encodedProjectID/branch/$encodedProjectBranch/human")
-                    .path("routers/Dashboard/{encodedProjectID}/branch/{encodedProjectBranch}/info")
-                    .encode()
-                    .buildAndExpand(encodedProjectID, encodedProjectBranch)
-                    //                .buildAndExpand(guidTagsEncoded)
-                    .toUri()
-            }
-            .header(HttpHeaders.COOKIE, finalCookie)
-            .accept(MediaType.APPLICATION_JSON)
-            .retrieve()
-            .bodyToMono(TaxonomyContentType::class.java)
-            .block()
-        return response
+
+        try {
+            val response = webClient.get()
+                .uri { uriBuilder: UriBuilder ->
+                    UriComponentsBuilder.fromUri(uriBuilder.build())
+                        //                .path("routers/TagFormat/$encodedProjectID/branch/$encodedProjectBranch/human")
+                        .path("routers/Dashboard/{encodedProjectID}/branch/{encodedProjectBranch}/info")
+                        .encode()
+                        .buildAndExpand(encodedProjectID, encodedProjectBranch)
+                        //                .buildAndExpand(guidTagsEncoded)
+                        .toUri()
+                }
+                .header(HttpHeaders.COOKIE, finalCookie)
+//            .accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.ALL)
+                .retrieve()
+                .bodyToMono(TaxonomyContentType::class.java)
+//                .bodyToMono(String::class.java)
+                .block()
+            println(response)
+            return response as TaxonomyContentType
+        }
+        catch (e: Exception) {
+//            println("Error in getting taxonomy content info: $e")
+//            println("Response: ${e.message}")
+//            throw e
+            throw Exception("Need to Login to UDCP WebPortal First Taxonomy DesignStudio First")
+//            return null
+        }
+
+
     }
 
 
@@ -346,7 +361,7 @@ class TaxonomyInfoService(
 
     private fun fetchContentRepoMap(
         requestedContentType: List<String> = listOf(),
-    ): HashMap<String, ContentContent>? {
+    ): HashMap<String, RepositoryList>? {
         val finalCookie = getCookie()
         var contentTypeURLPair = taxonomyContentTypeInfo?.contentTypes?.map {
             Pair(
@@ -360,7 +375,7 @@ class TaxonomyInfoService(
 
         println("ContentType URL Pair: $contentTypeURLPair")
 
-        var combinedresult: HashMap<String, ContentContent>? = hashMapOf()
+        var combinedresult: HashMap<String, RepositoryList>? = hashMapOf()
 
 
 
@@ -386,8 +401,8 @@ class TaxonomyInfoService(
             }
             val tmp = results?.awaitAll() ?: emptyList()
 //            val tmp = results?: emptyList()
-            tmp.forEach { (contentType, content) ->
-                content?.let { combinedresult?.set(contentType, it) }
+            tmp.forEach { (contentType, repoList) ->
+                repoList?.let { combinedresult?.set(contentType, it) }
             }
         }
         return combinedresult
@@ -400,21 +415,13 @@ class TaxonomyInfoService(
      * @param finalCookie The cookie used for authentication.
      * @return The information about the content in [ContentContent] format, or null if no content is found.
      */
-  private suspend fun getContentRecordRequest(contentURI: String, finalCookie: String): ContentContent? {
+  private suspend fun getContentRecordRequest(contentURI: String, finalCookie: String): RepositoryList? {
 //    private fun getContentRecordRequest(contentURI: String, finalCookie: String): ContentContent? {
         //        https://wellcomewebgme.centralus.cloudapp.azure.com/routers/Search/AllLeap%2BTaxonomyBootcamp/branch/master/%2FH/artifacts/
 //      println("Content URI: $contentURI")
 //        println("Final Cookie: $finalCookie")
       val artifactResponse =
             webClient.get()
-                //                            .uri(it.second.encode())
-//                .uri { uriBuilder: UriBuilder ->
-//                    UriComponentsBuilder.fromUri(uriBuilder.build())
-//                        .path()
-//                        .path(contentURI).encode()
-//                        .build(true).toUri()
-//                }
-
                 .uri { uriBuilder: UriBuilder ->
                     UriComponentsBuilder.fromUri(uriBuilder.build())
                         .path("/routers/Search/{encodedProjectID}/branch/{encodedProjectBranch}/{contentURI}/artifacts/")
@@ -423,13 +430,15 @@ class TaxonomyInfoService(
                         .toUri()
                 }
                 .header(HttpHeaders.COOKIE, finalCookie)
+                .accept(MediaType.ALL)
                 .retrieve()
-                .bodyToMono(ContentContent::class.java)
-//                .bodyToMono(String::class.java)
+                .bodyToMono(RepositoryList::class.java)
+                .timeout(java.time.Duration.ofSeconds(50))
                 .awaitSingle()
 
 //        println(artifactResponse)
-        return artifactResponse as ContentContent
+//        return artifactResponse as ContentContent
+        return artifactResponse as RepositoryList
     }
 
     fun getDownloadURL(processID: String, index: String): String {
