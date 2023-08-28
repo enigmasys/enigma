@@ -55,7 +55,7 @@ repositories {
 dependencies {
     implementation(project(":command"))
     implementation(project(":common"))
-    implementation("info.picocli:picocli:4.7.4")
+    implementation("info.picocli:picocli:4.7.5")
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.3")
 }
 
