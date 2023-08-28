@@ -17,14 +17,16 @@ class AzureDeviceFlow(
     @Value("\${spring.security.oauth2.client.provider.device_code.token-uri}")
     private var token_uri: String,
     @Value("\${spring.security.oauth2.client.registration.premonition.scope}")
-    private var scope: Set<String>
+    private var scope: Set<String>,
+    @Value("\${TOKEN_CACHE_FILE_PATH}")
+    private val TOKEN_CACHE_FILE_PATH: String
 ) {
 
 
     //    @Throws(Exception::class)
     fun acquireTokenDeviceCode(): IAuthenticationResult? {
 
-        val tokenCacheAspect = TokenCacheAspect(".sample_cache_new.json")
+        val tokenCacheAspect = TokenCacheAspect(TOKEN_CACHE_FILE_PATH)
         val pca = PublicClientApplication.builder(client_id)
             .authority(token_uri)
             .setTokenCacheAccessAspect(tokenCacheAspect)
