@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import picocli.CommandLine
 import picocli.CommandLine.Command
 import reactor.netty.http.client.HttpClient
+import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.Callable
 import kotlin.io.path.notExists
@@ -89,6 +90,26 @@ class DownloadCmdv1(
              var version:String= 0.toString()
 
 
+             // Make sure the string is a directory and not a file
+
+             println("dir: $dir")
+             Files.isDirectory(Paths.get(dir)).let {
+                 if (!it){
+                     println("Directory is a file: $dir")
+                     println("Please provide a directory and try again.")
+                     exitProcess(0)
+                 }
+             }
+
+             // Make sure the directory exists
+             dir?.let {
+                 if (Paths.get(dir).notExists()){
+                     println("Directory does not exist: $dir")
+                     println("Please create the directory and try again.")
+                     exitProcess(0)
+                 }
+             }
+
            taxonomyServiceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
            var mapOfRepoIndexList = hashMapOf<String,ArrayList<String>>()
 
@@ -134,6 +155,26 @@ class DownloadCmdv1(
             var startObsIndex:String? =  obsIndex
             var endObsIndex:String? = endIndex
             var version:String= 0.toString()
+
+
+            println("dir: $dir")
+            Files.isDirectory(Paths.get(dir)).let {
+                if (!it){
+                    println("Directory is a file: $dir")
+                    println("Please provide a directory and try again.")
+                    exitProcess(0)
+                }
+            }
+
+            // Make sure the directory exists
+            dir?.let {
+                if (Paths.get(dir).notExists()){
+                    println("Directory does not exist: $dir")
+                    println("Please create the directory and try again.")
+                    exitProcess(0)
+                }
+            }
+
 
 
 
