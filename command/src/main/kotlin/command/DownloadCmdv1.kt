@@ -60,9 +60,10 @@ class DownloadCmdv1(
         description = ["Helps in downloading of records from a repository."])
     var help = false
 
-    @CommandLine.Option(required = false, names=["-m","--metadata"],
-        description = ["Download ONLY all metadata appendFiles (without the data appendFiles)"])
-    var peek = false
+    // We are deprecating the peek option for now
+//    @CommandLine.Option(required = false, names=["-m","--metadata"],
+//        description = ["Download ONLY all metadata appendFiles (without the data appendFiles)"])
+//    var peek = false
 
     @CommandLine.Option(required = false, names=["--uri"], description = ["URI of the Record to be Downloaded"])
     var uri: String? = null
