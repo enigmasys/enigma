@@ -125,7 +125,7 @@ class TaxonomyInfoService(
                 .bodyToMono(TaxonomyContentType::class.java)
 //                .bodyToMono(String::class.java)
                 .block()
-            println(response)
+//            println(response)
             return response as TaxonomyContentType
         }
         catch (e: Exception) {
@@ -165,11 +165,11 @@ class TaxonomyInfoService(
             .bodyToFlux(String::class.java)
             .awaitSingle()
 
-            println(response)
+//            println(response)
             // Doing the mapping manually here
             // convert the response from string to the FileUrlInfo class using jackson object mapper
             val fileUrlInfo = jacksonObjectMapper().readValue(response, FileUrlInfo::class.java)
-            println(fileUrlInfo)
+//            println(fileUrlInfo)
 
             return fileUrlInfo
 
@@ -509,7 +509,8 @@ class TaxonomyInfoService(
             )
         }
 
-        println("ContentType URL Pair: $contentTypeURLPair")
+        logger.info("ContentType URL Pair: $contentTypeURLPair")
+
 
         var combinedresult: HashMap<String, RepositoryList>? = hashMapOf()
 
