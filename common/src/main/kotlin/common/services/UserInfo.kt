@@ -17,6 +17,10 @@ class UserInfo(private val webClient: WebClient,
     var logger = LoggerFactory.getLogger(this::class.java)
 
 
+    fun getUserTokenFromRemote() {
+        val token = authService.getAuthToken()
+    }
+
     fun getUserRegistration(): UserRegistration? {
         val token = authService.getAuthToken()
         var apiVersion: String = "/v2"

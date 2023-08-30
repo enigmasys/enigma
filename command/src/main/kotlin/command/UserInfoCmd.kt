@@ -6,6 +6,7 @@ import common.services.PremonitionProcessServiceImpl
 import common.services.UserInfo
 import common.services.auth.AuthService
 import common.util.prettyJsonPrint
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.util.ResourceUtils
 import picocli.CommandLine
@@ -37,6 +38,8 @@ class UserInfoCmd(
     @CommandLine.ParentCommand
     val parent: EnigmaCommand? = null
 
+    @Value("\${clientcli.TOKEN_CACHE_FILE_PATH:.token_cache.json}")
+    private val TOKEN_CACHE_FILE_PATH: String = ""
     override fun call(): Int {
         parent?.let { it ->
             if (it.token?.length?.compareTo(0) ?:  0  > 0){
@@ -47,8 +50,8 @@ class UserInfoCmd(
 
             loginFun -> {
                 println("Login Functionality..")
-
-                val file: File = ResourceUtils.getFile(".sample_cache.json")
+                // Here we check if the TOKEN_CACHE_FILE_PATH is present or not from the cliclient application properties
+                val file: File = ResourceUtils.getFile(TOKEN_CACHE_FILE_PATH)
 
                 if(file.exists()){
 //                    println("file present ${file.absolutePath}")
@@ -68,11 +71,11 @@ class UserInfoCmd(
             }
 
             appStatus ->{
-                val result =  UserInfoObj.getUserRegistration()
-                if (result != null) {
-//                    prettyPrint(result)
-                    prettyJsonPrint(result)
-                }
+                UserInfoObj.getUserRegistration()
+//                if (result != null) {
+////                    prettyPrint(result)
+//                    prettyJsonPrint(result)
+//                }
             }
             else -> 0
         }
