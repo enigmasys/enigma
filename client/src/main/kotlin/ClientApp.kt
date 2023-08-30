@@ -1,8 +1,5 @@
 package edu.vanderbilt.enigma.client
-import command.EnigmaCommand
-import command.DownloadCmdv1
-import command.ProcessCmdv1
-import command.UploadCmdv1
+import command.*
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -16,7 +13,9 @@ class ClientApp
     private val generateEnigmaCommand: EnigmaCommand,
     private val generateProcessCmd: ProcessCmdv1,
     private val generateDownloadCmdv1: DownloadCmdv1,
-    private val generateUploadCmdv1: UploadCmdv1
+    private val generateUploadCmdv1: UploadCmdv1,
+    private val generateUserComd: UserInfoCmd
+
 
 //	private val generateDevCmd: DevCmd
 
@@ -27,6 +26,7 @@ class ClientApp
             .addSubcommand(generateProcessCmd)
             .addSubcommand(generateDownloadCmdv1)
             .addSubcommand(generateUploadCmdv1)
+            .addSubcommand(generateUserComd)
             .execute(*args)
     }
 }
