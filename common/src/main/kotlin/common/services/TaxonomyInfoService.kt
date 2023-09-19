@@ -682,8 +682,11 @@ class TaxonomyInfoService(
         val observationMapper = jacksonObjectMapper()
         var rawData: TaxonomyData? = null
         // Read the metadata file
-        metadataFilePath?.let {
-            rawData = observationMapper.readValue(it.toFile(), TaxonomyData::class.java)
+        // set the rawData to the TaxonomyData class based on the metadatafilePath.
+        rawData = if (metadataFilePath != null){
+            observationMapper.readValue(metadataFilePath.toFile(), TaxonomyData::class.java)
+        } else{
+            TaxonomyData("Submission ${LocalDateTime.now()}")
         }
 
         displayName?.let {
@@ -694,10 +697,10 @@ class TaxonomyInfoService(
         // FIX ME! Here we could remove the tmpdirUUID from the list of files
         val listofFiles = fileinfo.keys.map { "$it" }.toList()
 
-        var tmpAppendMetadata = AppendMetadata(filenames = listofFiles, metadata = rawData!!)
+        val tmpAppendMetadata = AppendMetadata(filenames = listofFiles, metadata = rawData!!)
 //        println(tmpAppendMetadata)
 
-        var response =
+        val response =
             appendMetadataToRepository(repositoryID, tmpAppendMetadata)
 
         val tmpurlInfo = jacksonObjectMapper().readValue(response, AppendResponse::class.java).appendFiles.associate {
