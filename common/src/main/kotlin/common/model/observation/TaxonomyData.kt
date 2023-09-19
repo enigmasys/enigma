@@ -9,4 +9,6 @@ data class TaxonomyData @ConstructorProperties("displayName", "taxonomyTags","ta
     var displayName: String?,
     var taxonomyTags: List<Any>?,
     val taxonomyVersion: TaxonomyVersion?
-)
+) {
+    constructor(displayName: String) : this(displayName, null, null)
+}
