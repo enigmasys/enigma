@@ -29,7 +29,7 @@ class DeviceCredentialAuthService(
 
     private var token: String = ""
 
-    @Value("\${clientcli.TOKEN_CACHE_FILE_PATH:.token_cache.json}")
+    @Value("\${cliclient.TOKEN_CACHE_FILE_PATH:.token_cache.json}")
 //    @Value("\${TOKEN_CACHE_FILE_PATH}?:.token_cache.json")
     private lateinit var TOKEN_CACHE_FILE_PATH: String
 
