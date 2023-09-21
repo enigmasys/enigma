@@ -38,7 +38,7 @@ class UserInfoCmd(
     @CommandLine.ParentCommand
     val parent: EnigmaCommand? = null
 
-    @Value("\${clientcli.TOKEN_CACHE_FILE_PATH:.token_cache.json}")
+    @Value("\${cliclient.TOKEN_CACHE_FILE_PATH:.token_cache.json}")
     private val TOKEN_CACHE_FILE_PATH: String = ""
     override fun call(): Int {
         parent?.let { it ->
