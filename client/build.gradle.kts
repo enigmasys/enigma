@@ -8,7 +8,7 @@ val archivaHostId: String? by project
 val archivaPort: String? by project
 
 plugins {
-    id("org.springframework.boot") version "3.1.3"
+    id("org.springframework.boot") version "3.1.4"
     id("io.spring.dependency-management") version "1.1.3"
     kotlin("jvm") version "1.9.10"
     kotlin("plugin.spring") version "1.9.10"
@@ -56,7 +56,7 @@ dependencies {
     implementation(project(":command"))
     implementation(project(":common"))
     implementation("info.picocli:picocli:4.7.5")
-    implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.3")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.4")
 }
 
 tasks.getByName<Test>("test") {
