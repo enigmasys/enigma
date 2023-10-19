@@ -15,7 +15,6 @@ plugins {
     id("maven-publish")
 }
 
-
 group = "edu.vanderbilt"
 version = "0.0.1-SNAPSHOT"
 //# THis is specifically testing the CLI_VERSIOn and CLI_RELEASE_URL properties
@@ -25,7 +24,6 @@ val CLI_RELEASE_URL: String by project
 tasks.named("classes") {
     dependsOn("createProperties")
 }
-
 
 tasks.create("createProperties") {
     dependsOn("processResources")
@@ -46,7 +44,6 @@ tasks.create("createProperties") {
         }
     }
 }
-
 
 repositories {
     mavenCentral()
