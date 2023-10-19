@@ -32,5 +32,11 @@ class ClientApp
 }
 
 fun main(args: Array<String>) {
-    runApplication<ClientApp>(*args)
+    val logger = LoggerFactory.getLogger(ClientApp::class.java.name)
+    try {
+        runApplication<ClientApp>(*args)
+    } catch (e : Exception) {
+        var errorMessage = e.toString()
+        logger.error("An error occured calling the CLI: $errorMessage")
+    }
 }
