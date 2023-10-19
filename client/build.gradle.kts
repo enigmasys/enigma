@@ -57,6 +57,9 @@ dependencies {
     implementation(project(":common"))
     implementation("info.picocli:picocli:4.7.5")
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.3")
+
+    // Kotlin Test Support
+    testImplementation ("org.jetbrains.kotlin:kotlin-test")
 }
 
 tasks.getByName<Test>("test") {

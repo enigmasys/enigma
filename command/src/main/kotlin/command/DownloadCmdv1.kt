@@ -1,19 +1,14 @@
 package command
 
-import common.config.LogFilter
-import common.services.*
+import common.services.TaxonomyInfoService
 import common.services.auth.AuthService
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.ComponentScan
-import org.springframework.http.MediaType
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.client.WebClient
 import picocli.CommandLine
 import picocli.CommandLine.Command
-import reactor.netty.http.client.HttpClient
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.concurrent.Callable
@@ -38,8 +33,6 @@ class DownloadCmdv1(
     @CommandLine.Option(required = true, names=["-d","--dir"], description = ["Directory Path"])
     lateinit var dir: String
 
-
-
     @CommandLine.Option(required = false, names=["-p","--process", "-repo"],
         description = ["Repository ID (a.k.a. ProcessID) of the repository"])
     var processID: String? = null
@@ -61,9 +54,9 @@ class DownloadCmdv1(
     var help = false
 
     // We are deprecating the peek option for now
-//    @CommandLine.Option(required = false, names=["-m","--metadata"],
-//        description = ["Download ONLY all metadata appendFiles (without the data appendFiles)"])
-//    var peek = false
+    //    @CommandLine.Option(required = false, names=["-m","--metadata"],
+    //        description = ["Download ONLY all metadata appendFiles (without the data appendFiles)"])
+    //    var peek = false
 
     @CommandLine.Option(required = false, names=["--uri"], description = ["URI of the Record to be Downloaded"])
     var uri: String? = null

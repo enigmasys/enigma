@@ -30,7 +30,7 @@ group = "edu.vanderbilt"
 version = "0.0.1-SNAPSHOT"
 
 
-kotlin{
+kotlin {
     jvmToolchain(17)
 }
 
@@ -45,6 +45,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
     implementation("info.picocli:picocli:4.7.5")
     implementation("junit:junit:4.13.2")
+
+    // Kotlin Test Support
+    testImplementation ("org.jetbrains.kotlin:kotlin-test")
 }
 
 tasks.getByName<Test>("test") {
