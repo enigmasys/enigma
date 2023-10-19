@@ -8,8 +8,6 @@ val archivaPassword: String? by project
 val archivaHostId: String? by project
 val archivaPort: String? by project
 
-
-
 plugins {
     id("org.springframework.boot") version "3.1.3"
     id("io.spring.dependency-management") version "1.1.3"
@@ -17,9 +15,6 @@ plugins {
     kotlin("plugin.spring") version "1.9.10"
     id("maven-publish")
 }
-
-
-
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 //java.targetCompatibility = JavaVersion.VERSION_17
