@@ -52,3 +52,5 @@ out/
 /gradlew
 /gradlew.bat
 execution.log
+/client/execution.log
+/.authentication_cache.json
