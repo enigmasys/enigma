@@ -19,8 +19,8 @@ plugins {
 group = "edu.vanderbilt"
 version = "0.0.1-SNAPSHOT"
 //# THis is specifically testing the CLI_VERSIOn and CLI_RELEASE_URL properties
-val CLI_VERSION:String by project
-val CLI_RELEASE_URL:String by project
+val CLI_VERSION: String by project
+val CLI_RELEASE_URL: String by project
 
 tasks.named("classes") {
     dependsOn("createProperties")
@@ -59,7 +59,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.3")
 
     // Kotlin Test Support
-    testImplementation ("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
 }
 
 tasks.getByName<Test>("test") {
@@ -67,14 +67,14 @@ tasks.getByName<Test>("test") {
 }
 
 tasks.withType<KotlinCompile> {
-//    kotlinOptions { jvmTarget = "1.8" }
+    //    kotlinOptions { jvmTarget = "1.8" }
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = "17"
     }
 }
 
-kotlin{
+kotlin {
     jvmToolchain(17)
 }
 
@@ -82,14 +82,13 @@ tasks.getByName<Jar>("jar") {
     enabled = false
 }
 
-tasks.bootJar{
-//    exclude("application.yml")
+tasks.bootJar {
+    //    exclude("application.yml")
     exclude("application-clientcredential.yml")
-//    exclude("application-passthrough.yml")
+    //    exclude("application-passthrough.yml")
     archiveFileName.set("leap_cli.jar")
 }
 
-//
 //repositories {
 //    mavenCentral()
 //    maven {
@@ -101,12 +100,11 @@ tasks.bootJar{
 configurations {
     val elements = listOf(apiElements, runtimeElements)
     elements.forEach { element ->
-        element.get().outgoing.artifacts.removeIf { it -> it.buildDependencies.getDependencies(null).contains(tasks.jar.get())}
+        element.get().outgoing.artifacts.removeIf { it -> it.buildDependencies.getDependencies(null).contains(tasks.jar.get()) }
         element.get().outgoing.artifact(tasks.bootJar.get())
     }
 }
 
-//
 //publishing {
 //    publications.create<MavenPublication>("secretapp"){
 //        from(components["java"])
@@ -133,7 +131,5 @@ configurations {
 //                }
 //            }
 //        }
-//
-//
 //    }
 //}
