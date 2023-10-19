@@ -3,29 +3,25 @@ package command
 // It is generated in the file "ProcessCmdv1.kt" in the same package as the original class
 // The original class is "ProcessCmd.kt" in the same package
 // This will leverage the Centralized Service for accessing the Repository Information.
+
+import common.services.TaxonomyInfoService
 import common.services.auth.AuthService
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.stereotype.Component
 import picocli.CommandLine
 import java.util.concurrent.Callable
 
-import common.services.TaxonomyInfoService
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
-
 //@Component
 @CommandLine.Command(
-    name = "process",
-    aliases = ["proc", "repository", "repo"],
-    mixinStandardHelpOptions = true,
+        name = "process",
+        aliases = ["proc", "repository", "repo"],
+        mixinStandardHelpOptions = true,
 )
 @Component
 @ComponentScan(basePackages = ["common"])
 class ProcessCmdv1(
-    private val taxonomyServiceObj: TaxonomyInfoService,
-    private val authServiceObj: AuthService,
+        private val taxonomyServiceObj: TaxonomyInfoService,
+        private val authServiceObj: AuthService,
 
 //    @Value("\${cliclient.taxonomyProject}")
 //    private val TAXONOMYPROJECT: String = "AllLeap+TaxonomyBootcamp123",
@@ -33,8 +29,8 @@ class ProcessCmdv1(
 //    private val TAXONOMYBRANCH: String = "master123"
 ) : Callable<Int> {
     @CommandLine.Option(
-        names = ["-l", "--listofProcesses", "--list"],
-        description = ["Display the list of owned Repositories(a.k.a Process)."]
+            names = ["-l", "--listofProcesses", "--list"],
+            description = ["Display the list of owned Repositories(a.k.a Process)."]
     )
     var listofProcesses = false
 
@@ -48,9 +44,10 @@ class ProcessCmdv1(
 
     override fun call(): Int {
         parent?.let { it ->
-            if (it.token?.length?.compareTo(0) ?:  0  > 0){
+            if (it.token?.length?.compareTo(0) ?: 0 > 0) {
                 parent?.token?.let { it -> authServiceObj.setAuthToken(it) }
-            } }
+            }
+        }
         when {
             listofProcesses -> {
 //                val webgmeToken = getWebGMEToken()
@@ -67,8 +64,8 @@ class ProcessCmdv1(
                     result.forEach { (key, value) ->
                         value as List<*>
                         value.forEach {
-                            (it as Pair<* , *> )
-                                println("${it.first}  |  " + key.toString() + "  |  ${it.second} ")
+                            (it as Pair<*, *>)
+                            println("${it.first}  |  " + key.toString() + "  |  ${it.second} ")
                         }
                     }
                 }
@@ -118,8 +115,6 @@ class ProcessCmdv1(
 //                }
 
 
-
-
                 // This is the call to the Centralized Service to get the list of owned Repositories
             }
 
@@ -127,9 +122,6 @@ class ProcessCmdv1(
         }
         return 0
     }
-
-
-
 
 
 }
