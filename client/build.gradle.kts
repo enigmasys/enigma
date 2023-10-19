@@ -53,7 +53,12 @@ dependencies {
     implementation(project(":command"))
     implementation(project(":common"))
     implementation("info.picocli:picocli:4.7.5")
+    /*
+    From Code analysis
+    Warning:(26, 20)  Provides transitive vulnerable dependency maven:org.yaml:snakeyaml:1.33 CVE-2022-41854 6.5 Out-of-bounds Write vulnerability CVE-2022-1471 9.8 Deserialization of Untrusted Data vulnerability  Results powered by Checkmarx(c)
+     */
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.3")
+    implementation ("org.slf4j:slf4j-log4j12:1.7.29")
 
     // Kotlin Test Support
     testImplementation("org.jetbrains.kotlin:kotlin-test")

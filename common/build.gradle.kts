@@ -23,6 +23,10 @@ group = "edu.vanderbilt"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {
+    /*
+    From Code analysis
+    Warning:(26, 20)  Provides transitive vulnerable dependency maven:org.yaml:snakeyaml:1.33 CVE-2022-41854 6.5 Out-of-bounds Write vulnerability CVE-2022-1471 9.8 Deserialization of Untrusted Data vulnerability  Results powered by Checkmarx(c)
+     */
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.3")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
@@ -32,6 +36,7 @@ dependencies {
     implementation("com.azure:azure-storage-blob:12.24.0")
     implementation("com.microsoft.azure:msal4j:1.13.10")
     implementation("com.microsoft.azure:msal4j-persistence-extension:1.2.0")
+    implementation ("org.slf4j:slf4j-log4j12:1.7.29")
 
     // Kotlin Test Support
     testImplementation ("org.jetbrains.kotlin:kotlin-test")
