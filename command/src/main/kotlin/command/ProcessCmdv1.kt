@@ -53,6 +53,12 @@ class ProcessCmdv1(
     var dir:String? = null
 
     @CommandLine.Option(
+        names = ["-f", "--file"],
+        description = ["Store the JSON Schema of the Repository ID in a file"]
+    )
+    var fileName:String? = null
+
+    @CommandLine.Option(
         names = ["-r", "--repo"],
         description = ["Repository ID"]
     )
@@ -92,16 +98,23 @@ class ProcessCmdv1(
             }
             jsonschema -> {
                 if (repoId != null) {
-
                     println("=============================================")
                     var result: Any = Any()
                     taxonomyServiceObj.initTaxonomyInfoService()
                     result = taxonomyServiceObj.getContentTypeJsonSchema(repoId!!)
+
+                    fileName = fileName ?: ("$repoId.json")
                     // Store this in a file in the directory specified or in the current directory if not specified
                     dir?.let {
                         File(it).mkdirs()
-                        File(it + "/" + repoId + ".json").writeText(result.toString())
-                    } ?: File(repoId + ".json").writeText(result.toString())
+                        File("$it/$fileName").writeText(result.first.toString())
+                        File("$it/taxonomyVersion.json").writeText(result.second.toString())
+                    } ?: {
+                        File("$fileName").writeText(result.first.toString())
+                        File("taxonomyVersion.json").writeText(result.second.toString())
+                    }
+
+                    println("JSONSchema written to file $fileName")
                     println("=====================================================================")
 
                 }

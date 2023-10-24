@@ -97,7 +97,7 @@ class TaxonomyInfoService(
         this.taxonomyContentTypeInfo = getTaxonomyContentsInfo()
     }
 
-    fun getContentTypeJsonSchema(repositoryID: String): String{
+    fun getContentTypeJsonSchema(repositoryID: String): Pair<String,String>{
         val contentTypeName = getContentTypeOfRepository(repositoryID)
         val contentTypePath = getPathofContentType(contentTypeName)
         val finalCookie = getCookie()
@@ -107,8 +107,12 @@ class TaxonomyInfoService(
         val contentTypeRepoConfigObj = jacksonObjectMapper().readTree(contentTypeRepoConfig)
         val contentKey =contentTypeRepoConfigObj.get("content").get("content")["nodePath"].asText()
 //        println("Content Key: $contentKey")
+
+        val project = contentTypeRepoConfigObj.get("project")
+        println("TaxonomyVersion: $project")
          val jsonschemaResponse = getJSONSchemaForContentRepoRequest(contentKey)
-        return  jsonschemaResponse
+        return  Pair(jsonschemaResponse,project.toString())
+
     }
 
     private fun getContentRepoConfiguration(contentTypePath: String): String?
