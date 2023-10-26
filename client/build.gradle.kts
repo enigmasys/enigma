@@ -60,8 +60,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.3")
     implementation ("org.slf4j:slf4j-log4j12:1.7.29")
 
+
     // Kotlin Test Support
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation(kotlin("test"))
 }
 
 tasks.getByName<Test>("test") {
@@ -106,6 +107,7 @@ configurations {
         element.get().outgoing.artifact(tasks.bootJar.get())
     }
 }
+
 
 //publishing {
 //    publications.create<MavenPublication>("secretapp"){
