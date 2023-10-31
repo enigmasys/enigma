@@ -29,6 +29,7 @@ import org.springframework.web.util.UriBuilder
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
 import java.io.*
+//import java.io.*
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -91,28 +92,92 @@ class TaxonomyInfoService(
         return "$encodedCookieName=$aadToken; access_token=$webgmeAccesstoken ;"
     }
 
-    fun initTaxonomyInfoService(
-//        encodedProjectID: String,
-//        encodedProjectBranch: String,
-    ) {
-//        this.encodedProjectID = encodedProjectID
-//        this.encodedProjectBranch = encodedProjectBranch
+    fun initTaxonomyInfoService() {
         getTokens()
         this.taxonomyContentTypeInfo = getTaxonomyContentsInfo()
-//        this.contentRepoMap = getContentRepoMap()
     }
 
-    private fun getTaxonomyContentsInfo(
-    ): TaxonomyContentType? {
+    fun getContentTypeJsonSchema(repositoryID: String): Pair<String,String>{
+        val contentTypeName = getContentTypeOfRepository(repositoryID)
+        val contentTypePath = getPathofContentType(contentTypeName)
         val finalCookie = getCookie()
-        //  https://wellcomewebgme.centralus.cloudapp.azure.com/routers/Dashboard/AllLeap%2BTaxonomyBootcamp/branch/master/static/index.html
+        // https://wellcomewebgme.centralus.cloudapp.azure.com/routers/JSONSchema/AllLeap%2BMCPyschTaxonomy/tag/1_1_0/%2FH%2F6/schema.json?onlyReleased=true
+        val contentTypeRepoConfig = getContentRepoConfiguration(contentTypePath)
+        // use the configuration to fetch the JSON value of the content key
+        val contentTypeRepoConfigObj = jacksonObjectMapper().readTree(contentTypeRepoConfig)
+        val contentKey =contentTypeRepoConfigObj.get("content").get("content")["nodePath"].asText()
+//        println("Content Key: $contentKey")
+
+        val project = contentTypeRepoConfigObj.get("project")
+        println("TaxonomyVersion: $project")
+         val jsonschemaResponse = getJSONSchemaForContentRepoRequest(contentKey)
+        return  Pair(jsonschemaResponse,project.toString())
+
+    }
+
+    private fun getContentRepoConfiguration(contentTypePath: String): String?
+    {
+        // https://wellcomewebgme.centralus.cloudapp.azure.com/routers/Search/AllLeap%2BMCPyschTaxonomy/branch/master/%2FH/configuration.json
+        val finalCookie = getCookie()
+        val response = webClient.get()
+            .uri { uriBuilder: UriBuilder ->
+                UriComponentsBuilder.fromUri(uriBuilder.build())
+                    .path("routers/Search/{encodedProjectID}/{encodedProjectType}/{encodedProjectTypeValue}/{contentTypePath}/configuration.json")
+                    .encode()
+                    .buildAndExpand(encodedProjectID, encodedProjectType, this.encodedProjectTypeValue,contentTypePath)
+                    .toUri()
+            }
+            .header(HttpHeaders.COOKIE, finalCookie)
+            .accept(MediaType.ALL)
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .block()
+        return response
+
+
+    }
+
+    private fun getJSONSchemaForContentRepoRequest(contentTypeRepoPath: String): String{
+        val finalCookie = getCookie()
+
+//        println("Content Repo Path: $contentTypeRepoPath")
 
         try {
             val response = webClient.get()
                 .uri { uriBuilder: UriBuilder ->
                     UriComponentsBuilder.fromUri(uriBuilder.build())
+                        .path("routers/JSONSchema/{encodedProjectID}/{encodedProjectType}" +
+                                "/{encodedProjectTypeValue}/{contentTypeRepoPath}/schema.json")
+                        .queryParam("onlyReleased", "true")
+                        .encode()
+                        .buildAndExpand(encodedProjectID, encodedProjectType,
+                            this.encodedProjectTypeValue, contentTypeRepoPath)
+                        .toUri()
+                }
+
+                .header(HttpHeaders.COOKIE, finalCookie)
+                .accept(MediaType.ALL)
+                .retrieve()
+                .bodyToMono(String::class.java)
+                .block()
+            return response.toString()
+        }catch( Exception : Exception){
+            throw Exception("Error in getting JSON Schema for the Content Repo $Exception")
+        }
+
+    }
+
+
+    private fun getTaxonomyContentsInfo(
+    ): TaxonomyContentType? {
+        val finalCookie = getCookie()
+        try {
+            val response = webClient.get()
+                .uri { uriBuilder: UriBuilder ->
+                    UriComponentsBuilder.fromUri(uriBuilder.build())
                         //                .path("routers/TagFormat/$encodedProjectID/branch/$encodedProjectBranch/human")
-                        .path("routers/Dashboard/{encodedProjectID}/{encodedProjectType}/{encodedProjectTypeValue}/info")
+                        .path("routers/Dashboard/{encodedProjectID}/{encodedProjectType}/" +
+                                "{encodedProjectTypeValue}/info")
                         .encode()
                         .buildAndExpand(encodedProjectID, encodedProjectType, this.encodedProjectTypeValue)
                         //                .buildAndExpand(guidTagsEncoded)
@@ -131,11 +196,7 @@ class TaxonomyInfoService(
         catch (e: Exception) {
             throw Exception("Need to Login to UDCP WebPortal First Taxonomy DesignStudio First")
         }
-
-
     }
-
-
 
     suspend fun downloadFileUrls(
         repositoryID: String,
@@ -143,14 +204,13 @@ class TaxonomyInfoService(
         contentTypePath: String,
     ): FileUrlInfo? {
         val finalCookie = getCookie()
-
-
         val response = webClient.
         get()
             .uri { uriBuilder: UriBuilder ->
                 UriComponentsBuilder.fromUri(uriBuilder.build())
                     //                .path("routers/TagFormat/$encodedProjectID/branch/$encodedProjectBranch/human")
-                    .path("routers/Search/{encodedProjectID}/{encodeProjectType}/{encodedProjectTypeValue}/{contentTypePath}/artifacts/{repositoryID}/files")
+                    .path("routers/Search/{encodedProjectID}/{encodeProjectType}/{encodedProjectTypeValue}/" +
+                            "{contentTypePath}/artifacts/{repositoryID}/files")
                     .queryParam("ids", "{index}")
                     .encode()
                     .build(false)
@@ -165,15 +225,8 @@ class TaxonomyInfoService(
             .bodyToFlux(String::class.java)
             .awaitSingle()
 
-//            println(response)
-            // Doing the mapping manually here
-            // convert the response from string to the FileUrlInfo class using jackson object mapper
             val fileUrlInfo = jacksonObjectMapper().readValue(response, FileUrlInfo::class.java)
-//            println(fileUrlInfo)
-
             return fileUrlInfo
-
-//            DownloadFiles(fileUrlInfo, "./tmp", index = index, version = "0")
     }
 
 
@@ -184,14 +237,12 @@ class TaxonomyInfoService(
         contentTypePath: String,
     ): TaxonomyData? {
         val finalCookie = getCookie()
-        //http://localhost:12345/routers/Search/aadid_yogesh_p_d_p_barve_at_vanderbilt_p_edu%2BtestTax/branch/master/%2Fi/artifacts/e0de6a4a-5257-4f2c-b3ce-470e3299fc4a/6_0/metadata.json
-
         val response = webClient.
         get()
             .uri { uriBuilder: UriBuilder ->
                 UriComponentsBuilder.fromUri(uriBuilder.build())
-                    //                .path("routers/TagFormat/$encodedProjectID/branch/$encodedProjectBranch/human")
-                    .path("routers/Search/{encodedProjectID}/{encodedProjectType}/{encodedProjectTypeValue}/{contentTypePath}/artifacts/{repositoryID}/{index}/metadata.json")
+                    .path("routers/Search/{encodedProjectID}/{encodedProjectType}/{encodedProjectTypeValue}/" +
+                            "{contentTypePath}/artifacts/{repositoryID}/{index}/metadata.json")
                     .encode()
                     .build(false)
                     .expand(encodedProjectID,
@@ -206,8 +257,6 @@ class TaxonomyInfoService(
             .awaitSingle()
         return response
     }
-
-
     suspend fun saveMetadataFile(
         repositoryID: String,
         index: String,
@@ -221,9 +270,7 @@ class TaxonomyInfoService(
             val metadataFile = File(metadataFilePath.toString())
             observationMapper.writeValue(metadataFile, metadataObj)
         }
-
         return Unit
-
     }
 
     suspend fun DownloadFiles(values: FileUrlInfo, dir: String) {
@@ -257,128 +304,6 @@ class TaxonomyInfoService(
         }
     }
 
-
-
-
-//    suspend fun downloadFileUrls(
-//        repositoryID: String,
-//        index: String,
-//        contentTypePath: String,
-//    ): FileUrlInfo? {
-//        val finalCookie = getCookie()
-//
-//
-//        val response = webClient.
-//        get()
-//            .uri { uriBuilder: UriBuilder ->
-//                UriComponentsBuilder.fromUri(uriBuilder.build())
-//                    //                .path("routers/TagFormat/$encodedProjectID/branch/$encodedProjectBranch/human")
-//                    .path("routers/Search/{encodedProjectID}/branch/{encodedProjectBranch}/{contentTypePath}/artifacts/{repositoryID}/files")
-//                    .queryParam("ids", "{index}")
-//                    .encode()
-//                    .build(false)
-//                    .expand(encodedProjectID, encodedProjectBranch, contentTypePath, repositoryID, index)
-//                    .toUri()
-//            }
-//            .header(HttpHeaders.COOKIE, finalCookie)
-//            .accept(MediaType.APPLICATION_JSON)
-//            .retrieve()
-//            .bodyToFlux(String::class.java)
-//            .awaitSingle()
-//
-//            println(response)
-//            // Doing the mapping manually here
-//            // convert the response from string to the FileUrlInfo class using jackson object mapper
-//            val fileUrlInfo = jacksonObjectMapper().readValue(response, FileUrlInfo::class.java)
-//            println(fileUrlInfo)
-//
-//            return fileUrlInfo
-//
-////            DownloadFiles(fileUrlInfo, "./tmp", index = index, version = "0")
-//    }
-
-
-
-//    suspend fun getMetadata(
-//        repositoryID: String,
-//        index: String,
-//        contentTypePath: String,
-//    ): TaxonomyData? {
-//        val finalCookie = getCookie()
-//        //http://localhost:12345/routers/Search/aadid_yogesh_p_d_p_barve_at_vanderbilt_p_edu%2BtestTax/branch/master/%2Fi/artifacts/e0de6a4a-5257-4f2c-b3ce-470e3299fc4a/6_0/metadata.json
-//
-//        val response = webClient.
-//        get()
-//            .uri { uriBuilder: UriBuilder ->
-//                UriComponentsBuilder.fromUri(uriBuilder.build())
-//                    //                .path("routers/TagFormat/$encodedProjectID/branch/$encodedProjectBranch/human")
-//                    .path("routers/Search/{encodedProjectID}/branch/{encodedProjectBranch}/{contentTypePath}/artifacts/{repositoryID}/{index}/metadata.json")
-//                    .encode()
-//                    .build(false)
-//                    .expand(encodedProjectID, encodedProjectBranch, contentTypePath, repositoryID, index)
-//                    .toUri()
-//            }
-//            .header(HttpHeaders.COOKIE, finalCookie)
-//            .accept(MediaType.APPLICATION_JSON)
-//            .retrieve()
-//            .bodyToMono(TaxonomyData::class.java)
-//            .awaitSingle()
-//        return response
-//    }
-//
-
-//    suspend fun saveMetadataFile(
-//        repositoryID: String,
-//        index: String,
-//        contentTypePath: String,
-//        dir: String): Unit?
-//    {
-//        val metadataObj = getMetadata(repositoryID, index, contentTypePath)
-//        if (metadataObj != null) {
-//            val observationMapper = jacksonObjectMapper()
-//            val metadataFilePath = Paths.get(dir, "metadata.json")
-//            val metadataFile = File(metadataFilePath.toString())
-//            observationMapper.writeValue(metadataFile, metadataObj)
-//        }
-//
-//        return Unit
-//
-//    }
-
-//    suspend fun DownloadFiles(values: FileUrlInfo, dir: String) {
-//        val fileDownLoadMap: HashMap<String, String> = HashMap<String, String>()
-//        values.forEach {
-//            it.files.forEach {
-//                fileDownLoadMap.put(it.name,it.url)
-//            }
-//        }
-//
-//        val downloadDir = when (Paths.get(dir).isAbsolute) {
-//            false -> Paths.get(dir).toAbsolutePath().normalize()
-//            else -> Paths.get(dir)
-//        }
-//
-//        if (Files.notExists(downloadDir))
-//            withContext(Dispatchers.IO) {
-//                Files.createDirectories(downloadDir)
-//            }
-//        coroutineScope {
-//            fileDownLoadMap.map { file ->
-//                async(Dispatchers.IO) {
-//                    println("Downloading ${file.key} from ${file.value}")
-//                    val filePath = "$downloadDir/${file.key}"
-//                    val tmpDir = Paths.get(filePath).parent
-//                    if (Files.notExists(tmpDir))
-//                        Files.createDirectories(tmpDir)
-//                    FileDownloader.downloadFile(file.value, filePath)
-//                }
-//            }.awaitAll()
-//        }
-//    }
-
-
-
-
     suspend fun downloadFile(
         repositoryID: String,
         index: String,
@@ -398,7 +323,8 @@ class TaxonomyInfoService(
                 .uri { uriBuilder: UriBuilder ->
                     UriComponentsBuilder.fromUri(uriBuilder.build())
                         //                .path("routers/TagFormat/$encodedProjectID/branch/$encodedProjectBranch/human")
-                        .path("routers/Search/{encodedProjectID}/{encodedProjectType}/{encodedProjectTypeValue}/{contentTypePath}/artifacts/{repositoryID}/download")
+                        .path("routers/Search/{encodedProjectID}/{encodedProjectType}/" +
+                                "{encodedProjectTypeValue}/{contentTypePath}/artifacts/{repositoryID}/download")
                         .queryParam("ids", "{index}")
                         .encode()
                         .build(false)
@@ -561,7 +487,8 @@ class TaxonomyInfoService(
             webClient.get()
                 .uri { uriBuilder: UriBuilder ->
                     UriComponentsBuilder.fromUri(uriBuilder.build())
-                        .path("/routers/Search/{encodedProjectID}/{encodedProjectType}/{encodedProjectTypeValue}/{contentURI}/artifacts/")
+                        .path("/routers/Search/{encodedProjectID}/{encodedProjectType}" +
+                                "/{encodedProjectTypeValue}/{contentURI}/artifacts/")
                         .encode()
                         .buildAndExpand(encodedProjectID, encodedProjectType, this.encodedProjectTypeValue, contentURI)
                         .toUri()
@@ -588,37 +515,11 @@ class TaxonomyInfoService(
 
 //            val downloadURL = "https://wellcomewebgme.centralus.cloudapp.azure.com/routers/Dashboard/$encodedProjectID/branch/$encodedProjectBranch/$contentTypeRef/$processID/download?ids=$index"
         val downloadURL =
-            "/routers/Dashboard/$encodedProjectID/$encodedProjectType/${this.encodedProjectTypeValue}/$contentTypePath/artifacts/$processID/$index/metadata.json"
+            "/routers/Dashboard/$encodedProjectID/$encodedProjectType/" +
+                    "${this.encodedProjectTypeValue}/$contentTypePath/artifacts/$processID/$index/metadata.json"
         return downloadURL
     }
 
-
-
-
-//    http://localhost:12345/routers/Search/aadid_yogesh_p_d_p_barve_at_vanderbilt_p_edu%2BtestTax/branch/master/%2Fi/artifacts/e0de6a4a-5257-4f2c-b3ce-470e3299fc4a/6_0/metadata.json
-////    fun getDownloadURL(processID: String, index: String): String {
-////        val encodedProjectID = "AllLeap+TaxonomyBootcamp"
-////        val encodedProjectBranch = "master"
-//
-//        val contentTypeName = getContentTypeOfRepository(processID)
-//        val contentTypePath = getPathofContentType(contentTypeName)
-////        println("Content Type Path: $contentTypePath" + "Content Type Name: $contentTypeName")
-//
-//
-////            val downloadURL = "https://wellcomewebgme.centralus.cloudapp.azure.com/routers/Dashboard/$encodedProjectID/branch/$encodedProjectBranch/$contentTypeRef/$processID/download?ids=$index"
-//        val downloadURL =
-//            "/routers/Dashboard/$encodedProjectID/branch/$encodedProjectBranch/$contentTypePath/$processID/download?ids=$index"
-//        return downloadURL
-//    }
-
-
-
-//    fun getProcessIDinfo(processID: String): String {
-//        val contentTypeRef =
-//            taxonomyContentTypeInfo?.contentTypes?.find { it.name == processID }?.url?.split("/")?.get(6)
-//        // this.taxonomyContentTypeInfo.contentTypes.find { it.name == "Demo" }.path
-//        return contentTypeRef ?: ""
-//    }
 
     fun getWebGMEToken(): String? {
 
@@ -635,7 +536,8 @@ class TaxonomyInfoService(
                 .exchange().block()
              access_token = response?.cookies()?.get("access_token")?.get(0)?.value
         }catch (e: Exception) {
-            println("Error in Connecting to the Taxonomy Server... Please make sure you have internet connection")
+            println("Error in Connecting to the Taxonomy Server... " +
+                    "Please make sure you have internet connection")
             throw e
         }
         return access_token
@@ -678,7 +580,8 @@ class TaxonomyInfoService(
     }
 
     @OptIn(ExperimentalTime::class)
-    fun uploadToRepository(repositoryID: String, uploadDir: Path, metadataFilePath: Path?, displayName : String? = null) {
+    fun uploadToRepository(repositoryID: String, uploadDir: Path,
+                           metadataFilePath: Path?, displayName : String? = null) {
         val observationMapper = jacksonObjectMapper()
         var rawData: TaxonomyData? = null
         // Read the metadata file
@@ -763,8 +666,6 @@ class TaxonomyInfoService(
         }
     }
 
-
-
         // Upload the files to the repository
 
     fun appendMetadataToRepository(repositoryID: String, content: Any) : String {
@@ -772,17 +673,11 @@ class TaxonomyInfoService(
         val contentTypePath = getPathofContentType(contentTypeName)
         val finalCookie = getCookie()
 
-//        println("Final Cookie: $finalCookie")
-//
-//        println("Content Type Path: $contentTypePath  " + "Content Type Name: $contentTypeName")
-//        // add content to the body of the request
-//        println("Content: $content")
-
-
         val response = webClient.post()
             .uri { uriBuilder: UriBuilder ->
                 UriComponentsBuilder.fromUri(uriBuilder.build())
-                    .path("/routers/Search/{encodedProjectID}/{encodedProjectType}/{encodedProjectTypeValue}/{contentTypePath}/artifacts/{repositoryID}/append")
+                    .path("/routers/Search/{encodedProjectID}/{encodedProjectType}" +
+                            "/{encodedProjectTypeValue}/{contentTypePath}/artifacts/{repositoryID}/append")
                     .encode()
                     .buildAndExpand(encodedProjectID,
                         encodedProjectType,

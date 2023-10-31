@@ -14,6 +14,7 @@ import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
+import java.io.File
 
 //@Component
 @CommandLine.Command(
@@ -38,13 +39,34 @@ class ProcessCmdv1(
     )
     var listofProcesses = false
 
+
+    @CommandLine.Option(
+        names = ["-j", "--jsonschema"],
+        description = ["Get the JSON Schema of the Repository ID"]
+    )
+    var jsonschema = false
+
+    @CommandLine.Option(
+        names = ["-d", "--dir"],
+        description = ["Store the JSON Schema of the Repository ID in a directory"]
+    )
+    var dir:String? = null
+
+    @CommandLine.Option(
+        names = ["-f", "--file"],
+        description = ["Store the JSON Schema of the Repository ID in a file"]
+    )
+    var fileName:String? = null
+
+    @CommandLine.Option(
+        names = ["-r", "--repo"],
+        description = ["Repository ID"]
+    )
+    var repoId: String? = null
+
     @CommandLine.ParentCommand
     val parent: EnigmaCommand? = null
 
-//    @Value("\${cliclient.taxonomyProject}")
-//    private val TAXONOMYPROJECT: String = "AllLeap+TaxonomyBootcamp123"
-//    @Value("\${cliclient.taxonomyBranch}")
-//    private val TAXONOMYBRANCH: String = "master123"
 
     override fun call(): Int {
         parent?.let { it ->
@@ -73,54 +95,32 @@ class ProcessCmdv1(
                     }
                 }
                 println("=============================================")
-//                println(taxonomyServiceObj.getContentTypeOfRepository())
-//                println(taxonomyServiceObj.getPathofContentType())
-//                println(taxonomyServiceObj.getDownloadURL( "87dc1607-5d63-4073-9424-720f86ecef43","1_0"))
-                // get contentype of repository
-                //get contentype path
+            }
+            jsonschema -> {
+                if (repoId != null) {
+                    println("=============================================")
+                    var result: Any = Any()
+                    taxonomyServiceObj.initTaxonomyInfoService()
+                    result = taxonomyServiceObj.getContentTypeJsonSchema(repoId!!)
 
+                    fileName = fileName ?: ("$repoId.json")
+                    // Store this in a file in the directory specified or in the current directory if not specified
+                    dir?.let {
+                        File(it).mkdirs()
+                        File("$it/$fileName").writeText(result.first.toString())
+                        File("$it/taxonomyVersion.json").writeText(result.second.toString())
+                    } ?: {
+                        File("$fileName").writeText(result.first.toString())
+                        File("taxonomyVersion.json").writeText(result.second.toString())
+                    }
 
-//                // download file from a repository and index hashmap
-//                var mapOfRepoIndexList = hashMapOf<String,ArrayList<String>>()
-////                mapOfRepoIndexList["87dc1607-5d63-4073-9424-720f86ecef43"] = arrayListOf("1_0","2_0","3_0")
-//
-////                mapOfRepoIndexList["6e9da372-8cc7-4b11-bf85-23ed9d83a301"] = arrayListOf("54_0","55_0","53_0","9_0","15_0","14_0","12_0","10_0")
-////
-//                mapOfRepoIndexList["6e9da372-8cc7-4b11-bf85-23ed9d83a301"] = arrayListOf("54_0","55_0","53_0")
-//
-////                https://wellcomewebgme.centralus.cloudapp.azure.com/routers/Search/AllLeap%2BTaxonomyBootcamp/branch/master/%2Ft/artifacts/6e9da372-8cc7-4b11-bf85-23ed9d83a301/download?ids=%5B%2254_0%22%2C%2255_0%22%2C%2253_0%22%2C%229_0%22%2C%2215_0%22%2C%2214_0%22%2C%2212_0%22%2C%2210_0%22%5D
-//
-//
-//                runBlocking {
-//                    val contentType = taxonomyServiceObj.getContentTypeOfRepository("87dc1607-5d63-4073-9424-720f86ecef43")
-//                    val tpath = taxonomyServiceObj.getPathofContentType(contentType)
-//                    println("contentType: $contentType tpath: $tpath")
-//
-//                    val differed = mapOfRepoIndexList.map { (repoId, indexList) ->
-//                        println("repoId: $repoId indexList: $indexList")
-//                        val tmp = indexList.joinToString(
-//                            prefix = "[",
-//                            postfix = "]",
-//                            separator = ","
-//                        ) { "\"$it\"" }
-//                            val deferred = async {
-//                                // Will this be thread safe?
-//                                taxonomyServiceObj.downloadFile(repoId, tmp, tpath, "./newResult")
-//                            }
-//                            deferred
-//                    }
-//                    differed.forEach { it.await() }
-//
-////                    val deferred = async {
-////                        taxonomyServiceObj.downloadFile( "87dc1607-5d63-4073-9424-720f86ecef43","[\"1_0\"]",tpath, "./newResult")
-////                    }
-////                    deferred.await()
-//                }
+                    println("JSONSchema written to file $fileName")
+                    println("=====================================================================")
 
+                }
+                else
+                    println("Please specify the Repository ID")
 
-
-
-                // This is the call to the Centralized Service to get the list of owned Repositories
             }
 
             else -> 0
