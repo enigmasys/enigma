@@ -34,7 +34,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.20")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
-    implementation("com.azure:azure-storage-blob:12.24.1")
+    implementation("com.azure:azure-storage-blob:12.25.0")
     implementation("com.microsoft.azure:msal4j:1.14.0")
     implementation("com.microsoft.azure:msal4j-persistence-extension:1.2.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.1.5")
