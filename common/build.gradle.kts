@@ -12,7 +12,7 @@ val archivaPort: String? by project
 
 plugins {
     id("org.springframework.boot") version "3.1.5"
-    id("io.spring.dependency-management") version "1.1.3"
+    id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "1.9.20"
     kotlin("plugin.spring") version "1.9.20"
     id("maven-publish")
@@ -34,11 +34,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.20")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
-    implementation("com.azure:azure-storage-blob:12.24.1")
+    implementation("com.azure:azure-storage-blob:12.25.0")
     implementation("com.microsoft.azure:msal4j:1.14.0")
     implementation("com.microsoft.azure:msal4j-persistence-extension:1.2.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.1.5")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
 }
 
 tasks.getByName<Test>("test") {
