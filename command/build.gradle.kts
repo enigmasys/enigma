@@ -39,7 +39,7 @@ dependencies {
     implementation(project(":common"))
 
     implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.5")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.3")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.20")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.20")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
