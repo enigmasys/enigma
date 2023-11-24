@@ -56,7 +56,7 @@ dependencies {
     implementation(project(":command"))
     implementation(project(":common"))
     implementation("info.picocli:picocli:4.7.5")
-    implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.5")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.2.0")
 }
 
 tasks.getByName<Test>("test") {
