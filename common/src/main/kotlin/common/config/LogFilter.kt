@@ -59,8 +59,9 @@ class LogFilter {
             return if (response.statusCode().is4xxClientError || response.statusCode().is5xxServerError) {
                 response.bodyToMono(String::class.java)
                     .flatMap { body ->
-                        logger.debug("Body is {}", body)
-                        Mono.error(LEAPException(body, response.rawStatusCode()))
+                        logger.debug("Body is {}, with status Code {}", body, response.statusCode())
+                        Mono.error(LEAPException(body))
+//                        Mono.error(LEAPException(body, response.rawStatusCode()))
                     }
             } else {
                 Mono.just(response)
@@ -69,4 +70,4 @@ class LogFilter {
     }
 }
 
-class LEAPException(message: String?, val statusCode: Int) : RuntimeException(message)
+class LEAPException(message: String?) : RuntimeException(message)
