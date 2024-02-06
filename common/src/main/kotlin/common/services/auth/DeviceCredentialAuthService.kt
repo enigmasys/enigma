@@ -15,7 +15,6 @@ import org.springframework.web.reactive.function.client.WebClient
 class DeviceCredentialAuthService(
     val webClient: WebClient,
 ) : AuthService {
-
     val logger = LoggerFactory.getLogger(this::class.java)
 
     @Value("\${spring.security.oauth2.client.provider.aad.token-uri}")
@@ -34,8 +33,9 @@ class DeviceCredentialAuthService(
     private lateinit var TOKEN_CACHE_FILE_PATH: String
 
     override fun getAuthToken(): String {
-        if(token=="")
+        if (token == "") {
             fetchToken()
+        }
         return token
     }
 
@@ -59,5 +59,4 @@ class DeviceCredentialAuthService(
 //        println("Observer ID:"+ (result?.account()?.homeAccountId()?.split(".")?.get(0)))
 //        logger.info("Token ${token}")
     }
-
 }

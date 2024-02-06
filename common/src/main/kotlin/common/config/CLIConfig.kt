@@ -11,5 +11,3 @@ class CLIConfig {
     lateinit var taxonomyBranch: String
     lateinit var cookie_key_name: String
 }
-
-

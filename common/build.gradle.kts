@@ -4,11 +4,9 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 val archivaUser: String? by project
 val archivaPassword: String? by project
-//val version: String by project
+// val version: String by project
 val archivaHostId: String? by project
 val archivaPort: String? by project
-
-
 
 plugins {
     id("org.springframework.boot") version "3.2.2"
@@ -16,13 +14,13 @@ plugins {
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.spring") version "1.9.22"
     id("maven-publish")
+//     let's add the ktlink plugin
+    id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
 }
 
-
-
-
 java.sourceCompatibility = JavaVersion.VERSION_17
-//java.targetCompatibility = JavaVersion.VERSION_17
+
+// java.targetCompatibility = JavaVersion.VERSION_17
 
 group = "edu.vanderbilt"
 version = "0.0.1-SNAPSHOT"
@@ -44,7 +42,6 @@ dependencies {
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
     jvmArgs = mutableListOf("--enable-preview")
-
 }
 
 tasks.withType<KotlinCompile> {
@@ -93,7 +90,5 @@ publishing {
                 }
             }
         }
-
-
     }
 }

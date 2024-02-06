@@ -1,18 +1,12 @@
 package command
 
-
-
-import common.services.PremonitionProcessServiceImpl
 import common.services.UserInfo
 import common.services.auth.AuthService
-import common.util.prettyJsonPrint
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.util.ResourceUtils
 import picocli.CommandLine
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.util.concurrent.Callable
 
 @Component
@@ -23,13 +17,10 @@ import java.util.concurrent.Callable
 )
 class UserInfoCmd(
     private val UserInfoObj: UserInfo,
-    private val AuthServiceObj: AuthService
-
-)
-    : Callable<Int>
-{
-
-    @CommandLine.Option(names = ["-s", "--status","--login"], description = ["Display the Status of this Application/User."])
+    private val AuthServiceObj: AuthService,
+) :
+    Callable<Int> {
+    @CommandLine.Option(names = ["-s", "--status", "--login"], description = ["Display the Status of this Application/User."])
     var appStatus = false
 
     @CommandLine.Option(names = ["-o", "--logout"], description = ["Logout from this Application"])
@@ -40,40 +31,40 @@ class UserInfoCmd(
 
     @Value("\${cliclient.TOKEN_CACHE_FILE_PATH:.token_cache.json}")
     private val TOKEN_CACHE_FILE_PATH: String = ""
+
     override fun call(): Int {
         parent?.let { it ->
-            if (it.token?.length?.compareTo(0) ?:  0  > 0){
-                parent?.token?.let { it -> AuthServiceObj.setAuthToken(it) }
-            } }
+            if (it.token?.length?.compareTo(0) ?: 0 > 0)
+                {
+                    parent?.token?.let { it -> AuthServiceObj.setAuthToken(it) }
+                }
+        }
 
-        when{
-
+        when {
             loginFun -> {
                 println("Login Functionality..")
                 // Here we check if the TOKEN_CACHE_FILE_PATH is present or not from the cliclient application properties
                 val file: File = ResourceUtils.getFile(TOKEN_CACHE_FILE_PATH)
 
-                if(file.exists()){
+                if (file.exists())
+                    {
 //                    println("file present ${file.absolutePath}")
-                    if (file.isFile) {
-                        val result = file.delete()
-                        when (result) {
-                            true -> println("User Logged out successful")
-                            false -> println("logout failed")
+                        if (file.isFile) {
+                            val result = file.delete()
+                            when (result) {
+                                true -> println("User Logged out successful")
+                                false -> println("logout failed")
+                            }
                         }
-                    }
-
-                }
-                else {
+                    } else {
                     println("User is logged out already")
                 }
-
             }
 
-            appStatus ->{
+            appStatus -> {
                 UserInfoObj.getUserRegistration()
 //                if (result != null) {
-////                    prettyPrint(result)
+// //                    prettyPrint(result)
 //                    prettyJsonPrint(result)
 //                }
             }
@@ -81,5 +72,4 @@ class UserInfoCmd(
         }
         return 0
     }
-
 }

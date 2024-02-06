@@ -1,6 +1,5 @@
 package common.model
 
-
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class RepoObservations(
@@ -11,5 +10,5 @@ data class RepoObservations(
     @JsonProperty("id")
     val id: String?,
     @JsonProperty("taxonomyTags")
-    val taxonomyTags: List<Any>?
+    val taxonomyTags: List<Any>?,
 )

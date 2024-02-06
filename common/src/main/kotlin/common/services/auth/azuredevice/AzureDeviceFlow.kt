@@ -19,19 +19,17 @@ class AzureDeviceFlow(
     @Value("\${spring.security.oauth2.client.registration.premonition.scope}")
     private var scope: Set<String>,
     @Value("\${cliclient.TOKEN_CACHE_FILE_PATH:.token_cache.json}")
-    private val TOKEN_CACHE_FILE_PATH: String
+    private val TOKEN_CACHE_FILE_PATH: String,
 ) {
-
-
     //    @Throws(Exception::class)
     fun acquireTokenDeviceCode(): IAuthenticationResult? {
-
         val tokenCacheAspect = TokenCacheAspect(TOKEN_CACHE_FILE_PATH)
-        val pca = PublicClientApplication.builder(client_id)
-            .authority(token_uri)
-            .setTokenCacheAccessAspect(tokenCacheAspect)
+        val pca =
+            PublicClientApplication.builder(client_id)
+                .authority(token_uri)
+                .setTokenCacheAccessAspect(tokenCacheAspect)
 //            .setTokenCacheAccessAspect(PersistentTokenAspect().createPersistenceAspect())
-            .build()
+                .build()
 
         val accountsInCache = pca.accounts.join()
 
@@ -47,9 +45,10 @@ class AzureDeviceFlow(
         var result: IAuthenticationResult? =
             try {
                 if (account != null) {
-                    val silentParameters = SilentParameters
-                        .builder(scope, account)
-                        .build()
+                    val silentParameters =
+                        SilentParameters
+                            .builder(scope, account)
+                            .build()
 
                     // try to acquire token silently. This call will fail since the token cache
                     // does not have any data for the user you are trying to acquire a token for
@@ -64,7 +63,6 @@ class AzureDeviceFlow(
                     } catch (ex: java.lang.Exception) {
                         println("Exception: ${ex.message}")
                     }
-
                 } else if (ex is IllegalArgumentException) {
                     // Handle other exceptions accordingly
                     try {
@@ -90,12 +88,13 @@ class AzureDeviceFlow(
         val deviceCodeConsumer =
             Consumer { deviceCode: DeviceCode ->
                 System.out.println(
-                    deviceCode.message()
+                    deviceCode.message(),
                 )
             }
-        val parameters = DeviceCodeFlowParameters
-            .builder(scope, deviceCodeConsumer)
-            .build()
+        val parameters =
+            DeviceCodeFlowParameters
+                .builder(scope, deviceCodeConsumer)
+                .build()
 
         // Try to acquire a token via device code flow. If successful, you should see
         // the token and account information printed out to console, and the sample_cache.json
@@ -103,14 +102,14 @@ class AzureDeviceFlow(
         return pca.acquireToken(parameters).join()
     }
 
-
     private fun acquireTokenSilently(
         app: PublicClientApplication,
-        account: IAccount
+        account: IAccount,
     ): CompletableFuture<IAuthenticationResult> {
-        val authParams = SilentParameters
-            .builder(scope, account)
-            .build()
+        val authParams =
+            SilentParameters
+                .builder(scope, account)
+                .build()
         return app.acquireTokenSilently(authParams)
     }
 

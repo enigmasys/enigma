@@ -1,25 +1,15 @@
 package common.services
 
 import common.services.auth.AuthService
-import org.springframework.core.io.Resource
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
-import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.stereotype.Service
-import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.reactive.function.BodyInserters
-import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.util.UriComponentsBuilder
-import reactor.core.publisher.Mono
 
 @Service
 class PremonitionFileUploadService(
     private val webClient: WebClient,
-    val authService: AuthService
+    val authService: AuthService,
 ) {
-
-//    fun uploadFile(resource: Resource, uploadURL: String): Mono<HttpStatus> {
+    //    fun uploadFile(resource: Resource, uploadURL: String): Mono<HttpStatus> {
 //        val token = authService.getAuthToken()
 //        val url =
 //            UriComponentsBuilder.fromHttpUrl(uploadURL).build(false).toUri()
@@ -27,7 +17,7 @@ class PremonitionFileUploadService(
 //            .uri(url)
 //            .headers { it.setBearerAuth(token) }
 //
-////            .contentType()
+// //            .contentType()
 //            .body(BodyInserters.fromResource(resource))
 //            .exchangeToMono { response: ClientResponse ->
 //                if (response.statusCode() == HttpStatus.OK) {
@@ -61,5 +51,4 @@ class PremonitionFileUploadService(
 //                }
 //            }
 //    }
-
 }

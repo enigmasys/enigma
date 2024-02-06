@@ -4,11 +4,11 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
+import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
-import org.springframework.context.annotation.Primary
-import org.springframework.web.reactive.function.client.ExchangeStrategies
 
 @Configuration
 class GenericWebClient : ClientConfig {
@@ -25,8 +25,8 @@ class GenericWebClient : ClientConfig {
             .baseUrl(baseUrl)
             .clientConnector(
                 ReactorClientHttpConnector(
-                    HttpClient.create().followRedirect(true)
-                )
+                    HttpClient.create().followRedirect(true),
+                ),
             )
             .filters { exchangeFilterFunctions ->
                 exchangeFilterFunctions.add(LogFilter.logRequest())
@@ -37,7 +37,7 @@ class GenericWebClient : ClientConfig {
                     .codecs { clientCodecConfigurer ->
                         clientCodecConfigurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024)
                     }
-                    .build()
+                    .build(),
             )
             .build()
     }

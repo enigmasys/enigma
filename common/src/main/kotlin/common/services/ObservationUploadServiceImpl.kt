@@ -1,9 +1,7 @@
 package common.services
 
-
 import common.model.observation.UploadObservationObject
 import common.services.auth.AuthService
-import common.util.prettyJsonPrint
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
@@ -13,12 +11,11 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 import reactor.core.publisher.Mono
 
-
+// class ObservationUploadServiceImpl(@Qualifier("premonitionApiWebClient") private val webClient: WebClient) {
 @Service
-//class ObservationUploadServiceImpl(@Qualifier("premonitionApiWebClient") private val webClient: WebClient) {
 class ObservationUploadServiceImpl(
     private val webClient: WebClient,
-    val authService: AuthService
+    val authService: AuthService,
 ) {
     val logger = LoggerFactory.getLogger(this::class.java)
 
@@ -38,28 +35,30 @@ class ObservationUploadServiceImpl(
         apiVersion = "/v2"
         logger.debug(observationObject.toString())
 //        prettyJsonPrint(observationObject)
-        val request = webClient.post()
-            .uri { uriBuilder: UriBuilder ->
-                uriBuilder.path("$apiVersion/Process/AppendObservation")
-                    .queryParam("processId", processID)
-                    .build()
-            }
-            .headers { it.setBearerAuth(token) }
-            .contentType(MediaType.APPLICATION_JSON)
+        val request =
+            webClient.post()
+                .uri { uriBuilder: UriBuilder ->
+                    uriBuilder.path("$apiVersion/Process/AppendObservation")
+                        .queryParam("processId", processID)
+                        .build()
+                }
+                .headers { it.setBearerAuth(token) }
+                .contentType(MediaType.APPLICATION_JSON)
 //            .body(Mono.just(observationObject),UploadObservationObject::class.java)
-            .body(BodyInserters.fromPublisher(Mono.just(observationObject), UploadObservationObject::class.java))
+                .body(BodyInserters.fromPublisher(Mono.just(observationObject), UploadObservationObject::class.java))
 //            .body(BodyInserters.fromPublisher(Mono.just(observationObject), UploadObservationObject::class.java))
 //            .accept(MediaType.APPLICATION_JSON)
 //            .body(BodyInserters.fromValue(observationObject))
-            .accept(MediaType.APPLICATION_JSON)
-            .exchange()
-            .flatMap { clientResponse ->
-                if (clientResponse.statusCode().is4xxClientError) {
-                    clientResponse.body { clientHttpResponse, context -> clientHttpResponse.body }
-                    return@flatMap clientResponse.bodyToMono(String::class.java)
-                } else return@flatMap clientResponse.bodyToMono(String::class.java)
-            }
-
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .flatMap { clientResponse ->
+                    if (clientResponse.statusCode().is4xxClientError) {
+                        clientResponse.body { clientHttpResponse, context -> clientHttpResponse.body }
+                        return@flatMap clientResponse.bodyToMono(String::class.java)
+                    } else {
+                        return@flatMap clientResponse.bodyToMono(String::class.java)
+                    }
+                }
 
 //        val response = request
 //            .retrieve()
@@ -71,15 +70,11 @@ class ObservationUploadServiceImpl(
     }
 
     fun uploadObservationDataFile() {}
+
     fun uploadBatchObservationDataFiles() {}
+
     fun appendBatchObservations() {}
+
     fun updateObservation() {
     }
 }
-
-
-
-
-
-
-

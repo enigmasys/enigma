@@ -10,12 +10,11 @@ import reactor.core.publisher.Mono
 import java.net.InetAddress
 
 @Service
-class UserInfo(private val webClient: WebClient,
-               val authService: AuthService
+class UserInfo(
+    private val webClient: WebClient,
+    val authService: AuthService,
 ) {
-
     var logger = LoggerFactory.getLogger(this::class.java)
-
 
     fun getUserTokenFromRemote() {
         val token = authService.getAuthToken()
@@ -24,32 +23,33 @@ class UserInfo(private val webClient: WebClient,
     fun getUserRegistration(): UserRegistration? {
         val token = authService.getAuthToken()
         var apiVersion: String = "/v2"
-        val myRequest = webClient.get()
-            .uri(apiVersion + "/User/CheckRegistration")
-            .headers { it.setBearerAuth(token) }
+        val myRequest =
+            webClient.get()
+                .uri(apiVersion + "/User/CheckRegistration")
+                .headers { it.setBearerAuth(token) }
 
-
-        val retrievedResource: Mono<UserRegistration> = myRequest
-            .retrieve()
-            .bodyToMono(UserRegistration::class.java)
+        val retrievedResource: Mono<UserRegistration> =
+            myRequest
+                .retrieve()
+                .bodyToMono(UserRegistration::class.java)
 
         val result = retrievedResource.share().block()
 //        logger.info(result.toString())
         return result
     }
 
-
     fun selfRegister(): String? {
         logger.info(InetAddress.getLocalHost().hostName)
         var apiVersion: String = "/v2"
-        val myRequest = webClient.get()
-            .uri { uriBuilder: UriBuilder ->
-                uriBuilder.path("$apiVersion/User/Register")
-                    .queryParam("displayName", "LeapService-${InetAddress.getLocalHost().hostName}")
-                    .build()
-            }
-            .retrieve()
-            .bodyToMono(String::class.java)
+        val myRequest =
+            webClient.get()
+                .uri { uriBuilder: UriBuilder ->
+                    uriBuilder.path("$apiVersion/User/Register")
+                        .queryParam("displayName", "LeapService-${InetAddress.getLocalHost().hostName}")
+                        .build()
+                }
+                .retrieve()
+                .bodyToMono(String::class.java)
 
         //
 
@@ -58,5 +58,4 @@ class UserInfo(private val webClient: WebClient,
 //        logger.info(result.toString())
         return result
     }
-
 }

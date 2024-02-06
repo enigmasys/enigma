@@ -7,5 +7,5 @@ data class Directory(
     val expiresInMins: Int,
     val isUploadDir: Boolean,
     val processId: String,
-    val sasUrl: String
+    val sasUrl: String,
 )

@@ -16,9 +16,7 @@ import java.lang.Thread.sleep
 class ClientCredentialAuthService(
     val webClient: WebClient,
 ) : AuthService {
-
     val logger = LoggerFactory.getLogger(this::class.java)
-
 
     @Value("\${spring.security.oauth2.client.provider.aad.token-uri}")
     private lateinit var token_uri: String
@@ -48,22 +46,23 @@ class ClientCredentialAuthService(
 
     fun fetchToken() {
         logger.debug("Fetching the tokens")
-        val dataMap = LinkedMultiValueMap<String, String>().apply {
-            add("grant_type", "client_credentials")
-            add("client_id", client_id)
-            add("client_secret", client_secret)
-            add("scope", scope)
-        }
-        token = webClient
-            .post()
-            .uri(token_uri)
-            .body(BodyInserters.fromFormData(dataMap))
-            .retrieve()
-            .bodyToMono(AzureToken::class.java)
-            .map { it.access_token }
-            .onErrorReturn("").share().block().toString()
+        val dataMap =
+            LinkedMultiValueMap<String, String>().apply {
+                add("grant_type", "client_credentials")
+                add("client_id", client_id)
+                add("client_secret", client_secret)
+                add("scope", scope)
+            }
+        token =
+            webClient
+                .post()
+                .uri(token_uri)
+                .body(BodyInserters.fromFormData(dataMap))
+                .retrieve()
+                .bodyToMono(AzureToken::class.java)
+                .map { it.access_token }
+                .onErrorReturn("").share().block().toString()
         sleep(100)
 //        logger.info("Token ${token}")
     }
-
 }

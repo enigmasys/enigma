@@ -8,10 +8,8 @@ import java.io.IOException
 import java.nio.file.Path
 import java.nio.file.Paths
 
-
 @ConditionalOnProperty("authentication.security.deviceflow.enabled", havingValue = "true")
 class PersistentTokenAspect {
-
     @Throws(IOException::class)
     private fun createPersistenceSettings(): PersistenceSettings? {
 //        val path: Path = Paths.get(System.getProperty("user.home"), "MSAL", "testCache")
@@ -26,7 +24,7 @@ class PersistentTokenAspect {
                 "MsalTestAttribute1Key",
                 "MsalTestAttribute1Value",
                 "MsalTestAttribute2Key",
-                "MsalTestAttribute2Value"
+                "MsalTestAttribute2Value",
             )
             .setLockRetry(1000, 50)
             .build()

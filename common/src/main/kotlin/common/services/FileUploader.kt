@@ -20,11 +20,15 @@ import java.util.*
 class FileUploader(
     private val ProcessServiceObj: PremonitionProcessServiceImpl,
     private val ObservationUploadServiceObj: ObservationUploadServiceImpl,
-    private val ObservationDownloadServiceObj: ObservationServiceImpl
+    private val ObservationDownloadServiceObj: ObservationServiceImpl,
 ) {
     val logger = LoggerFactory.getLogger(this::class.java)
 
-    fun put(sasUrl: String, uploadDir: String, index: String) {
+    fun put(
+        sasUrl: String,
+        uploadDir: String,
+        index: String,
+    ) {
         if (Files.notExists(Paths.get(uploadDir))) {
             logger.info("Folder does not exist")
             return
@@ -49,35 +53,49 @@ class FileUploader(
         }
     }
 
-
-    fun uploadDirectory(processID: String, observerID: String, uploadDir: Path, data: Path? = null) {
+    fun uploadDirectory(
+        processID: String,
+        observerID: String,
+        uploadDir: Path,
+        data: Path? = null,
+    ) {
         val processInfo = ProcessServiceObj.getProcessState(processID)
-        /// We need to include the displayName, taxonomyVersion(To form the TagFormatter URL ).
+        // / We need to include the displayName, taxonomyVersion(To form the TagFormatter URL ).
         // for this we would need to fetch the displayName from Index 0.
 
 //        http://localhost:12345/routers/TagFormat/aadid_yogesh_p_d_p_barve_at_vanderbilt_p_edu%2BLEAP_Taxonomy_Release_v1B/branch/master/human?tags=
-        var index0_data = ObservationDownloadServiceObj.getObservation(processID = processID,
-                                startObsIndex = 0.toString(),
-                                version= processInfo?.lastVersionIndex.toString()
+        var index0_data =
+            ObservationDownloadServiceObj.getObservation(
+                processID = processID,
+                startObsIndex = 0.toString(),
+                version = processInfo?.lastVersionIndex.toString(),
             )
-        var mapper =  ObjectMapper(); // or inject it as a dependency
-        val tmpTaxonomyData =   mapper.convertValue(index0_data!!.data,Array<TaxonomyData>::class.java)
+        var mapper = ObjectMapper(); // or inject it as a dependency
+        val tmpTaxonomyData = mapper.convertValue(index0_data!!.data, Array<TaxonomyData>::class.java)
         val displayName = tmpTaxonomyData[0].displayName
 
         // This will be the tagFormatter URL to be called for the given taxonomy data.
         var tmp_baseurl = ""
-        if (!tmpTaxonomyData[0].taxonomyVersion!!.url?.contains("http")!!){
-            tmp_baseurl = "http://"+tmpTaxonomyData[0].taxonomyVersion!!.url
-        }else
+        if (!tmpTaxonomyData[0].taxonomyVersion!!.url?.contains("http")!!) {
+            tmp_baseurl = "http://" + tmpTaxonomyData[0].taxonomyVersion!!.url
+        } else {
             tmp_baseurl = tmpTaxonomyData[0].taxonomyVersion!!.url.toString()
+        }
 //        val toGuidFormatURL = tmp_baseurl + "/routers/TagFormat/"+ java.net.URLEncoder.encode(tmpTaxonomyData[0].taxonomyVersion!!.id, "utf-8")+"/branch/"+ tmpTaxonomyData[0].taxonomyVersion!!.branch+"/guid"
-        val uploadMetaData = tmpTaxonomyData[0].taxonomyVersion!!.branch?.let { branchID ->
-            tmpTaxonomyData[0].taxonomyVersion!!.id?.let { projectID ->
-                generateUploadMetaData(processID, observerID = observerID, data,displayName,tmp_baseurl, projectID,
-                    branchID
-                )
-            }
-        } as UploadObservationObject
+        val uploadMetaData =
+            tmpTaxonomyData[0].taxonomyVersion!!.branch?.let { branchID ->
+                tmpTaxonomyData[0].taxonomyVersion!!.id?.let { projectID ->
+                    generateUploadMetaData(
+                        processID,
+                        observerID = observerID,
+                        data,
+                        displayName,
+                        tmp_baseurl,
+                        projectID,
+                        branchID,
+                    )
+                }
+            } as UploadObservationObject
 
         uploadMetaData.isFunction = processInfo!!.isFunction
         uploadMetaData.index = processInfo.numObservations
@@ -96,8 +114,12 @@ class FileUploader(
 //        // putobservation
         uploadMetaData.dataFiles?.let {
             ObservationDownloadServiceObj.putObservationFiles(
-                processID, result.directoryId, uploadMetaData.index.toString(),
-                uploadMetaData.index.toString(), "0", it
+                processID,
+                result.directoryId,
+                uploadMetaData.index.toString(),
+                uploadMetaData.index.toString(),
+                "0",
+                it,
             )
         }
     }
@@ -105,17 +127,27 @@ class FileUploader(
     companion object {
         fun getMapofRelativeAndAbsolutePath(uploadDir: String): Map<Path, Path> {
             var uploadDirPath = Paths.get(uploadDir)
-            var fileList = Files.walk(uploadDirPath)
-                .filter(Files::isRegularFile)
-                .toList()
+            var fileList =
+                Files.walk(uploadDirPath)
+                    .filter(Files::isRegularFile)
+                    .toList()
             var relativeFileList = fileList.map { uploadDirPath.relativize(it) }
             var fileMap = relativeFileList.zip(fileList).toMap()
             return fileMap
         }
 
-        private fun generateUploadMetaData(processID: String, observerID: String, data: Path?, displayName: String?, ToGuidTagURL: String?, projectID: String, projectBranch: String): Any {
-//		var processID = "4935ff85-8e84-4b06-a69a-9ac160542a50"
-            val uploadData = """
+        private fun generateUploadMetaData(
+            processID: String,
+            observerID: String,
+            data: Path?,
+            displayName: String?,
+            ToGuidTagURL: String?,
+            projectID: String,
+            projectBranch: String,
+        ): Any {
+// 		var processID = "4935ff85-8e84-4b06-a69a-9ac160542a50"
+            val uploadData =
+                """
             {
               "isFunction": false,
               "processType": "TestSim",
@@ -143,12 +175,18 @@ class FileUploader(
 //            println("Current Date: $currentDate")
             uploadObs.startTime = currentDate
             if (ToGuidTagURL != null) {
-                val tmpdata =  TaxonomyServerClient().getGuidTags(ToGuidTagURL, projectID , projectBranch, ObjectMapper().writeValueAsString(rawData!!.taxonomyTags))
+                val tmpdata =
+                    TaxonomyServerClient().getGuidTags(
+                        ToGuidTagURL,
+                        projectID,
+                        projectBranch,
+                        ObjectMapper().writeValueAsString(rawData!!.taxonomyTags),
+                    )
                 if (tmpdata != null) {
                     rawData?.taxonomyTags = ObjectMapper().readTree(tmpdata).toList()
                 }
             }
-            if (rawData?.displayName == null){
+            if (rawData?.displayName == null) {
                 rawData?.displayName = displayName
             }
             data?.let {

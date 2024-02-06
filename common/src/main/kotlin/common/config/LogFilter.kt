@@ -1,7 +1,6 @@
 package common.config
 
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
@@ -11,6 +10,7 @@ import java.util.function.Consumer
 class LogFilter {
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java)
+
         fun logRequest(): ExchangeFilterFunction {
             return ExchangeFilterFunction.ofRequestProcessor { clientRequest ->
                 logger.debug("==================================================")
@@ -38,24 +38,30 @@ class LogFilter {
             logger.debug("Returned status code {} ({})", status.value(), status.toString())
         }
 
-
         private fun logHeaders(response: ClientResponse) {
             response.headers().asHttpHeaders().forEach { name: String?, values: List<String?> ->
                 values.forEach(
-                    Consumer { value: String? -> logNameAndValuePair(name, value) })
+                    Consumer { value: String? -> logNameAndValuePair(name, value) },
+                )
             }
         }
+
         private fun logHeaders(request: ClientRequest) {
             request.headers().forEach { name: String?, values: List<String?> ->
                 values.forEach(
-                    Consumer { value: String? -> logNameAndValuePair(name, value) })
+                    Consumer { value: String? -> logNameAndValuePair(name, value) },
+                )
             }
         }
-        private fun logNameAndValuePair(name: String?, value: String?) {
+
+        private fun logNameAndValuePair(
+            name: String?,
+            value: String?,
+        ) {
             logger.debug("{}={}", name, value)
         }
 
-         private fun logBody(response: ClientResponse): Mono<ClientResponse> {
+        private fun logBody(response: ClientResponse): Mono<ClientResponse> {
             return if (response.statusCode().is4xxClientError || response.statusCode().is5xxServerError) {
                 response.bodyToMono(String::class.java)
                     .flatMap { body ->

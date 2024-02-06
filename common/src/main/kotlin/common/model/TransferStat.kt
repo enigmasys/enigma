@@ -10,5 +10,5 @@ data class TransferStat(
     val runDurationMs: Any?,
     val runEnd: Any?,
     val runStart: String?,
-    val status: String?
+    val status: String?,
 )

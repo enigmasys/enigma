@@ -11,5 +11,5 @@ data class Application(
     val processId: String,
     val processType: String,
     val runtimeConfig: RuntimeConfig,
-    val version: Int
+    val version: Int,
 )

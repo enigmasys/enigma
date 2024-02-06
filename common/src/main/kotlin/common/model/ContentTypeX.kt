@@ -1,6 +1,5 @@
 package common.model
 
-
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class ContentTypeX(
