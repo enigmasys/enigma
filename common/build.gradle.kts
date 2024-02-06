@@ -38,7 +38,7 @@ dependencies {
     implementation("com.microsoft.azure:msal4j:1.14.2")
     implementation("com.microsoft.azure:msal4j-persistence-extension:1.2.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
 }
 
 tasks.getByName<Test>("test") {
