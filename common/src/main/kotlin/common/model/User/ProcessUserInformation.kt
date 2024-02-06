@@ -5,5 +5,5 @@ data class ProcessUserInformation(
     val isOwner: Boolean,
     val principalId: String,
     val processId: String,
-    val processType: String
+    val processType: String,
 )

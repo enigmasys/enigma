@@ -1,6 +1,5 @@
 package common.model.taxonomyserver
 
-
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class AppendHeaders(
@@ -11,5 +10,5 @@ data class AppendHeaders(
     @JsonProperty("x-ms-blob-type")
     val xMsBlobType: String,
     @JsonProperty("x-ms-encryption-algorithm")
-    val xMsEncryptionAlgorithm: String
+    val xMsEncryptionAlgorithm: String,
 )

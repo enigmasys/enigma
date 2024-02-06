@@ -8,6 +8,5 @@ data class EgressData(
     val expiresOn: String,
     val files: List<DataLakeFile>?,
     val processId: String,
-    val transferId: Any?
+    val transferId: Any?,
 )
-

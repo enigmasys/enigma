@@ -7,5 +7,5 @@ data class File(
     val hash: Any?,
     val length: Any?,
     val name: String,
-    val sasUrl: String
+    val sasUrl: String,
 )

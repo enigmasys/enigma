@@ -13,5 +13,5 @@ data class Children(
     @JsonProperty("taxonomyTags")
     val taxonomyTags: List<Any>?,
     @JsonProperty("time")
-    val time: String?
+    val time: String?,
 )

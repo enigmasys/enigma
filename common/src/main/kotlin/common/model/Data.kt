@@ -10,5 +10,5 @@ data class Data(
     val Quantity: Int,
     val Sex: Int,
     val Status: Int,
-    val Type: Int
+    val Type: Int,
 )

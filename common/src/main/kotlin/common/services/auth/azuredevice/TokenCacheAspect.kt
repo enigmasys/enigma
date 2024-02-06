@@ -7,16 +7,16 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 
-
-class TokenCacheAspect(fileName: String)
- : ITokenCacheAccessAspect {
+class TokenCacheAspect(fileName: String) :
+    ITokenCacheAccessAspect {
     private var data: String
-    private var cacheFileName:String
+    private var cacheFileName: String
+
     init {
         // surround with try catch
         try {
             data = CryptHelper.decrypt("Bar12345Bar12346", readDataFromFile(fileName))!!
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             println("Error decrypting the data from the file: $fileName")
             data = ""
         }
@@ -38,18 +38,17 @@ class TokenCacheAspect(fileName: String)
     companion object {
         private fun readDataFromFile(resource: String): String {
             return try {
-                //Determine if sample running from IDE (resource URI starts with 'file')
+                // Determine if sample running from IDE (resource URI starts with 'file')
                 // or from a .jar (resource URI starts with 'jar'),
                 //  so that sample_cache.json is read properly
                 val file: File = ResourceUtils.getFile(resource)
-                if(file.exists()){
+                if (file.exists()) {
                     return String(
                         Files.readAllBytes(
-                            Paths.get(file.toURI())
-                        )
+                            Paths.get(file.toURI()),
+                        ),
                     )
-                }
-                else {
+                } else {
                     val uri = file.toURI()
                     val myFolderPath = Paths.get(uri)
                     return String(Files.readAllBytes(myFolderPath))

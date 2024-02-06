@@ -9,7 +9,10 @@ import javax.crypto.spec.SecretKeySpec
 object CryptHelper {
     private const val SECONDARY_KEY = "RandomInitVector" // 16 bytes IV
 
-    fun encrypt(key: String, value: String): String? {
+    fun encrypt(
+        key: String,
+        value: String,
+    ): String? {
         try {
             val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
             val iv = IvParameterSpec(SECONDARY_KEY.toByteArray(charset("UTF-8")))
@@ -25,7 +28,10 @@ object CryptHelper {
         return null
     }
 
-    fun decrypt(key: String,  encrypted: String?): String? {
+    fun decrypt(
+        key: String,
+        encrypted: String?,
+    ): String? {
         try {
             val iv = IvParameterSpec(SECONDARY_KEY.toByteArray(charset("UTF-8")))
             val skeySpec = SecretKeySpec(key.toByteArray(charset("UTF-8")), "AES")

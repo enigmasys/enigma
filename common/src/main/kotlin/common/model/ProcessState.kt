@@ -5,5 +5,5 @@ data class ProcessState(
     val lastVersionIndex: Int,
     val numObservations: Int,
     val processId: String,
-    val processType: String
+    val processType: String,
 )

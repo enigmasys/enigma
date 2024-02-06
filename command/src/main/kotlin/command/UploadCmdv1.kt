@@ -4,7 +4,6 @@ import common.services.TaxonomyInfoService
 import common.services.auth.AuthService
 import common.util.tryExtendPath
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.stereotype.Component
 import picocli.CommandLine
@@ -37,28 +36,28 @@ import kotlin.system.exitProcess
 @ComponentScan(basePackages = ["common"])
 class UploadCmdv1(
     private val TaxonomyInfoServceObj: TaxonomyInfoService,
-    private val AuthServiceObj: AuthService
-): Callable<Int> {
-
+    private val AuthServiceObj: AuthService,
+) : Callable<Int> {
     val logger = LoggerFactory.getLogger(this::class.java)
 
-    @CommandLine.Option(required = true, names=["-d","--dir"], description = ["Directory Path"])
+    @CommandLine.Option(required = true, names = ["-d", "--dir"], description = ["Directory Path"])
     var dir: String? = null
 
-    @CommandLine.Option(required = true, names=["-p","--process","-repo"], description = ["Repository ID (a.k.a. ProcessID) of the repository"])
+    @CommandLine.Option(
+        required = true,
+        names = ["-p", "--process", "-repo"],
+        description = ["Repository ID (a.k.a. ProcessID) of the repository"],
+    )
     var processID: String? = null
 
-    @CommandLine.Option(required = false, names=["-f"], description = ["JSON file path of metadata for the record"])
-    var metadata:String? = null
+    @CommandLine.Option(required = false, names = ["-f"], description = ["JSON file path of metadata for the record"])
+    var metadata: String? = null
 
-    @CommandLine.Option(required = false, names=["-m","-msg"], description = ["Add a description to the uploads"])
-    var displayName:String? = null
-
+    @CommandLine.Option(required = false, names = ["-m", "-msg"], description = ["Add a description to the uploads"])
+    var displayName: String? = null
 
     @CommandLine.Option(names = ["-h", "--help"], usageHelp = true, description = ["Helps in uploading of records to a repository."])
     var help = false
-
-
 
     @CommandLine.ParentCommand
     val parent: EnigmaCommand? = null
@@ -68,42 +67,47 @@ class UploadCmdv1(
 //    @Value("\${cliclient.taxonomyBranch}")
 //    private val TAXONOMYBRANCH: String = "master123"
 
-    override fun call(): Int  {
-
+    override fun call(): Int {
         parent?.let { it ->
-            if (it.token?.length?.compareTo(0) ?:  0  > 0){
-                parent?.token?.let { it -> AuthServiceObj.setAuthToken(it) }
-            } }
+            if (it.token?.length?.compareTo(0) ?: 0 > 0)
+                {
+                    parent?.token?.let { it -> AuthServiceObj.setAuthToken(it) }
+                }
+        }
 
-        when{
+        when {
             help -> exitProcess(0)
 
             else -> {
-
                 Files.isDirectory(Paths.get(dir)).let {
-                    if (!it){
-                        println("WARNING: Specified Directory $dir is a not a valid Input Directory, Please check.")
-                        println("Please provide an INPUT DIRECTORY Path containing ONLY " +
-                                "the data to be uploaded and try again.")
-                        exitProcess(0)
-                    }
+                    if (!it)
+                        {
+                            println("WARNING: Specified Directory $dir is a not a valid Input Directory, Please check.")
+                            println(
+                                "Please provide an INPUT DIRECTORY Path containing ONLY " +
+                                    "the data to be uploaded and try again.",
+                            )
+                            exitProcess(0)
+                        }
                 }
 
                 // Make sure the directory exists
                 dir?.let {
-                    if (Paths.get(dir).notExists()){
-                        println("Directory does not exist: $dir")
-                        println("Please create the directory and try again.")
-                        exitProcess(0)
-                    }
+                    if (Paths.get(dir).notExists())
+                        {
+                            println("Directory does not exist: $dir")
+                            println("Please create the directory and try again.")
+                            exitProcess(0)
+                        }
                 }
 
-                var jsonFilePath: Path? =  metadata?.run {
-                    when(Paths.get(metadata).isAbsolute){
-                        false -> Paths.get(metadata).toAbsolutePath().normalize()
-                        else -> Paths.get(metadata)
-                    }
-                }?:null
+                var jsonFilePath: Path? =
+                    metadata?.run {
+                        when (Paths.get(metadata).isAbsolute) {
+                            false -> Paths.get(metadata).toAbsolutePath().normalize()
+                            else -> Paths.get(metadata)
+                        }
+                    } ?: null
 
                 val uploadDir = Paths.get(dir?.let { tryExtendPath(it) })
 
@@ -113,14 +117,13 @@ class UploadCmdv1(
 //                TaxonomyInfoServceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
                 TaxonomyInfoServceObj.initTaxonomyInfoService()
 
-
-                //Stress Test with 100 records
+                // Stress Test with 100 records
 
 //                for (i in 1..10) {
-                    processID?.let {
-                        logger.info("$it ::  $uploadDir :: $jsonFilePath")
-                        TaxonomyInfoServceObj.uploadToRepository(it, uploadDir, jsonFilePath, displayName)
-                    }
+                processID?.let {
+                    logger.info("$it ::  $uploadDir :: $jsonFilePath")
+                    TaxonomyInfoServceObj.uploadToRepository(it, uploadDir, jsonFilePath, displayName)
+                }
 //                }
                 println("Upload Complete")
                 println("=====================================")
@@ -128,6 +131,4 @@ class UploadCmdv1(
         }
         return 0
     }
-
-
 }

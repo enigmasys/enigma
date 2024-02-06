@@ -17,5 +17,5 @@ data class UploadObservationObject(
     var startTime: String?,
     var version: Int?,
     var `data`: List<Any>? = emptyList(),
-    var dataFiles: List<String>? = emptyList()
+    var dataFiles: List<String>? = emptyList(),
 )

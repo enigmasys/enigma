@@ -7,5 +7,5 @@ data class ProcessDependency(
     val processId: String,
     val processType: String,
     val startIndex: Int,
-    val version: Int
+    val version: Int,
 )

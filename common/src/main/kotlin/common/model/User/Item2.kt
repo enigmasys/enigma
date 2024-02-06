@@ -5,5 +5,5 @@ data class Item2(
     val fullName: String,
     val objectId: String,
     val tenantId: String,
-    val userId: String
+    val userId: String,
 )

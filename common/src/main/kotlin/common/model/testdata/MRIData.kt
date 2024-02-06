@@ -49,5 +49,5 @@ data class MRIData(
     val SliceThickness: Int,
     val SoftwareVersions: String,
     val StationName: String,
-    val TxRefAmp: Double
+    val TxRefAmp: Double,
 )

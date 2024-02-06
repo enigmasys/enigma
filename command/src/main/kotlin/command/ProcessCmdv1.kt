@@ -3,20 +3,15 @@ package command
 // It is generated in the file "ProcessCmdv1.kt" in the same package as the original class
 // The original class is "ProcessCmd.kt" in the same package
 // This will leverage the Centralized Service for accessing the Repository Information.
+import common.services.TaxonomyInfoService
 import common.services.auth.AuthService
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.stereotype.Component
 import picocli.CommandLine
+import java.io.File
 import java.util.concurrent.Callable
 
-import common.services.TaxonomyInfoService
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
-import java.io.File
-
-//@Component
+// @Component
 @CommandLine.Command(
     name = "process",
     aliases = ["proc", "repository", "repo"],
@@ -27,7 +22,6 @@ import java.io.File
 class ProcessCmdv1(
     private val taxonomyServiceObj: TaxonomyInfoService,
     private val authServiceObj: AuthService,
-
 //    @Value("\${cliclient.taxonomyProject}")
 //    private val TAXONOMYPROJECT: String = "AllLeap+TaxonomyBootcamp123",
 //    @Value("\${cliclient.taxonomyBranch}")
@@ -35,44 +29,44 @@ class ProcessCmdv1(
 ) : Callable<Int> {
     @CommandLine.Option(
         names = ["-l", "--listofProcesses", "--list"],
-        description = ["Display the list of owned Repositories(a.k.a Process)."]
+        description = ["Display the list of owned Repositories(a.k.a Process)."],
     )
     var listofProcesses = false
 
-
     @CommandLine.Option(
         names = ["-j", "--jsonschema"],
-        description = ["Get the JSON Schema of the Repository ID"]
+        description = ["Get the JSON Schema of the Repository ID"],
     )
     var jsonschema = false
 
     @CommandLine.Option(
         names = ["-d", "--dir"],
-        description = ["Store the JSON Schema of the Repository ID in a directory"]
+        description = ["Store the JSON Schema of the Repository ID in a directory"],
     )
-    var dir:String? = null
+    var dir: String? = null
 
     @CommandLine.Option(
         names = ["-f", "--file"],
-        description = ["Store the JSON Schema of the Repository ID in a file"]
+        description = ["Store the JSON Schema of the Repository ID in a file"],
     )
-    var fileName:String? = null
+    var fileName: String? = null
 
     @CommandLine.Option(
         names = ["-r", "--repo"],
-        description = ["Repository ID"]
+        description = ["Repository ID"],
     )
     var repoId: String? = null
 
     @CommandLine.ParentCommand
     val parent: EnigmaCommand? = null
 
-
     override fun call(): Int {
         parent?.let { it ->
-            if (it.token?.length?.compareTo(0) ?:  0  > 0){
-                parent?.token?.let { it -> authServiceObj.setAuthToken(it) }
-            } }
+            if (it.token?.length?.compareTo(0) ?: 0 > 0)
+                {
+                    parent?.token?.let { it -> authServiceObj.setAuthToken(it) }
+                }
+        }
         when {
             listofProcesses -> {
 //                val webgmeToken = getWebGMEToken()
@@ -89,8 +83,8 @@ class ProcessCmdv1(
                     result.forEach { (key, value) ->
                         value as List<*>
                         value.forEach {
-                            (it as Pair<* , *> )
-                                println("${it.first}  |  " + key.toString() + "  |  ${it.second} ")
+                            (it as Pair<*, *>)
+                            println("${it.first}  |  " + key.toString() + "  |  ${it.second} ")
                         }
                     }
                 }
@@ -116,20 +110,13 @@ class ProcessCmdv1(
 
                     println("JSONSchema written to file $fileName")
                     println("=====================================================================")
-
-                }
-                else
+                } else {
                     println("Please specify the Repository ID")
-
+                }
             }
 
             else -> 0
         }
         return 0
     }
-
-
-
-
-
 }

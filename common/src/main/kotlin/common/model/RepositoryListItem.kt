@@ -1,6 +1,5 @@
 package common.model
 
-
 import com.fasterxml.jackson.annotation.JsonProperty
 
 data class RepositoryListItem(
@@ -9,5 +8,5 @@ data class RepositoryListItem(
     @JsonProperty("id")
     val id: String,
     @JsonProperty("taxonomyVersion")
-    val taxonomyVersion: Taxonomy
+    val taxonomyVersion: Taxonomy,
 )

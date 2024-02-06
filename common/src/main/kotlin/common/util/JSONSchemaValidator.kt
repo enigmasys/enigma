@@ -1,25 +1,25 @@
-//package common.util
+// package common.util
 //
-//import com.fasterxml.jackson.databind.JsonNode
-//import com.fasterxml.jackson.databind.ObjectMapper
-//import com.networknt.schema.JsonSchema
-//import com.networknt.schema.JsonSchemaFactory
-//import com.networknt.schema.SpecVersionDetector
-//import com.networknt.schema.ValidationMessage
-//import org.slf4j.LoggerFactory
-//import org.springframework.stereotype.Component
-//import java.io.FileInputStream
-//import java.io.InputStream
-//import java.net.URL
-//import java.util.function.Consumer
+// import com.fasterxml.jackson.databind.JsonNode
+// import com.fasterxml.jackson.databind.ObjectMapper
+// import com.networknt.schema.JsonSchema
+// import com.networknt.schema.JsonSchemaFactory
+// import com.networknt.schema.SpecVersionDetector
+// import com.networknt.schema.ValidationMessage
+// import org.slf4j.LoggerFactory
+// import org.springframework.stereotype.Component
+// import java.io.FileInputStream
+// import java.io.InputStream
+// import java.net.URL
+// import java.util.function.Consumer
 //
 //
-//enum class ResourceSourceType {
+// enum class ResourceSourceType {
 //    FILE, RESOURCE, URL
-//}
+// }
 //
-//@Component
-//class JSONSchemaValidator {
+// @Component
+// class JSONSchemaValidator {
 //    private val log = LoggerFactory.getLogger(this::class.java)
 //
 //    fun inputStreamFromClasspath(path: String): InputStream {
@@ -61,7 +61,7 @@
 //        schemaStream: InputStream
 //    ): Boolean {
 //
-////        val schemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V201909)
+// //        val schemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V201909)
 //
 //        val json: JsonNode = objectMapper.readTree(jsonStream)
 //
@@ -70,7 +70,7 @@
 //        val schema = getJsonSchemaFromJsonNodeAutomaticVersion(schemaNode)
 //
 //
-////        val schema: JsonSchema = schemaFactory.getSchema(schemaStream)
+// //        val schema: JsonSchema = schemaFactory.getSchema(schemaStream)
 //
 //        val validationResult: Set<ValidationMessage> = schema!!.validate(json)
 //        if (validationResult.isEmpty()) {
@@ -79,7 +79,7 @@
 //
 //        } else {
 //
-////            TODO("Need to emit error here.. Also, need to properly upload the data once this is success")
+// //            TODO("Need to emit error here.. Also, need to properly upload the data once this is success")
 //            validationResult.forEach(Consumer { vm: ValidationMessage ->
 //                println(
 //                    vm.message
@@ -88,4 +88,4 @@
 //            return false
 //        }
 //    }
-//}
+// }

@@ -6,22 +6,17 @@ import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
 import java.io.BufferedInputStream
 import java.io.FileOutputStream
-import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLConnection
-import java.net.URLEncoder
 import java.nio.file.Files
 import java.nio.file.Paths
-
 
 class FileDownloader {
     companion object {
         @Suppress("JAVA_CLASS_ON_COMPANION")
         @JvmStatic
         private val logger = LoggerFactory.getLogger(javaClass.enclosingClass)
-
-
 
         fun encodeParameterAndQuery(url: String): String {
             val uri = URL(url)
@@ -44,22 +39,23 @@ class FileDownloader {
             return encodedUrl.toString()
         }
 
-
-        suspend fun downloadFile(url: String, destination: String) {
+        suspend fun downloadFile(
+            url: String,
+            destination: String,
+        ) {
             withContext(Dispatchers.IO) {
                 try {
-
-                    if (Files.notExists(Paths.get(destination)))
+                    if (Files.notExists(Paths.get(destination))) {
                         Files.createFile(Paths.get(destination))
+                    }
 
-                    val isPresent = async { isAvailable(url, destination)}.await()
+                    val isPresent = async { isAvailable(url, destination) }.await()
                     if (!isPresent) {
                         logger.info("Starting download to $destination")
                         logger.info("Downloading from $url")
                         val encodedUrl = encodeParameterAndQuery(url)
                         val urlConnection = URL(encodedUrl).openConnection()
                         val inputStream = BufferedInputStream(urlConnection.getInputStream())
-
 
                         val outputStream = FileOutputStream(destination)
                         val data = ByteArray(1024)
@@ -71,20 +67,13 @@ class FileDownloader {
                         logger.info("Finished download to $destination")
                         outputStream.close()
                         inputStream.close()
-
-
-
-
-
                     }
-
                 } catch (e: Exception) {
                     // Handle the exception here, or re-throw it
                     e.printStackTrace()
                 }
             }
         }
-
 
         suspend fun getFileSizeOfUrl(url: String): Long {
             var urlConnection: URLConnection? = null
@@ -96,13 +85,17 @@ class FileDownloader {
                 return if (contentLengthStr.isNullOrEmpty()) -1 else contentLengthStr.toLong()
             } catch (ignored: Exception) {
             } finally {
-                if (urlConnection is HttpURLConnection)
+                if (urlConnection is HttpURLConnection) {
                     urlConnection.disconnect()
+                }
             }
             return -1
         }
 
-        suspend fun isAvailable(fileURL: String?, localFilename: String?): Boolean {
+        suspend fun isAvailable(
+            fileURL: String?,
+            localFilename: String?,
+        ): Boolean {
             if (Files.exists(Paths.get(localFilename))) {
                 val remoteSize = fileURL?.let { getFileSizeOfUrl(it) }
                 val localSize = Files.size(Paths.get(localFilename))
@@ -110,8 +103,9 @@ class FileDownloader {
                     return false
                 }
                 return true
-            } else
+            } else {
                 return false
+            }
         }
     }
 }

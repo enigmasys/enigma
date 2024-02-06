@@ -1,6 +1,5 @@
 package common.model.observation
 
-
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 
@@ -11,5 +10,5 @@ data class FileUrlInfoItem(
     @JsonProperty("id")
     val id: String,
     @JsonProperty("repoId")
-    val repoId: String
+    val repoId: String,
 )
