@@ -15,7 +15,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.22"
     id("maven-publish")
 //     let's add the ktlink plugin
-    id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_17
@@ -36,7 +36,7 @@ dependencies {
     implementation("com.microsoft.azure:msal4j:1.14.2")
     implementation("com.microsoft.azure:msal4j-persistence-extension:1.2.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test:3.2.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
 }
 
 tasks.getByName<Test>("test") {
