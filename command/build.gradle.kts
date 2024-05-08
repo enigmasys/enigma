@@ -19,10 +19,10 @@ val archivaPort: String? by project
 
 
 plugins {
-    id("org.springframework.boot") version "3.2.2"
-    id("io.spring.dependency-management") version "1.1.4"
-    kotlin("jvm") version "1.9.22"
-    kotlin("plugin.spring") version "1.9.22"
+    id("org.springframework.boot") version "3.2.5"
+    id("io.spring.dependency-management") version "1.1.5"
+    kotlin("jvm") version "1.9.24"
+    kotlin("plugin.spring") version "1.9.24"
     id("maven-publish")
 }
 
@@ -38,12 +38,12 @@ dependencies {
 
     implementation(project(":common"))
 
-    implementation("org.springframework.boot:spring-boot-starter-webflux:3.2.2")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.22")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
-    implementation("info.picocli:picocli:4.7.5")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.2.5")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.24")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.24")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.8.0")
+    implementation("info.picocli:picocli:4.7.6")
     implementation("junit:junit:4.13.2")
 }
 
