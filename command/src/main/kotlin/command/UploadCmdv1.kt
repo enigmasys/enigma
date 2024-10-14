@@ -13,6 +13,7 @@ import java.nio.file.Paths
 import java.util.concurrent.Callable
 import kotlin.io.path.notExists
 import kotlin.system.exitProcess
+import kotlin.time.measureTime
 
 /**
  * Upload Command
@@ -114,16 +115,29 @@ class UploadCmdv1(
                 println("Upload Command Invoked.")
                 println("=====================================")
                 println("Uploading records from $uploadDir to repository $processID")
+
+
+
 //                TaxonomyInfoServceObj.initTaxonomyInfoService(TAXONOMYPROJECT, TAXONOMYBRANCH)
-                TaxonomyInfoServceObj.initTaxonomyInfoService()
+                var time_elapsed = measureTime {
+                    TaxonomyInfoServceObj.initTaxonomyInfoService()
+                }
+
+//                println("Time elapsed initTaxonomyInfoService: $time_elapsed")
 
                 // Stress Test with 100 records
 
 //                for (i in 1..10) {
-                processID?.let {
-                    logger.info("$it ::  $uploadDir :: $jsonFilePath")
-                    TaxonomyInfoServceObj.uploadToRepository(it, uploadDir, jsonFilePath, displayName)
+
+                time_elapsed = measureTime {
+                    processID?.let {
+                        logger.info("$it ::  $uploadDir :: $jsonFilePath")
+                        TaxonomyInfoServceObj.uploadToRepository(it, uploadDir, jsonFilePath, displayName)
+                    }
                 }
+
+//                println("Time elapsed uploadToRepository: $time_elapsed")
+
 //                }
                 println("Upload Complete")
                 println("=====================================")

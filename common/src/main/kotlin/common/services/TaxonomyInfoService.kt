@@ -51,6 +51,7 @@ import java.util.zip.ZipInputStream
 import kotlin.collections.HashMap
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
+import kotlin.time.measureTimedValue
 
 // Service for retrieving taxonomy-related content information from the WebGME instance.
 @Service
@@ -84,12 +85,29 @@ class TaxonomyInfoService(
 //    lateinit var encodedProjectTypeValue: String
 
     fun getTokens() {
-        aadToken = authServiceObj.getAuthToken()
+
+
+        var (tmpToken, elapsedTime) = measureTimedValue {
+            authServiceObj.getAuthToken()
+        }
+//        println("Time taken to get AAD token is $elapsedTime")
+        aadToken = tmpToken
+//        println("AAD Token: $aadToken")
+
         // logger.debug("aadToken: $aadToken")
         if (aadToken == "") {
             throw Exception("AAD token is empty, If using Passthrough, Make sure to set the AAD token using -t option")
         }
-        webgmeAccesstoken = getWebGMEToken().toString()
+        val (tmpwebgmeAccesstoken, time_Elapsed) = measureTimedValue{
+            getWebGMEToken().toString()
+        }
+        // get the token expiration time from the tmpwebgmeAccesstoken
+
+
+
+//        println("Time taken to get WebGME token is $time_Elapsed")
+        webgmeAccesstoken = tmpwebgmeAccesstoken
+//        println("WebGME Token: $webgmeAccesstoken")
         if (webgmeAccesstoken == "") {
             throw Exception("WebGME token is empty")
         }
@@ -601,9 +619,64 @@ class TaxonomyInfoService(
     }
 
     fun getContentTypeOfRepository(repositoryID: String = "87dc1607-5d63-4073-9424-720f86ecef43"): String {
+
+
+        val CACHE_EXPIRE_LIMIT = 24 * 60 * 60 * 1000
+//        val CACHE_EXPIRE_LIMIT = 1 * 1000
         if (contentRepoMap == null) {
-            contentRepoMap = fetchContentRepoMap()
+//            println("Fetching Content Repo Map..")
+            val contentRepoFileName = "contentRepoMap.json"
+            val cacheFileName = "cacheFile.json"
+            // create a cachefile for the contentRepoMap with elapsed time for checking...
+            // create a key value pair for the cache file
+
+            var needtoFetchContentRepoMap = true
+            if (File(cacheFileName).exists()){
+                // check the time elapsed since the file was created
+                val cacheFile = File(cacheFileName)
+                val currentTime = System.currentTimeMillis()
+                val lastModifiedTime = cacheFile.lastModified()
+
+
+                val elapsedTime = currentTime - lastModifiedTime
+
+//                println("Elapsed Time: $elapsedTime")
+//                println("Cache Expire Limit: $CACHE_EXPIRE_LIMIT")
+                if (elapsedTime > CACHE_EXPIRE_LIMIT) {
+                    // if the elapsed time is greater than 1 hour, then delete the file
+//                    println("Cache File Exists and the elapsed time is greater than CACHE_EXPIRE_LIMIT")
+
+                    cacheFile.delete()
+                    needtoFetchContentRepoMap = true
+                }else{
+//                    println("Cache File Exists and the elapsed time is less than 1 hour")
+                    if (File(contentRepoFileName).exists())
+                    {
+                        try {
+                            contentRepoMap = jacksonObjectMapper().readValue(
+                                File(contentRepoFileName),
+                                jacksonObjectMapper().typeFactory.constructMapType(
+                                    HashMap::class.java, String::class.java, RepositoryList::class.java
+                                )
+                            )
+                            needtoFetchContentRepoMap = false
+                        }
+                        catch (e: Exception) {
+                            needtoFetchContentRepoMap = true
+                        }
+                    }
+                }
+            }
+
+            if (needtoFetchContentRepoMap) {
+                contentRepoMap = fetchContentRepoMap()
+                // store this in a file
+                File(contentRepoFileName).writeText(jacksonObjectMapper().writeValueAsString(contentRepoMap))
+                // create a cache file with the current time
+                File(cacheFileName).createNewFile()
+            }
         }
+//        println("Content Repo Map: $contentRepoMap")
         val contentType = contentRepoMap?.filterValues { it.any { it.id == repositoryID } }?.keys?.firstOrNull()
 
         return contentType ?: ""
@@ -646,8 +719,13 @@ class TaxonomyInfoService(
         val tmpAppendMetadata = AppendMetadata(filenames = listofFiles, metadata = rawData!!)
 //        println(tmpAppendMetadata)
 
-        val response =
-            appendMetadataToRepository(repositoryID, tmpAppendMetadata)
+
+        var (response, elapsedTime) = measureTimedValue {
+
+                appendMetadataToRepository(repositoryID, tmpAppendMetadata)
+
+        }
+//        println("Time taken to append metadata to repository is $elapsedTime")
 
         val tmpurlInfo =
             jacksonObjectMapper().readValue(response, AppendResponse::class.java).appendFiles.associate {
@@ -691,6 +769,7 @@ class TaxonomyInfoService(
                     deferredUploads.forEach { it.await() }
                 }
             }
+//        println("Time taken to upload ${fileinfo.size} files is $measureTime")
         logger.info("Time taken to upload ${fileinfo.size} files is $measureTime")
     }
 
@@ -721,17 +800,31 @@ class TaxonomyInfoService(
         repositoryID: String,
         content: Any,
     ): String {
-        val contentTypeName = getContentTypeOfRepository(repositoryID)
-        val contentTypePath = getPathofContentType(contentTypeName)
-        val finalCookie = getCookie()
 
-        val response =
+        val (contentTypeName, elapsed_time) = measureTimedValue {
+             getContentTypeOfRepository(repositoryID)
+        }
+//        println("Time taken to get content type of repository is $elapsed_time")
+
+
+        val (contentTypePath, elapsed_time1) = measureTimedValue {
+            getPathofContentType(contentTypeName)
+        }
+
+//        println("Time taken to get content type path is $elapsed_time1")
+
+
+        val (finalCookie, elapsed_time2)  = measureTimedValue {  getCookie() }
+
+//        println("Time taken to get cookie is $elapsed_time2")
+
+        val (response, response_time) = measureTimedValue {
             webClient.post()
                 .uri { uriBuilder: UriBuilder ->
                     UriComponentsBuilder.fromUri(uriBuilder.build())
                         .path(
                             "/routers/Search/{encodedProjectID}/{encodedProjectType}" +
-                                "/{encodedProjectTypeValue}/{contentTypePath}/artifacts/{repositoryID}/append",
+                                    "/{encodedProjectTypeValue}/{contentTypePath}/artifacts/{repositoryID}/append",
                         )
                         .encode()
                         .buildAndExpand(
@@ -749,6 +842,9 @@ class TaxonomyInfoService(
                 .retrieve()
                 .bodyToMono(String::class.java)
                 .block()
+        }
+
+//        println("Response-Time taken to append metadata to repository is $response_time")
 
         return response!!
     }
