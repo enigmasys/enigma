@@ -9,10 +9,10 @@ val archivaHostId: String? by project
 val archivaPort: String? by project
 
 plugins {
-    id("org.springframework.boot") version "3.3.1"
-    id("io.spring.dependency-management") version "1.1.5"
-    kotlin("jvm") version "2.0.0"
-    kotlin("plugin.spring") version "2.0.0"
+    id("org.springframework.boot") version "3.3.4"
+    id("io.spring.dependency-management") version "1.1.6"
+    kotlin("jvm") version "2.0.21"
+    kotlin("plugin.spring") version "2.0.21"
     id("maven-publish")
 //     let's add the ktlink plugin
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
@@ -26,17 +26,17 @@ group = "edu.vanderbilt"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-webflux:3.3.1")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:3.3.4")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.0")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.2")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.8.1")
-    implementation("com.azure:azure-storage-blob:12.26.1")
-    implementation("com.microsoft.azure:msal4j:1.16.0")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.3")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.21")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.21")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.9.0")
+    implementation("com.azure:azure-storage-blob:12.28.1")
+    implementation("com.microsoft.azure:msal4j:1.17.2")
     implementation("com.microsoft.azure:msal4j-persistence-extension:1.3.0")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:3.3.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.3")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:3.3.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.2")
 }
 
 tasks.getByName<Test>("test") {
